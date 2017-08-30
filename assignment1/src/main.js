@@ -1,6 +1,8 @@
 import Sprite from './utils/sprite';
 import Game from './game'
 
+import './style.css'
+
 // let canvas = document.getElementById("alchemy_table");
 // let context = canvas.getContext('2d');
 
