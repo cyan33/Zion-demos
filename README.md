@@ -8,6 +8,18 @@ Clone the repo first:
 
 `git clone git@github.com:thomasyimgit/csc591-assignments.git`
 
+Install the dependencies:
+
+`npm install`
+
+Run wepack in `watch` mode:
+
+`npm run watch`
+
+or `build`:
+
+`npm run build`
+
 ## Convention
 
 For collaborating assignments, each of us own our own branch, which is our name. (This may not necessarily be the best practice, but it's just for UNIFORM in team collaboration.) For example, like me, I'll work on the branch `Chang`.
@@ -21,3 +33,9 @@ The rest of the work is pretty easy. Everytime you make some changes to the code
 
 However, the review process could be flexible. For a tight due project, the base line is **"as long as it doesn't break down the code base and finishes the basic functionalities."**
 
+## UPDATE
+
+1. use `single quote` instead of `double quote`
+2. use es6 as much as possible
+3. a class file shoule be named in capital letters, like `Game.js`
+4. the files in `utils` are what we are gonna continue use in our future projects.
