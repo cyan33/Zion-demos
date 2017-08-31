@@ -29,4 +29,5 @@ body{
     width: 64px;
     height: 64px;
     margin: 10px auto;
+    cursor: pointer;
 }
