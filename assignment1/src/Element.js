@@ -1,7 +1,7 @@
 class Element {
     constructor(index, url) {
         this.index = index;
-        this.src = setSrc(url);
+        this.src = this.setSrc(url);
     }
 
     setSrc(url) {
