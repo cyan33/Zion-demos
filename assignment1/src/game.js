@@ -5,11 +5,8 @@ import {
     EMOJI_AMOUNT,
     EMOJI_URL_SOURCE,
     EMOJI_NAME,
-<<<<<<< HEAD
-    EMOJI_COMBINATION
-=======
+    EMOJI_COMBINATION,
     EMOJI_SIZE
->>>>>>> add dnd handlers and more utils
 } from './options'
 import {
     clearCanvas,
