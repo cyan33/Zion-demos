@@ -1,11 +1,13 @@
 // drag and drop utils handlers
 import { coordinateConversion } from './canvas'
+import { getBoundaries } from '../helper'
+import { EMOJI_SIZE } from '../options'
 
 /*
     drag and drop in canvas is much different than in DOM, because the canvas comes
     as a whole, so these functions may seem to be hacky, or dirty.
 */
-export const dndWrapper = function(canvas, context) {
+export default function dndWrapper(canvas, context) {
     let isMouseDown = false;
 
     let getItemPosition = (item) => {
@@ -21,39 +23,50 @@ export const dndWrapper = function(canvas, context) {
     let getDraggingItemIndex = (items, x, y) => {
         for (let i = 0; i < items.length; i++) {
             let currItem = items[i];
-            if (x < currItem.position.x + currItem.width
-                && x > currItem.position.x
-                && y < currItem.position.y + currItem.height
-                && y > currItem.position.y) {
-                    return i;
-                }
+            let {
+                top,
+                left,
+                right,
+                bottom
+            } = getBoundaries(currItem.position, currItem.size);
+
+            if (x < right && x > left && y < bottom && y > top) {
+                return i;
+            }
         }
         return -1;
     };
 
-    let onMouseDownHandler = (items, i, ) => {
-        // get the current position of items[i]
-        const { x, y } = getPosition(items[i]);
-        isMouseDown = true;
-        this.
-    };
+    let isCollapsed = (items, draggingIndex) => {
+        // check if the `draggingIndex`th of items overlaps any one of the rest elements
+        if (draggingIndex < 0 || items.length === 0)  return;
 
-    let onMouseMoveHandler = (e) => {
+        const dragging = items[draggingIndex]
+        
+        const { x, y } = dragging.position;
+        const center = {
+            x: x + dragging.size.width / 2,
+            y: y + dragging.size.height / 2,
+        };
 
-        updateItemPosition(items, i, )
-    };
-
-    let onMouseUpHandler = () => {
-        this.onMouseMove = null;
-    };
-
-    let isCollapsed = () => {
-
+        for (let i = 0; i < items.length; i++) {
+            if (i === draggingIndex)    continue;
+            const {
+                top,
+                right,
+                left,
+                bottom
+            } = getBoundaries(items[i].position, items[i].size);
+            if (center.x < right && center.x > left 
+                && center.y < bottom && center.y > top) {
+                return i;
+            }
+        }
+        return -1;
     };
     
     return {
-        onMouseDownHandler,
-        onMouseMoveHandle,
         isCollapsed,
+        getDraggingItemIndex,
     };
 };

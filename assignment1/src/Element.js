@@ -1,11 +1,12 @@
-class Element {
-    constructor(index, url) {
-        this.index = index;
-        this.src = this.setSrc(url);
-    }
+import { getImgSourceUrl } from './helper'
+import { EMOJI_NAME, EMOJI_SIZE } from './options'
 
-    setSrc(url) {
-        this.src = url;
+class Element {
+    constructor(name, { x, y }) {
+        this.index = EMOJI_NAME.indexOf(name);
+        this.src = getImgSourceUrl(name);
+        this.size = EMOJI_SIZE;
+        this.position = { x, y };
     }
 }
 
