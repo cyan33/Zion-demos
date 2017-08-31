@@ -12,6 +12,8 @@ import {
 class Game {
     constructor() {
         this.canvas = document.getElementById('alchemy_table');
+        this.canvas.width = parseInt(window.innerWidth) - 150;
+        this.canvas.height = parseInt(window.innerHeight);
         this.context = this.canvas.getContext('2d');
     }
 
