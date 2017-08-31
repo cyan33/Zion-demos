@@ -21,6 +21,7 @@ class Game {
         this.canvas.width = parseInt(window.innerWidth) - 150;
         this.canvas.height = parseInt(window.innerHeight);
         this.context = this.canvas.getContext('2d');
+        this.sidebar = ['fearful', 'relaxed', 'cop'];
         
         // current emojis on the canvas
         this.emojis = [];
@@ -89,7 +90,12 @@ class Game {
         const x = e.clientX - EMOJI_SIZE.width / 2;
         const y = e.clientY - EMOJI_SIZE.height / 2;
 
-        this.emojis.push(new Element(EMOJI_NAME[combIndex], { x, y }));
+        let emoji_name = EMOJI_NAME[combIndex];
+        this.emojis.push(new Element(emoji_name, { x, y }));
+        if (this.sidebar.indexOf(emoji_name) === -1) {
+            this.sidebar.push(emoji_name);
+            this.insertEmojiToSidebar(emoji_name);
+        } 
 
         this.draggingIndex = -1;
     }
@@ -110,18 +116,17 @@ class Game {
         this.context.drawImage(target, x, y, width, height);
     }
 
-    insertEmojisToSidebar() {
-        for (let i = 0; i < EMOJI_AMOUNT; i++) {
-            let div = document.createElement('div');
-            div.className = `sidebar-emoji ${EMOJI_NAME[i]}`;
-            let img = document.createElement('img');
-            img.src = EMOJI_URL_SOURCE[i];
-            div.append(img);
+    insertEmojiToSidebar(name) {
+        let index = EMOJI_NAME.indexOf(name);
+        let div = document.createElement('div');
+        div.className = `sidebar-emoji ${EMOJI_NAME[index]}`;
+        let img = document.createElement('img');
+        img.src = EMOJI_URL_SOURCE[index];
+        div.append(img);
 
-            div.addEventListener('click', (e) => this.addSidebarEmojiClickHandler(e));
+        div.addEventListener('click', (e) => this.addSidebarEmojiClickHandler(e));
 
-            document.querySelector('.sidebar').append(div);
-        }
+        document.querySelector('.sidebar').append(div);
     }
     
     addClearAllHandler() {
@@ -158,7 +163,9 @@ class Game {
     }
 
     init() {
-        this.insertEmojisToSidebar();
+        for(let i = 0; i < this.sidebar.length; i++){
+            this.insertEmojiToSidebar(this.sidebar[i]);
+        }
         this.addClearAllHandler();
         this.addCanvasHandlers(this.canvas);
 
