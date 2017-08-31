@@ -1,8 +1,6 @@
 import Sprite from './utils/sprite';
 import Game from './game'
 
-import './style.css'
-
 // let canvas = document.getElementById("alchemy_table");
 // let context = canvas.getContext('2d');
 
@@ -107,7 +105,7 @@ import './style.css'
 
 // setInterval(game_loop, 30);
 
-// (function() {
-//     let game = new Game();
-//     game.init();
-// })();
+(function() {
+    let game = new Game();
+    game.init();
+})();
