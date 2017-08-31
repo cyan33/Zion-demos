@@ -6,13 +6,14 @@ import {
     EMOJI_URL_SOURCE,
     EMOJI_NAME,
     EMOJI_COMBINATION,
-    EMOJI_SIZE
+    EMOJI_SIZE,
 } from './options'
 import {
     clearCanvas,
     generateRandomPosition,
     drawImageByUrl
 } from './utils/canvas'
+import { removeMultiElementFromArray, getCombinationIndex } from './helper'
 
 class Game {
     constructor() {
@@ -53,7 +54,6 @@ class Game {
             this.draggingOffsetLeft = clientX - this.emojis[this.draggingIndex].position.x;
             this.draggingOffsetTop = clientY - this.emojis[this.draggingIndex].position.y; 
         }
-        console.log('mousedown', this.draggingIndex);
     }
 
     onCanvasMouseMove(e) {
@@ -61,25 +61,37 @@ class Game {
         const { clientX, clientY } = e;
 
         if (isMouseDown && this.draggingIndex >= 0) {
+            // update position
             this.emojis[this.draggingIndex].position = {
                 x: clientX - this.draggingOffsetLeft,
                 y: clientY - this.draggingOffsetTop
             }
-            console.log('mousemove', this.draggingIndex);
         }
     }
 
-    updateEmojis() {
-        // this function serves as the `update` function
-
-        // update the position of the dragging emoji
-    }
-
-    onCanvasMouseUp() {
-        // console.log('mouseup');
+    onCanvasMouseUp(e) {
         this.dnd.isMouseDown = false;
-        this.draggingIndex = -1;
         // collision detection
+        const { isCollapsed } = this.dnd;
+        let collapsedIndex = isCollapsed(this.emojis, this.draggingIndex);
+
+        if (this.draggingIndex < 0 || collapsedIndex < 0) return;
+
+        let a = this.emojis[this.draggingIndex].index;
+        let b = this.emojis[collapsedIndex].index;
+
+        let combIndex = getCombinationIndex(a, b);
+
+        if (combIndex < 0)  return;
+
+        this.emojis = removeMultiElementFromArray(this.emojis, this.draggingIndex, collapsedIndex);
+        
+        const x = e.clientX - EMOJI_SIZE.width / 2;
+        const y = e.clientY - EMOJI_SIZE.height / 2;
+
+        this.emojis.push(new Element(EMOJI_NAME[combIndex], { x, y }));
+
+        this.draggingIndex = -1;
     }
 
     addSidebarEmojiClickHandler(e) {
@@ -113,7 +125,7 @@ class Game {
     }
     
     addClearAllHandler() {
-        document.querySelector('.clear-all').addEventListener('click', clearCanvas.bind(null, this.canvas, this.context));
+        document.querySelector('.clear-all').addEventListener('click', () => this.emojis = []);
     }
 
     debug() {
@@ -138,6 +150,10 @@ class Game {
     }
 
     gameLoop() {
+        // why we don't have update()?
+        // because we have already done those parts in the canvas handlers
+        // in the future we may abstract those logic into a single function
+
         this.render();
     }
 

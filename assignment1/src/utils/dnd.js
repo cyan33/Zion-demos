@@ -28,7 +28,7 @@ export default function dndWrapper(canvas, context) {
                 left,
                 right,
                 bottom
-            } = getBoundaries(currItem.position, EMOJI_SIZE);
+            } = getBoundaries(currItem.position, currItem.size);
 
             if (x < right && x > left && y < bottom && y > top) {
                 return i;
@@ -37,28 +37,35 @@ export default function dndWrapper(canvas, context) {
         return -1;
     };
 
-    let onMouseDownHandler = (items, i, ) => {
-        // get the current position of items[i]
-        const { x, y } = getPosition(items[i]);
-        isMouseDown = true;
-    };
+    let isCollapsed = (items, draggingIndex) => {
+        // check if the `draggingIndex`th of items overlaps any one of the rest elements
+        if (draggingIndex < 0 || items.length === 0)  return;
 
-    let onMouseMoveHandler = (e) => {
+        const dragging = items[draggingIndex]
+        
+        const { x, y } = dragging.position;
+        const center = {
+            x: x + dragging.size.width / 2,
+            y: y + dragging.size.height / 2,
+        };
 
-        updateItemPosition(items, i, )
-    };
-
-    let onMouseUpHandler = () => {
-        this.onMouseMove = null;
-    };
-
-    let isCollapsed = () => {
-
+        for (let i = 0; i < items.length; i++) {
+            if (i === draggingIndex)    continue;
+            const {
+                top,
+                right,
+                left,
+                bottom
+            } = getBoundaries(items[i].position, items[i].size);
+            if (center.x < right && center.x > left 
+                && center.y < bottom && center.y > top) {
+                return i;
+            }
+        }
+        return -1;
     };
     
     return {
-        onMouseDownHandler,
-        onMouseMoveHandler,
         isCollapsed,
         getDraggingItemIndex,
     };
