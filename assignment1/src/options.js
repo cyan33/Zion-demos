@@ -1,6 +1,11 @@
 export const EMOJI_AMOUNT = 5;
 export const EMOJI_LIST = [];
 
+export const EMOJI_SIZE = {
+    width: 64,
+    height: 64,
+}
+
 export const EMOJI_NAME = ['fearful', 'relaxed', 'cop', 'heartpulse', 'anger'];
 
 export const EMOJI_URL_SOURCE = [
