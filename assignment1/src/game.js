@@ -5,6 +5,7 @@ import {
 } from './options'
 
 import {
+    clearCanvas,
     generateRandomPosition
 } from './utils/canvas'
 
@@ -37,6 +38,10 @@ class Game {
         }
     }
     
+    addClearAllHandler() {
+        document.querySelector('.clear-all').addEventListener('click', clearCanvas.bind(null, this.canvas, this.context));
+    }
+
     debug() {
         window.canvas = this.canvas;
         window.context = this.context;
@@ -44,6 +49,7 @@ class Game {
 
     init() {
         this.insertEmojisToSidebar();
+        this.addClearAllHandler();
 
         // only activate this function when you are in developing mode
         this.debug();
