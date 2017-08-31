@@ -13,6 +13,7 @@ class Game {
     constructor() {
         this.canvas = document.getElementById('alchemy_table');
         this.context = this.canvas.getContext('2d');
+        this.sidebar = ['fearful', 'heartpulse'];
     }
 
     addSidebarEmojiClickHandler(e) {
@@ -25,11 +26,12 @@ class Game {
     }
 
     insertEmojisToSidebar() {
-        for (let i = 0; i < EMOJI_AMOUNT; i++) {
+        for (let i = 0; i < this.sidebar.length; i++) {
+            let index = EMOJI_NAME.indexOf(this.sidebar[i]);
             let div = document.createElement('div');
-            div.className = `sidebar-emoji ${EMOJI_NAME[i]}`;
+            div.className = `sidebar-emoji ${EMOJI_NAME[index]}`;
             let img = document.createElement('img');
-            img.src = EMOJI_URL_SOURCE[i];
+            img.src = EMOJI_URL_SOURCE[index];
             div.append(img);
 
             div.addEventListener('click', (e) => this.addSidebarEmojiClickHandler(e));

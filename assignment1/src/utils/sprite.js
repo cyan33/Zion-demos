@@ -1,5 +1,5 @@
 class Sprite {
-    constructor(x, y, width, height, src) {
+    constructor(x = 0, y = 0, width = 64, height = 64, src = undefined) {
         this.X = x;
         this.Y = y;
         this.image = new Image();
