@@ -1,7 +1,8 @@
 import {
     EMOJI_AMOUNT,
     EMOJI_URL_SOURCE,
-    EMOJI_NAME
+    EMOJI_NAME,
+    EMOJI_COMBINATION
 } from './options'
 
 import {
@@ -42,6 +43,10 @@ class Game {
     
     addClearAllHandler() {
         document.querySelector('.clear-all').addEventListener('click', clearCanvas.bind(null, this.canvas, this.context));
+    }
+
+    combineElements(element1, element2){
+        return EMOJI_COMBINATION[element1][element2];
     }
 
     debug() {
