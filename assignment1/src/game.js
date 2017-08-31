@@ -10,7 +10,8 @@ import {
 } from './options'
 import {
     clearCanvas,
-    generateRandomPosition
+    generateRandomPosition,
+    drawImageByUrl
 } from './utils/canvas'
 
 class Game {
@@ -22,10 +23,13 @@ class Game {
         
         // current emojis on the canvas
         this.emojis = [];
+
         // the index of the draggin emoji you are dragging, note that this
         // is NOT the common-sense index in EMOJI_NAME
         // and this should be only used in Game
         this.draggingIndex = -1;
+        this.draggingOffsetTop = 0;
+        this.draggingOffsetLeft = 0;
 
         this.dnd = dndWrapper(this.canvas, this.context);
     }
@@ -37,16 +41,45 @@ class Game {
         canvas.onmouseout = this.onCanvasMouseUp.bind(this);
     }
 
-    onCanvasMouseDown() {
-        console.log('mousedown');
+    onCanvasMouseDown(e) {
+        this.dnd.isMouseDown = true;
+
+        // get and set the current dragging index
+        const { getDraggingItemIndex } = this.dnd;
+        const { clientX, clientY } = e;
+
+        this.draggingIndex = getDraggingItemIndex(this.emojis, clientX, clientY);
+        if (this.draggingIndex >= 0) {
+            this.draggingOffsetLeft = clientX - this.emojis[this.draggingIndex].position.x;
+            this.draggingOffsetTop = clientY - this.emojis[this.draggingIndex].position.y; 
+        }
+        console.log('mousedown', this.draggingIndex);
     }
 
-    onCanvasMouseMove() {
-        console.log('mousemove');
+    onCanvasMouseMove(e) {
+        const { isMouseDown } = this.dnd;
+        const { clientX, clientY } = e;
+
+        if (isMouseDown && this.draggingIndex >= 0) {
+            this.emojis[this.draggingIndex].position = {
+                x: clientX - this.draggingOffsetLeft,
+                y: clientY - this.draggingOffsetTop
+            }
+            console.log('mousemove', this.draggingIndex);
+        }
+    }
+
+    updateEmojis() {
+        // this function serves as the `update` function
+
+        // update the position of the dragging emoji
     }
 
     onCanvasMouseUp() {
-        console.log('mouseup');
+        // console.log('mouseup');
+        this.dnd.isMouseDown = false;
+        this.draggingIndex = -1;
+        // collision detection
     }
 
     addSidebarEmojiClickHandler(e) {
@@ -83,22 +116,29 @@ class Game {
         document.querySelector('.clear-all').addEventListener('click', clearCanvas.bind(null, this.canvas, this.context));
     }
 
-    combineElements(element1, element2){
-        return EMOJI_COMBINATION[element1][element2];
-    }
-
     debug() {
         window.canvas = this.canvas;
         window.context = this.context;
         window.emojis = this.emojis;
+        window.dnd = this.dnd;
     }
 
     render() {
-        setTimeout(this.render, 30);
+        clearCanvas(this.canvas, this.context);
+
+        const { width, height } = EMOJI_SIZE;
+        for (let i = 0; i < this.emojis.length; i++) {
+            let src = this.emojis[i].src;
+            let { x, y } = this.emojis[i].position;
+
+            drawImageByUrl.call(this.context, this.emojis[i].src, x, y, width, height);
+        }
+
+        setTimeout(this.render.bind(this), 30);
     }
 
     gameLoop() {
-        // this.render();
+        this.render();
     }
 
     init() {

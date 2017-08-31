@@ -1,5 +1,7 @@
 // drag and drop utils handlers
 import { coordinateConversion } from './canvas'
+import { getBoundaries } from '../helper'
+import { EMOJI_SIZE } from '../options'
 
 /*
     drag and drop in canvas is much different than in DOM, because the canvas comes
@@ -21,12 +23,16 @@ export default function dndWrapper(canvas, context) {
     let getDraggingItemIndex = (items, x, y) => {
         for (let i = 0; i < items.length; i++) {
             let currItem = items[i];
-            if (x < currItem.position.x + currItem.width
-                && x > currItem.position.x
-                && y < currItem.position.y + currItem.height
-                && y > currItem.position.y) {
-                    return i;
-                }
+            let {
+                top,
+                left,
+                right,
+                bottom
+            } = getBoundaries(currItem.position, EMOJI_SIZE);
+
+            if (x < right && x > left && y < bottom && y > top) {
+                return i;
+            }
         }
         return -1;
     };
@@ -54,5 +60,6 @@ export default function dndWrapper(canvas, context) {
         onMouseDownHandler,
         onMouseMoveHandler,
         isCollapsed,
+        getDraggingItemIndex,
     };
 };

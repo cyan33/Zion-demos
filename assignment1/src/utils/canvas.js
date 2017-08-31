@@ -27,3 +27,11 @@ export function generateRandomPosition(canvas, middle = false) {
     }
     return { x, y };
 }
+
+export function drawImageByUrl(url, x, y, width, height) {
+    // this refers to the canvas CONTEXT
+    let img = new Image();
+    img.src = url;
+
+    this.drawImage(img, x, y, width, height);
+}
