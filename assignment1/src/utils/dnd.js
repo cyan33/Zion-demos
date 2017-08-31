@@ -5,7 +5,7 @@ import { coordinateConversion } from './canvas'
     drag and drop in canvas is much different than in DOM, because the canvas comes
     as a whole, so these functions may seem to be hacky, or dirty.
 */
-export const dndWrapper = function(canvas, context) {
+export default function dndWrapper(canvas, context) {
     let isMouseDown = false;
 
     let getItemPosition = (item) => {
@@ -35,7 +35,6 @@ export const dndWrapper = function(canvas, context) {
         // get the current position of items[i]
         const { x, y } = getPosition(items[i]);
         isMouseDown = true;
-        this.
     };
 
     let onMouseMoveHandler = (e) => {
@@ -53,7 +52,7 @@ export const dndWrapper = function(canvas, context) {
     
     return {
         onMouseDownHandler,
-        onMouseMoveHandle,
+        onMouseMoveHandler,
         isCollapsed,
     };
 };
