@@ -1,7 +1,8 @@
 import {
     EMOJI_AMOUNT,
     EMOJI_URL_SOURCE,
-    EMOJI_NAME
+    EMOJI_NAME,
+    EMOJI_COMBINATION
 } from './options'
 
 import {
@@ -40,6 +41,11 @@ class Game {
 
             document.querySelector('.sidebar').append(div);
         }
+    }
+
+    getCombination(first, second) {
+        let combo = EMOJI_COMBINATION[first][second];
+        return combo !== null? combo : undefined
     }
     
     addClearAllHandler() {
