@@ -1,0 +1,32 @@
+body{
+    width: 100%;
+    height: 100%;
+}
+
+#alchemy_table {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 150px;
+    bottom: 0;
+    width: calc(100% - 150px);
+    height: 100%;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #f9f9e6;
+}
+
+.sidebar .sidebar-emoji {
+    width: 64px;
+    height: 64px;
+    margin: 10px auto;
+}

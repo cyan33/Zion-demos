@@ -105,7 +105,7 @@ import Game from './game'
 
 // setInterval(game_loop, 30);
 
-// (function() {
-//     let game = new Game();
-//     game.init();
-// })();
+(function() {
+    let game = new Game();
+    game.init();
+})();
