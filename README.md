@@ -40,11 +40,3 @@ However, the review process could be flexible. For a tight due project, the base
 3. a class file shoule be named in capital letters, like `Game.js`
 4. the files in `utils` are what we are gonna continue use in our future projects.
 
-
-## COMBINATIONS ##
-Following are the combinations allowed.   
-:fearful: + :fearful: = :heartpulse:   
-:relaxed: + :cop: = :anger:   
-:heartpulse: + :anger: = :penguin:   
-:penguin: + :relaxed: = :cactus:   
-:cop: + :cactus: = :octopus:   
