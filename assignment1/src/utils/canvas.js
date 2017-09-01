@@ -35,3 +35,12 @@ export function drawImageByUrl(url, x, y, width, height) {
 
     this.drawImage(img, x, y, width, height);
 }
+
+export function insertText(context, options = { }) {
+    const { text, font, position: { x, y }, color } = options;
+
+    context.fillStyle = color;
+    context.font = font;
+
+    context.fillText(text, x, y);
+}

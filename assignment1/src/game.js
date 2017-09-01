@@ -11,7 +11,8 @@ import {
 import {
     clearCanvas,
     generateRandomPosition,
-    drawImageByUrl
+    drawImageByUrl,
+    insertText
 } from './utils/canvas'
 import { removeMultiElementFromArray, getCombinationIndex } from './helper'
 
@@ -34,6 +35,18 @@ class Game {
         this.draggingOffsetLeft = 0;
 
         this.dnd = dndWrapper(this.canvas, this.context);
+    }
+
+    showUnlockedCount() {
+        insertText(this.context, {
+            text: `You have unlocked ${this.sidebar.length - 3}/${EMOJI_AMOUNT - 3} hidden ${this.sidebar.length - 3 > 1 ? 'elements' : 'element'}`,
+            font: '30px Georgia',
+            position: {
+                x: 50,
+                y: this.canvas.height - 40
+            },
+            color: '#ada386'
+        })
     }
 
     addCanvasHandlers(canvas) {
@@ -91,7 +104,10 @@ class Game {
         const y = e.clientY - EMOJI_SIZE.height / 2;
 
         let emoji_name = EMOJI_NAME[combIndex];
+        
         this.emojis.push(new Element(emoji_name, { x, y }));
+
+        // if it unlocks a new element
         if (this.sidebar.indexOf(emoji_name) === -1) {
             this.sidebar.push(emoji_name);
             this.insertEmojiToSidebar(emoji_name);
@@ -128,9 +144,19 @@ class Game {
 
         document.querySelector('.sidebar').append(div);
     }
+
+    initSidebar() {
+        for(let i = 0; i < this.sidebar.length; i++){
+            this.insertEmojiToSidebar(this.sidebar[i]);
+        }
+    }
     
     addClearAllHandler() {
-        document.querySelector('.clear-all').addEventListener('click', () => this.emojis = []);
+        document.querySelector('.clear-all').addEventListener('click', () => {
+            if (window.confirm('Are you sure you want to remove ALL the elements on the canvas??')) {
+                this.emojis = [];
+            }
+        });
     }
 
     debug() {
@@ -151,6 +177,8 @@ class Game {
             drawImageByUrl.call(this.context, this.emojis[i].src, x, y, width, height);
         }
 
+        this.showUnlockedCount();
+
         setTimeout(this.render.bind(this), 30);
     }
 
@@ -163,9 +191,8 @@ class Game {
     }
 
     init() {
-        for(let i = 0; i < this.sidebar.length; i++){
-            this.insertEmojiToSidebar(this.sidebar[i]);
-        }
+        this.initSidebar();
+
         this.addClearAllHandler();
         this.addCanvasHandlers(this.canvas);
 
