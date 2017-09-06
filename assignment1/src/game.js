@@ -1,5 +1,6 @@
 import Element from './Element'
 import dndWrapper from './utils/dnd'
+import AudioManager from './utils/AudioManager'
 
 import {
     EMOJI_AMOUNT,
@@ -7,6 +8,9 @@ import {
     EMOJI_NAME,
     EMOJI_COMBINATION,
     EMOJI_SIZE,
+    GAME_AUDIO,
+    CORRECT,
+    INCORRECT
 } from './options'
 import {
     clearCanvas,
@@ -23,6 +27,7 @@ class Game {
         this.canvas.height = parseInt(window.innerHeight);
         this.context = this.canvas.getContext('2d');
         this.sidebar = ['fearful', 'relaxed', 'cop'];
+        this.audio = new AudioManager();
         
         // current emojis on the canvas
         this.emojis = [];
@@ -96,7 +101,10 @@ class Game {
 
         let combIndex = getCombinationIndex(a, b);
 
-        if (combIndex < 0)  return;
+        if (combIndex < 0) {
+            this.audio.getAudioByName(INCORRECT).play();
+            return;
+        }
 
         this.emojis = removeMultiElementFromArray(this.emojis, this.draggingIndex, collapsedIndex);
         
@@ -106,6 +114,8 @@ class Game {
         let emoji_name = EMOJI_NAME[combIndex];
         
         this.emojis.push(new Element(emoji_name, { x, y }));
+
+        this.audio.getAudioByName(CORRECT).play();
 
         // if it unlocks a new element
         if (this.sidebar.indexOf(emoji_name) === -1) {
@@ -150,6 +160,12 @@ class Game {
             this.insertEmojiToSidebar(this.sidebar[i]);
         }
     }
+
+    initAudio() {
+        for(let i = 0; i < GAME_AUDIO.length; i++) {
+            this.audio.addAudio(GAME_AUDIO[i]);
+        }
+    }
     
     addClearAllHandler() {
         document.querySelector('.clear-all').addEventListener('click', () => {
@@ -192,6 +208,7 @@ class Game {
 
     init() {
         this.initSidebar();
+        this.initAudio();
 
         this.addClearAllHandler();
         this.addCanvasHandlers(this.canvas);
