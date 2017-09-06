@@ -8,7 +8,9 @@ import {
     EMOJI_NAME,
     EMOJI_COMBINATION,
     EMOJI_SIZE,
-    GAME_AUDIO
+    GAME_AUDIO,
+    CORRECT,
+    INCORRECT
 } from './options'
 import {
     clearCanvas,
@@ -100,7 +102,7 @@ class Game {
         let combIndex = getCombinationIndex(a, b);
 
         if (combIndex < 0) {
-            this.audio.getAudioByName('incorrect.mp3').play();
+            this.audio.getAudioByName(INCORRECT).play();
             return;
         }
 
@@ -113,7 +115,7 @@ class Game {
         
         this.emojis.push(new Element(emoji_name, { x, y }));
 
-        this.audio.getAudioByName('combo.mp3').play();
+        this.audio.getAudioByName(CORRECT).play();
 
         // if it unlocks a new element
         if (this.sidebar.indexOf(emoji_name) === -1) {
