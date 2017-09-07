@@ -18,7 +18,8 @@ import {
     drawImageByUrl,
     insertText
 } from './utils/canvas'
-import { removeMultiElementFromArray, getCombinationIndex } from './helper'
+import { getCombinationIndex } from './helper'
+import { removeMultiElementFromArray } from './utils/operations'
 
 class Game {
     constructor() {
@@ -131,7 +132,7 @@ class Game {
         let target = e.target;
         let name = e.target.parentNode.className.split(' ')[1];
 
-        const { x, y } = generateRandomPosition(this.canvas, true);
+        const { x, y } = generateRandomPosition(this.canvas, true, EMOJI_SIZE);
         
         this.emojis.push(new Element(name, { x, y }));
 
