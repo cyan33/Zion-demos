@@ -1,5 +1,3 @@
-import { EMOJI_SIZE } from '../options';
-
 export function clearCanvas(canvas, context) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
@@ -12,11 +10,23 @@ export function coordinateConversion(canvas, x, y) {
     }
 }
 
+export function getBoundaries(pos, size) {
+    const { x, y } = pos;
+    const { width, height } = size;
+
+    return {
+        top: y,
+        left: x,
+        bottom: y + height,
+        right: x + width,
+    }
+}
+
 // TODO: should dnd the emoji from the sidebar into the canvas
-export function generateRandomPosition(canvas, middle = false) {
+export function generateRandomPosition(canvas, middle = false, size) {
     let x, y;
     const getRandomNumBetween = (min, max) => Math.random() * (max - min) + min; 
-    const { width, height } = EMOJI_SIZE;
+    const { width, height } = size;
 
     if (middle) {
         x = Math.round(getRandomNumBetween(canvas.width * 0.2, canvas.width * 0.8 - width));

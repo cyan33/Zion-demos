@@ -1,7 +1,5 @@
 // drag and drop utils handlers
-import { coordinateConversion } from './canvas'
-import { getBoundaries } from '../helper'
-import { EMOJI_SIZE } from '../options'
+import { coordinateConversion, getBoundaries } from './canvas'
 
 /*
     drag and drop in canvas is much different than in DOM, because the canvas comes
