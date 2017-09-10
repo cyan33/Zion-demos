@@ -1,13 +1,13 @@
 import { getImgSourceUrl } from './helper'
 import { EMOJI_NAME, EMOJI_SIZE } from './options'
+import Sprite from "./utils/Sprite";
 
-class Element {
-    constructor(name, { x, y }) {
+function Element (name, { x, y }){
+        Sprite.call(this, getImgSourceUrl(name), EMOJI_SIZE, { x, y })
         this.index = EMOJI_NAME.indexOf(name);
-        this.src = getImgSourceUrl(name);
-        this.size = EMOJI_SIZE;
-        this.position = { x, y };
-    }
 }
+
+Element.prototype = Object.create(Sprite.prototype);
+Element.prototype.constructor = Element;
 
 export default Element;
