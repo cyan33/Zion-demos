@@ -1,13 +1,13 @@
 import { getImgSourceUrl } from './helper'
 import { EMOJI_NAME, EMOJI_SIZE } from './options'
+import Sprite from "./utils/Sprite";
 
-class Element {
-    constructor(name, { x, y }) {
+class Element extends Sprite{
+    constructor(name, { x, y }){
+        super(getImgSourceUrl(name), EMOJI_SIZE, { x, y })
         this.index = EMOJI_NAME.indexOf(name);
-        this.src = getImgSourceUrl(name);
-        this.size = EMOJI_SIZE;
-        this.position = { x, y };
     }
+
 }
 
 export default Element;
