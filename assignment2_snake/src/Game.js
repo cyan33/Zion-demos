@@ -16,7 +16,13 @@ class Game {
         this.isAccelerating = false;
     }
 
-    
+    setMovingDirection() {
+        this.movingDirection = d;
+    }
+
+    addKeyboardHandlers() {
+        document.addEventListener('keydown', () => this.setMovingDirection())
+    }
 
     update() {
         // make the snake move one more step every 1 second
