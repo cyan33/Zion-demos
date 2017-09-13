@@ -1,6 +1,7 @@
 import { drawWalls, initSnake, drawSnake } from './helper'
 import { 
-    UP, DOWN, RIGHT, LEFT
+    UP, DOWN, RIGHT, LEFT,
+    MOVING_SPEED
 } from './options'
 
 class Game {
@@ -28,7 +29,7 @@ class Game {
         // make the snake move one more step every 1 second
         // according to the direction
 
-        setTimeout(this.update.bind(this), 1000)
+        setTimeout(this.update.bind(this), MOVING_SPEED)
     }
 
     render() {
