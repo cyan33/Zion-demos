@@ -56,9 +56,9 @@ function isCollidesItself(head, snakeSegments) {
 }
 
 function updateLocalStorage(score) {
-    let maxScore = localStorage.getItem('maxScore') || 0;
-    if (score > maxScore) {
-        localStorage.setItem('maxScore', score);
+    let highestScore = localStorage.getItem('highestScore') || 0;
+    if (score > highestScore) {
+        localStorage.setItem('highestScore', score);
     }
 }
 
@@ -92,7 +92,7 @@ export function moveSnake() {
     }
 
     // check if it eats food
-    // score++
+    // score++ and call this.initScorePanel()
 
     let head = new Segment({}, { x: nx, y: ny });
     snakeSegments.pop();

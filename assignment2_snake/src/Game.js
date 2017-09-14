@@ -14,8 +14,15 @@ class Game {
 
         this.snakeSegments = initSnake();
         this.movingDirection = RIGHT;
-        this.score = localStorage.getItem('maxScore') || 0;;
+        this.currScore = 0;
         // this.isAccelerating = false;
+        
+    }
+
+    initScorePanel() {
+        const highestScore = localStorage.getItem('highestScore') || 0;
+        document.querySelector('.score-panel .current .score').innerHTML = this.currScore;
+        document.querySelector('.score-panel .highest .score').innerHTML = highestScore;
     }
 
     setMovingDirection(e) {
@@ -49,6 +56,8 @@ class Game {
         drawSnake(this.context, this.snakeSegments);
 
         // the food
+        // current score
+        
     }
 
     gameloop() {
@@ -67,6 +76,7 @@ class Game {
         this.timer = setInterval(this.gameloop.bind(this), MOVING_SPEED);
         this.debug();
         this.addKeyboardHandlers();
+        this.initScorePanel();
     }
 }
 

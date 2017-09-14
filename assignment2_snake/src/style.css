@@ -1,4 +1,22 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 800px;
+    margin: 50px auto;
+}
+
 #snake {
     display: block;
-    margin: 50px auto;
+}
+
+.score-panel {
+    width: 200px;
+    height: 600px;
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+    line-height: 2;
+    border: 1px solid gray;
+    border-left: none;
+    letter-spacing: 1px;
 }
