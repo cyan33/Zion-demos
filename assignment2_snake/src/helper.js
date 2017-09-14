@@ -36,6 +36,7 @@ export function drawSnake(context, snakeSegments) {
         const { x, y } = s.position;
         drawSingleSegment(context, { x, y });
     })
+    context.restore();
 }
 
 function isCollidesWall(head) {
@@ -129,4 +130,5 @@ export function drawFood(context, food) {
     context.save();
     context.fillStyle = '#de9f5f';
     context.fillRect(food.position.x * SEGMENT_WIDTH, food.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
+    context.restore();
 }

@@ -1,4 +1,4 @@
-import {drawWalls, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood} from './helper'
+import { drawWalls, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood } from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
     MOVING_SPEED
