@@ -1,7 +1,8 @@
 import { drawWalls, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood } from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
-    MOVING_SPEED
+    MOVING_SPEED,
+    CANVAS_WIDTH, CANVAS_HEIGHT
 } from './options'
 
 class Game {
@@ -9,8 +10,8 @@ class Game {
         this.canvas = document.querySelector('#snake');
         this.context = this.canvas.getContext('2d');
 
-        // this.canvas.height = parseInt(window.innerHeight) - 20;
-        // this.canvas.width = this.canvas.height;
+        this.canvas.height = CANVAS_HEIGHT;
+        this.canvas.width = CANVAS_WIDTH;
 
         this.snakeSegments = initSnake();
         this.food = initFood();
@@ -59,8 +60,6 @@ class Game {
 
         // the food
         drawFood(this.context, this.food);
-        // current score
-        
     }
 
     gameloop() {
