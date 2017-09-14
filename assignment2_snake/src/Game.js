@@ -1,4 +1,4 @@
-import { drawWalls, initSnake, drawSnake } from './helper'
+import { drawWalls, initSnake, drawSnake, moveSnake } from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
     MOVING_SPEED
@@ -14,27 +14,41 @@ class Game {
 
         this.snakeSegments = initSnake();
         this.movingDirection = RIGHT;
-        this.isAccelerating = false;
+        this.currScore = 0;
+        // this.isAccelerating = false;
+        
     }
 
-    setMovingDirection() {
-        this.movingDirection = d;
+    initScorePanel() {
+        const highestScore = localStorage.getItem('highestScore') || 0;
+        document.querySelector('.score-panel .current .score').innerHTML = this.currScore;
+        document.querySelector('.score-panel .highest .score').innerHTML = highestScore;
+    }
+
+    setMovingDirection(e) {
+        if (e.keyCode === 37 && this.movingDirection !== RIGHT) {
+            this.movingDirection = LEFT;
+        } else if (e.keyCode === 38 && this.movingDirection !== DOWN) {
+            this.movingDirection = UP;
+        } else if (e.keyCode === 39 && this.movingDirection !== LEFT) {
+            this.movingDirection = RIGHT;
+        } else if (e.keyCode === 40 && this.movingDirection !== UP) {
+            this.movingDirection = DOWN;
+        }
     }
 
     addKeyboardHandlers() {
-        document.addEventListener('keydown', () => this.setMovingDirection())
+        document.addEventListener('keydown', (e) => this.setMovingDirection(e))
     }
 
     update() {
         // make the snake move one more step every 1 second
         // according to the direction
-
-        setTimeout(this.update.bind(this), MOVING_SPEED)
+        this.snakeSegments = moveSnake.call(this, this.snakeSegments, this.movingDirection);
     }
 
     render() {
         const { width, height } = this.canvas;
-
         // background
         drawWalls(this.context, width, height);
 
@@ -42,20 +56,27 @@ class Game {
         drawSnake(this.context, this.snakeSegments);
 
         // the food
+        // current score
+        
+    }
+
+    gameloop() {
+        this.update();
+        this.render();
     }
 
     debug() {
         window.snakeSegments = this.snakeSegments;
-    }
-
-    gameloop() {
-        this.render();
-        setTimeout(this.gameloop.bind(this), 30);
+        window.update = this.update.bind(this);
+        window.render = this.render.bind(this);
+        window.gameloop = this.gameloop.bind(this);
     }
     
     init() {
-        this.gameloop();
+        this.timer = setInterval(this.gameloop.bind(this), MOVING_SPEED);
         this.debug();
+        this.addKeyboardHandlers();
+        this.initScorePanel();
     }
 }
 
