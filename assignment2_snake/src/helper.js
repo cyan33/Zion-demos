@@ -63,7 +63,13 @@ function updateLocalStorage(score) {
 }
 
 function showRestartLayer() {
+    document.querySelector('.restart-layer').style.display = 'block';
+    document.querySelector('.restart-layer').style.opacity = 0.5;
+    document.querySelector("button").addEventListener("click", reload);
+}
 
+function reload() {
+    location.reload();
 }
 
 export function moveSnake() {
@@ -81,14 +87,8 @@ export function moveSnake() {
     if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)) {
         updateLocalStorage(this.score);
 
-        // ask the user to refresh to replay the game
-        if (window.confirm('Game over. Click OK to play again.')) {
-            location.reload();
-        } else {
-            clearInterval(this.timer);
-            return snakeSegments;
-            showRestartLayer();
-        }
+        clearInterval(this.timer);
+        showRestartLayer();
     }
 
     // check if it eats food

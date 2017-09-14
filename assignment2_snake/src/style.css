@@ -20,3 +20,21 @@
     border-left: none;
     letter-spacing: 1px;
 }
+
+.restart-layer {
+    display: none;
+    background-color: #808080;
+    position: absolute;
+    height: 620px;
+    width: 800px;
+}
+
+.restart-layer button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 100px;
+    margin-left: 300px;
+    margin-top: 250px;
+}
