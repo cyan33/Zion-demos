@@ -14,7 +14,6 @@ class Game {
 
         this.snakeSegments = initSnake();
         this.food = initFood();
-        console.log(this.food.position);
         this.movingDirection = RIGHT;
         this.currScore = 0;
         // this.isAccelerating = false;
