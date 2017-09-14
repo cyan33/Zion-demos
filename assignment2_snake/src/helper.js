@@ -4,6 +4,8 @@ import {
     ROWS, COLS
 } from './options'
 import Food from "./Food";
+import { getRandomNumber } from './utils/operations'
+
 
 export function drawWalls(context, width, height) {
     context.fillStyle = 'white';
@@ -116,9 +118,6 @@ export function checkFood() {
         newFood = initFood()
     }
     return newFood;
-}
-function getRandomNumber(max) {
-    return Math.floor(Math.random()*(max));
 }
 export function  initFood() {
     var xPos = getRandomNumber(COLS);
