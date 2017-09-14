@@ -3,6 +3,9 @@ import {
     SEGMENT_WIDTH, SNAKE_INIT_LENGTH, LEFT, UP, RIGHT, DOWN,
     ROWS, COLS
 } from './options'
+import Food from "./Food";
+import { getRandomNumber } from './utils/operations'
+
 
 export function drawWalls(context, width, height) {
     context.fillStyle = 'white';
@@ -35,6 +38,7 @@ export function drawSnake(context, snakeSegments) {
         const { x, y } = s.position;
         drawSingleSegment(context, { x, y });
     })
+    context.restore();
 }
 
 function isCollidesWall(head) {
@@ -72,7 +76,7 @@ function reload() {
 }
 
 export function moveSnake() {
-    const { snakeSegments, movingDirection } = this;
+    const { snakeSegments, movingDirection, food} = this;
     // construct a new head segment according to the moving direction
     let nx = snakeSegments[0].position.x;
     let ny = snakeSegments[0].position.y;
@@ -89,13 +93,40 @@ export function moveSnake() {
         clearInterval(this.timer);
         showRestartLayer();
     }
-
-    // check if it eats food
-    // score++ and call this.initScorePanel()
-
     let head = new Segment({}, { x: nx, y: ny });
-    snakeSegments.pop();
-    snakeSegments.unshift(head);
+    // check if it eats food
+    if (isCollidesFood({x: nx, y: ny}, food.position)) {
+        // score++ and call this.initScorePanel()
+        this.currScore++;
+        this.initScorePanel();
+    } else {
+        snakeSegments.pop();
+    }
 
+    snakeSegments.unshift(head);
     return snakeSegments;
+}
+
+export function checkFood() {
+    const { snakeSegments, food} = this;
+    let pos = snakeSegments[0].position;
+
+    var newFood = food;
+    // check if it eats food
+    if (isCollidesFood(pos, food.position)) {
+        newFood = initFood()
+    }
+    return newFood;
+}
+export function  initFood() {
+    var xPos = getRandomNumber(COLS);
+    var yPos = getRandomNumber(ROWS);
+    return new Food({}, {x:xPos, y:yPos});
+}
+
+export function drawFood(context, food) {
+    context.save();
+    context.fillStyle = '#de9f5f';
+    context.fillRect(food.position.x * SEGMENT_WIDTH, food.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
+    context.restore();
 }

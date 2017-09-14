@@ -7,3 +7,7 @@ export function removeMultiElementFromArray(arr, ...indexes) {
 
     return arr;
 }
+
+export function getRandomNumber(max) {
+    return Math.floor(Math.random()*(max));
+}
