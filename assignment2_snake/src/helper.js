@@ -64,7 +64,6 @@ function updateLocalStorage(score) {
 
 function showRestartLayer() {
     document.querySelector('.restart-layer').style.display = 'block';
-    document.querySelector('.restart-layer').style.opacity = 0.5;
     document.querySelector("button").addEventListener("click", reload);
 }
 
