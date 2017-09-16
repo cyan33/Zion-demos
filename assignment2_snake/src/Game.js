@@ -1,4 +1,4 @@
-import { drawWalls, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood } from './helper'
+import { drawWalls, drawObstacles, initObstacles, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood } from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
     MOVING_SPEED,
@@ -14,7 +14,8 @@ class Game {
         this.canvas.width = CANVAS_WIDTH;
 
         this.snakeSegments = initSnake();
-        this.food = initFood();
+        this.obstacles = initObstacles(5);
+        this.food = initFood(this.obstacles);
         this.movingDirection = RIGHT;
         this.currScore = 0;
         // this.isAccelerating = false;
@@ -46,14 +47,17 @@ class Game {
     update() {
         // make the snake move one more step every 1 second
         // according to the direction
-        this.snakeSegments = moveSnake.call(this, this.snakeSegments, this.movingDirection);
-        this.food = checkFood.call(this, this.snakeSegments, this.food);
+        this.snakeSegments = moveSnake.call(this, this.snakeSegments, this.movingDirection, this.obstacles);
+        this.food = checkFood.call(this, this.snakeSegments, this.food, this.obstacles);
     }
 
     render() {
         const { width, height } = this.canvas;
         // background
         drawWalls(this.context, width, height);
+
+        // obstacles
+        drawObstacles(this.context, this.obstacles);
 
         // the snake
         drawSnake(this.context, this.snakeSegments);
