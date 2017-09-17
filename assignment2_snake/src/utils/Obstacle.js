@@ -1,5 +1,5 @@
 import Sprite from './Sprite'
-import { dist } from './operations'
+import { getDistance } from './operations'
 const NUM_SECTIONS = 9;
 const COLLISION_PROX = 1;
 
@@ -46,13 +46,13 @@ class Obstacle extends Sprite {
     }
 
     nearObstacle(objX, objY, prox) {
-        var distance = dist(objX, objY, this.center.x, this.center.y);
+        var distance = getDistance(objX, objY, this.center.x, this.center.y);
         return (distance <= prox)? true : false;
     }
 
     // Checks if an object is near this boundary
     nearBoundary(objX, objY, boundX, boundY) {
-        var distance = dist(objX, objY, boundX, boundY);
+        var distance = getDistance(objX, objY, boundX, boundY);
         return (distance <= COLLISION_PROX)? true : false;
     }
 }

@@ -47,8 +47,8 @@ class Game {
     update() {
         // make the snake move one more step every 1 second
         // according to the direction
-        this.snakeSegments = moveSnake.call(this, this.snakeSegments, this.movingDirection, this.obstacles);
-        this.food = checkFood.call(this, this.snakeSegments, this.food, this.obstacles);
+        this.snakeSegments = moveSnake.call(this);
+        this.food = checkFood.call(this);
     }
 
     render() {

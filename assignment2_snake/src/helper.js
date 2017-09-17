@@ -5,7 +5,7 @@ import {
     FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX
 } from './options'
 import Food from "./Food";
-import { getRandomNumber, dist } from './utils/operations'
+import { getRandomNumber, getDistance } from './utils/operations'
 import Obstacle from './utils/Obstacle'
 
 export function drawWalls(context, width, height) {
@@ -72,7 +72,7 @@ function getClosestObstacle(head, obstacles) {
     var closest_obs = null;
     for(var i = 0; i < obstacles.length; i++) {
         var obs = obstacles[i];
-        var distance = dist(head.x, head.y, obs.center.x, obs.center.y);
+        var distance = getDistance(head.x, head.y, obs.center.x, obs.center.y);
         if(distance < smallest_dist) {
             smallest_dist = distance;
             closest_obs = obs;
@@ -174,10 +174,10 @@ export function drawFood(context, food) {
 export function initObstacles(num_obs) {
     var obstacles = new Array();
     
-    for(var i = 0; i < num_obs; i++){
-        var x = 0;
-        var y = 0;
-        var obs = null;
+    for(let i = 0; i < num_obs; i++){
+        let x = 0;
+        let y = 0;
+        let obs = null;
         do {
             x = getRandomNumber(COLS);
             y = getRandomNumber(ROWS);
@@ -192,8 +192,8 @@ export function initObstacles(num_obs) {
 }
 
 export function drawObstacles(context, obstacles) {
-    for(var i = 0; i < obstacles.length; i++) {
-        var obstacle = obstacles[i];
+    for(let i = 0; i < obstacles.length; i++) {
+        let obstacle = obstacles[i];
         context.save();
         context.fillStyle = 'black';
         context.fillRect(obstacle.position.x * SEGMENT_WIDTH, obstacle.position.y * SEGMENT_WIDTH, OBSTACLE_SIZE, OBSTACLE_SIZE);
