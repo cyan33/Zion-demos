@@ -18,12 +18,12 @@ class Obstacle extends Sprite {
     // subdivides this obstacle into boundaries for collision detection
     calculateBoundaries() {
         this.boundaries = new Array();
-        var sections_rc = Math.sqrt(NUM_SECTIONS);
-        var width = this.size / sections_rc;
-        var x = this.position.x, y = this.position.y;
+        let sections_rc = Math.sqrt(NUM_SECTIONS);
+        let width = this.size / sections_rc;
+        let x = this.position.x, y = this.position.y;
         // Define boundaries based on number of sections
-        for(var i = 0; i < sections_rc; i++) {
-            for(var j = 0; j < sections_rc; j++) {
+        for(let i = 0; i < sections_rc; i++) {
+            for(let j = 0; j < sections_rc; j++) {
                 this.boundaries.push(this.calculateCenter(x, y, width));
                 x += width;
             }
@@ -36,9 +36,9 @@ class Obstacle extends Sprite {
     getCollision(objX, objY, prox) {
         // check if we're near this obstacle
         if(this.nearObstacle(objX, objY, prox)) {
-            for(var i = 0; i < this.boundaries.length; i++) {
-                var boundary = this.boundaries[i];
-                var collided = this.nearBoundary(objX, objY, boundary.x, boundary.y);
+            for(let i = 0; i < this.boundaries.length; i++) {
+                let boundary = this.boundaries[i];
+                let collided = this.nearBoundary(objX, objY, boundary.x, boundary.y);
                 if(collided) return true;
             }
         }
@@ -46,13 +46,13 @@ class Obstacle extends Sprite {
     }
 
     nearObstacle(objX, objY, prox) {
-        var distance = getDistance(objX, objY, this.center.x, this.center.y);
+        let distance = getDistance(objX, objY, this.center.x, this.center.y);
         return (distance <= prox)? true : false;
     }
 
     // Checks if an object is near this boundary
     nearBoundary(objX, objY, boundX, boundY) {
-        var distance = getDistance(objX, objY, boundX, boundY);
+        let distance = getDistance(objX, objY, boundX, boundY);
         return (distance <= COLLISION_PROX)? true : false;
     }
 }

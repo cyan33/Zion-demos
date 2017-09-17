@@ -5,7 +5,7 @@
     "main": "./src/main.js",
     "scripts": {
       "build": "webpack",
-      "watch": "webpack -w",
+      "watch": "open ./index.html && webpack -w",
       "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Chang",

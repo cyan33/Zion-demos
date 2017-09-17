@@ -62,17 +62,17 @@ function isCollidesItself(head, snakeSegments) {
 
 function isCollidesObstacle(head, obstacles) {
     // do collision check for each obstacle
-    var closest = getClosestObstacle(head, obstacles);
+    let closest = getClosestObstacle(head, obstacles);
     if(closest.getCollision(head.x, head.y, OBSTACLE_SIZE / OBSTACLE_PROX)) return true;
     return false;
 }
 
 function getClosestObstacle(head, obstacles) {
-    var smallest_dist = Number.MAX_VALUE;
-    var closest_obs = null;
-    for(var i = 0; i < obstacles.length; i++) {
-        var obs = obstacles[i];
-        var distance = getDistance(head.x, head.y, obs.center.x, obs.center.y);
+    let smallest_dist = Number.MAX_VALUE;
+    let closest_obs = null;
+    for(let i = 0; i < obstacles.length; i++) {
+        let obs = obstacles[i];
+        let distance = getDistance(head.x, head.y, obs.center.x, obs.center.y);
         if(distance < smallest_dist) {
             smallest_dist = distance;
             closest_obs = obs;
@@ -100,9 +100,9 @@ function reload() {
 
 function nearObstacles(obj, obstacles, offset) {
     // want to check for all obstacles
-    var near = false;
-    for(var i = 0; i < obstacles.length; i++) {
-        var check = obstacles[i];
+    let near = false;
+    for(let i = 0; i < obstacles.length; i++) {
+        let check = obstacles[i];
         // ensure not within distance range of check size
         if(check.nearObstacle(obj.position.x, obj.position.y, offset)) near = true;
     }
@@ -146,7 +146,7 @@ export function checkFood() {
     const { snakeSegments, food, obstacles } = this;
     let pos = snakeSegments[0].position;
 
-    var newFood = food;
+    let newFood = food;
     // check if it eats food
     if (isCollidesFood(pos, food.position)) {
         newFood = initFood(obstacles);
@@ -154,10 +154,10 @@ export function checkFood() {
     return newFood;
 }
 export function initFood(obstacles) {
-    var food = null;
+    let food = null;
     do {
-        var xPos = getRandomNumber(COLS);
-        var yPos = getRandomNumber(ROWS);
+        let xPos = getRandomNumber(COLS);
+        let yPos = getRandomNumber(ROWS);
         food = new Food({}, {x:xPos, y:yPos});
     } while(nearObstacles(food, obstacles, FOOD_FROM_OBSTACLE));
     
@@ -172,7 +172,7 @@ export function drawFood(context, food) {
 }
 
 export function initObstacles(num_obs) {
-    var obstacles = new Array();
+    let obstacles = new Array();
     
     for(let i = 0; i < num_obs; i++){
         let x = 0;
