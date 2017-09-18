@@ -2,7 +2,8 @@ import Segment from './Segment'
 import { 
     SEGMENT_WIDTH, SNAKE_INIT_LENGTH, LEFT, UP, RIGHT, DOWN,
     ROWS, COLS, OBSTACLE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT,
-    FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX
+    FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX,
+    SPOILED_FOOD_TIMEOUT
 } from './options'
 import Food from "./Food";
 import { getRandomNumber, getDistance } from './utils/operations'
@@ -47,8 +48,14 @@ function isCollidesWall(head) {
     return head.x >= ROWS || head.x < 0 || head.y >= COLS || head.y < 0;
 }
 
-function isCollidesFood(head, food) {
-    return head.x === food.x && head.y === food.y;
+function isCollidesFood(head, food, spoiledFood = null) {
+    if(head.x === food.x && head.y === food.y){
+        return 1;
+    } else if (spoiledFood && head.x === spoiledFood.position.x && head.y === spoiledFood.position.y) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 function isCollidesItself(head, snakeSegments) {
@@ -109,7 +116,14 @@ function nearObstacles(obj, obstacles, offset) {
 }
 
 export function moveSnake() {
-    const { snakeSegments, movingDirection, food, obstacles} = this;
+    const { 
+        snakeSegments,
+        movingDirection,
+        food,
+        spoiledFood,
+        obstacles,
+    } = this;
+
     // construct a new head segment according to the moving direction
     let nx = snakeSegments[0].position.x;
     let ny = snakeSegments[0].position.y;
@@ -122,17 +136,23 @@ export function moveSnake() {
     // check collision with itself, crosses the wall, or hits an obstacle
     if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)
         || isCollidesObstacle({x: nx, y: ny}, obstacles)) {
-        updateLocalStorage(this.score);
+        updateLocalStorage(this.currScore);
 
         clearInterval(this.timer);
         showRestartLayer();
     }
     let head = new Segment({}, { x: nx, y: ny });
     // check if it eats food
-    if (isCollidesFood({x: nx, y: ny}, food.position)) {
+    var collision = isCollidesFood({x: nx, y: ny}, food.position, spoiledFood);
+    if (collision == 1) {
         // score++ and call this.initScorePanel()
         this.currScore++;
         this.initScorePanel();
+    } else if (collision == -1){
+        this.currScore--;
+        this.initScorePanel();
+        snakeSegments.pop();
+        snakeSegments.pop();
     } else {
         snakeSegments.pop();
     }
@@ -141,17 +161,24 @@ export function moveSnake() {
     return snakeSegments;
 }
 
-export function checkFood() {
-    const { snakeSegments, food, obstacles } = this;
+export function checkFood(food, isSpoiled) {
+    if (food == null){
+        return null;
+    }
+    const { snakeSegments, obstacles } = this;
     let pos = snakeSegments[0].position;
 
     let newFood = food;
     // check if it eats food
-    if (isCollidesFood(pos, food.position)) {
+    if (isCollidesFood(pos, food.position) != 0) {
+        if (isSpoiled) {
+            return null;
+        }
         newFood = initFood(obstacles);
     }
     return newFood;
 }
+
 export function initFood(obstacles) {
     let food = null;
     do {
@@ -163,11 +190,25 @@ export function initFood(obstacles) {
     return food;
 }
 
-export function drawFood(context, food) {
+export function drawFood(context, food, spoiledFood) {
     context.save();
     context.fillStyle = '#de9f5f';
     context.fillRect(food.position.x * SEGMENT_WIDTH, food.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
+    if (spoiledFood != null){
+        context.fillStyle = '#FF0000';
+        context.fillRect(spoiledFood.position.x * SEGMENT_WIDTH, spoiledFood.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
+    }
     context.restore();
+}
+
+export function removeSpoiledFood(){
+    this.spoiledFood = null;
+    setTimeout(createSpoiledFood.bind(this), SPOILED_FOOD_TIMEOUT);
+}
+
+export function createSpoiledFood() {
+    this.spoiledFood = initFood(this.obstacles);
+    setTimeout(removeSpoiledFood.bind(this), SPOILED_FOOD_TIMEOUT);
 }
 
 export function initObstacles(num_obs) {
