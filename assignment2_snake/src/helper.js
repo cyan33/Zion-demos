@@ -1,7 +1,7 @@
 import Segment from './Segment'
 import { 
     SEGMENT_WIDTH, SNAKE_INIT_LENGTH, LEFT, UP, RIGHT, DOWN,
-    ROWS, COLS, BAD_FOOD_TIMEOUT
+    ROWS, COLS
 } from './options'
 import Food from "./Food";
 import { getRandomNumber } from './utils/operations'
@@ -142,17 +142,6 @@ export function  initFood() {
     var xPos = getRandomNumber(COLS);
     var yPos = getRandomNumber(ROWS);
     return new Food({}, {x:xPos, y:yPos});
-}
-
-export function  initBadFood() {
-    var badFood = initFood();
-    badFood = setTimeout(removeSpoiledFood(this.badFood), BAD_FOOD_TIMEOUT);
-    return badFood;
-}
-
-function removeSpoiledFood(badFood){
-    setTimeout(initBadFood, BAD_FOOD_TIMEOUT);
-    return null;
 }
 
 export function drawFood(context, food, badFood) {
