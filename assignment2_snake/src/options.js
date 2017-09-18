@@ -21,4 +21,4 @@ export const COLS = CANVAS_HEIGHT / SEGMENT_WIDTH;
 export const MOVING_SPEED = 300; // 1000ms interval for setTimeout
 export const ACCELERATING_SPEED = 400;
 
-export const BAD_FOOD_TIMEOUT = 30000;
+export const SPOILED_FOOD_TIMEOUT = 30000;

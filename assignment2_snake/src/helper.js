@@ -47,10 +47,10 @@ function isCollidesWall(head) {
     return head.x >= ROWS || head.x < 0 || head.y >= COLS || head.y < 0;
 }
 
-function isCollidesFood(head, food, badFood) {
+function isCollidesFood(head, food, spoiledFood) {
     if(head.x === food.x && head.y === food.y){
         return 1;
-    } else if (badFood != null && head.x === badFood.position.x && head.y === badFood.position.y) {
+    } else if (spoiledFood != null && head.x === spoiledFood.position.x && head.y === spoiledFood.position.y) {
         return -1;
     } else {
         return 0;
@@ -115,7 +115,7 @@ function nearObstacles(obj, obstacles, offset) {
     return near;
 }
 
-export function moveSnake(badFood) {
+export function moveSnake(spoiledFood) {
     const { snakeSegments, movingDirection, food, obstacles} = this;
     // construct a new head segment according to the moving direction
     let nx = snakeSegments[0].position.x;
@@ -136,7 +136,7 @@ export function moveSnake(badFood) {
     }
     let head = new Segment({}, { x: nx, y: ny });
     // check if it eats food
-    var collision = isCollidesFood({x: nx, y: ny}, food.position, badFood);
+    var collision = isCollidesFood({x: nx, y: ny}, food.position, spoiledFood);
     if (collision == 1) {
         // score++ and call this.initScorePanel()
         this.currScore++;
@@ -154,7 +154,7 @@ export function moveSnake(badFood) {
     return snakeSegments;
 }
 
-export function checkFood(food, isBad) {
+export function checkFood(food, isSpoiled) {
     if (food == null){
         return null;
     }
@@ -164,7 +164,7 @@ export function checkFood(food, isBad) {
     let newFood = food;
     // check if it eats food
     if (isCollidesFood(pos, food.position, null) != 0) {
-        if (isBad) {
+        if (isSpoiled) {
             return null;
         }
         newFood = initFood(obstacles);
@@ -183,13 +183,13 @@ export function initFood(obstacles) {
     return food;
 }
 
-export function drawFood(context, food, badFood) {
+export function drawFood(context, food, spoiledFood) {
     context.save();
     context.fillStyle = '#de9f5f';
     context.fillRect(food.position.x * SEGMENT_WIDTH, food.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
-    if (badFood != null){
+    if (spoiledFood != null){
         context.fillStyle = '#FF0000';
-        context.fillRect(badFood.position.x * SEGMENT_WIDTH, badFood.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
+        context.fillRect(spoiledFood.position.x * SEGMENT_WIDTH, spoiledFood.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
     }
     context.restore();
 }
