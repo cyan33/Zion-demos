@@ -1,8 +1,10 @@
-import { drawWalls, drawObstacles, initObstacles, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood } from './helper'
+import { drawWalls, drawObstacles, initObstacles, initSnake, drawSnake, moveSnake,
+    initFood, drawFood, checkFood, removeSpoiledFood, createSpoiledFood, initSpoiledFood} from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
-    MOVING_SPEED,
-    CANVAS_WIDTH, CANVAS_HEIGHT
+    MOVING_SPEED, 
+    CANVAS_WIDTH, CANVAS_HEIGHT,
+    SPOILED_FOOD_TIMEOUT
 } from './options'
 
 class Game {
@@ -14,12 +16,17 @@ class Game {
         this.canvas.width = CANVAS_WIDTH;
 
         this.snakeSegments = initSnake();
+
         this.obstacles = initObstacles(5);
+
         this.food = initFood(this.obstacles);
+        this.spoiledFood = initFood(this.obstacles);
+
+        setTimeout(removeSpoiledFood.bind(this), SPOILED_FOOD_TIMEOUT, this.obstacles);
+        
         this.movingDirection = RIGHT;
         this.currScore = 0;
         // this.isAccelerating = false;
-        
     }
 
     initScorePanel() {
@@ -48,7 +55,8 @@ class Game {
         // make the snake move one more step every 1 second
         // according to the direction
         this.snakeSegments = moveSnake.call(this);
-        this.food = checkFood.call(this);
+        this.food = checkFood.call(this, this.food, false);
+        this.spoiledFood = checkFood.call(this, this.spoiledFood, true);
     }
 
     render() {
@@ -63,7 +71,7 @@ class Game {
         drawSnake(this.context, this.snakeSegments);
 
         // the food
-        drawFood(this.context, this.food);
+        drawFood(this.context, this.food, this.spoiledFood);
     }
 
     gameloop() {
