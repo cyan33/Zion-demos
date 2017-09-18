@@ -1,9 +1,9 @@
-import { drawWalls, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood } from './helper'
+import { drawWalls, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood, initBadFood} from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
-    MOVING_SPEED
+    MOVING_SPEED, BAD_FOOD_TIMEOUT
 } from './options'
-
+var badFood;
 class Game {
     constructor() {
         this.canvas = document.querySelector('#snake');
@@ -14,10 +14,11 @@ class Game {
 
         this.snakeSegments = initSnake();
         this.food = initFood();
+        badFood = initFood();
+        setTimeout(removeSpoiledFood, 3000);
         this.movingDirection = RIGHT;
         this.currScore = 0;
         // this.isAccelerating = false;
-        
     }
 
     initScorePanel() {
@@ -58,8 +59,7 @@ class Game {
         drawSnake(this.context, this.snakeSegments);
 
         // the food
-        drawFood(this.context, this.food);
-        // current score
+        drawFood(this.context, this.food, badFood);
         
     }
 
@@ -83,4 +83,8 @@ class Game {
     }
 }
 
+function removeSpoiledFood(){
+    console.log("TEST");
+    badFood = null;
+}
 export default Game;
