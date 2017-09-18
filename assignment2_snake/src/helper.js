@@ -164,12 +164,14 @@ export function checkFood(food, isBad) {
     let newFood = food;
     // check if it eats food
     if (isCollidesFood(pos, food.position, null) != 0) {
-        if(isBad){
+        if (isBad) {
             return null;
         }
         newFood = initFood(obstacles);
+    }
     return newFood;
 }
+
 export function initFood(obstacles) {
     let food = null;
     do {
