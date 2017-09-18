@@ -18,7 +18,7 @@ export const OBSTACLE_FROM_OBSTACLE = OBSTACLE_SIZE;
 export const ROWS = CANVAS_WIDTH / SEGMENT_WIDTH;
 export const COLS = CANVAS_HEIGHT / SEGMENT_WIDTH;
 
-export const MOVING_SPEED = 300; // 1000ms interval for setTimeout
+export const MOVING_SPEED = 250; // 1000ms interval for setTimeout
 export const ACCELERATING_SPEED = 400;
 
-export const SPOILED_FOOD_TIMEOUT = 30000;
+export const SPOILED_FOOD_TIMEOUT = 7000;
