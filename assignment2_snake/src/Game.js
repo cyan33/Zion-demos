@@ -7,6 +7,7 @@ import {
     SPOILED_FOOD_TIMEOUT
 } from './options'
 
+const NUM_OBSTACLES = 6;
 class Game {
     constructor() {
         this.canvas = document.querySelector('#snake');
@@ -16,9 +17,7 @@ class Game {
         this.canvas.width = CANVAS_WIDTH;
 
         this.snakeSegments = initSnake();
-
-        this.obstacles = initObstacles(5);
-
+        this.obstacles = initObstacles(NUM_OBSTACLES);
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
 
