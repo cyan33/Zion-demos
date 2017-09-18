@@ -17,9 +17,7 @@ class Game {
         this.canvas.width = CANVAS_WIDTH;
 
         this.snakeSegments = initSnake();
-        console.log('obstacles');
         this.obstacles = initObstacles(NUM_OBSTACLES);
-        console.log('food');
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
 

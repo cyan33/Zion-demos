@@ -189,7 +189,6 @@ export function initFood(obstacles) {
         food = new Food({}, {x:xPos, y:yPos});
     } while(nearObstacles(food, obstacles, FOOD_FROM_OBSTACLE)
             || food.x >= COLS - 2 || food.y >= ROWS - 2);
-    console.log(`(${food.position.x},${food.position.y})`);
     return food;
 }
 
@@ -228,7 +227,6 @@ export function initObstacles(num_obs) {
         } while(nearObstacles(obs, obstacles, getRandomNumber(OBSTACLE_FROM_OBSTACLE))
                 || x > COLS - SEGMENT_WIDTH || y > ROWS - SEGMENT_WIDTH 
                 || (x <= OBSTACLE_SIZE / SEGMENT_WIDTH && y <= OBSTACLE_SIZE / SEGMENT_WIDTH));
-        console.log(`(${obs.position.x},${obs.position.y})`);
         obstacles.push(obs);
     }
 
