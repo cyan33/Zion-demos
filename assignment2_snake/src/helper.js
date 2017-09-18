@@ -1,11 +1,12 @@
 import Segment from './Segment'
 import { 
     SEGMENT_WIDTH, SNAKE_INIT_LENGTH, LEFT, UP, RIGHT, DOWN,
-    ROWS, COLS
+    ROWS, COLS, OBSTACLE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT,
+    FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX
 } from './options'
 import Food from "./Food";
-import { getRandomNumber } from './utils/operations'
-
+import { getRandomNumber, getDistance } from './utils/operations'
+import Obstacle from './utils/Obstacle'
 
 export function drawWalls(context, width, height) {
     context.fillStyle = 'white';
@@ -65,6 +66,28 @@ function isCollidesItself(head, snakeSegments) {
     return false;
 }
 
+function isCollidesObstacle(head, obstacles) {
+    // do collision check for each obstacle
+    let closest = getClosestObstacle(head, obstacles);
+    if(closest.getCollision(head.x, head.y, OBSTACLE_SIZE / OBSTACLE_PROX)) return true;
+    return false;
+}
+
+function getClosestObstacle(head, obstacles) {
+    let smallest_dist = Number.MAX_VALUE;
+    let closest_obs = null;
+    for(let i = 0; i < obstacles.length; i++) {
+        let obs = obstacles[i];
+        let distance = getDistance(head.x, head.y, obs.center.x, obs.center.y);
+        if(distance < smallest_dist) {
+            smallest_dist = distance;
+            closest_obs = obs;
+        }
+    }
+    
+    return closest_obs;
+}
+
 function updateLocalStorage(score) {
     let highestScore = localStorage.getItem('highestScore') || 0;
     if (score > highestScore) {
@@ -73,12 +96,27 @@ function updateLocalStorage(score) {
 }
 
 function showRestartLayer() {
+    document.querySelector('.restart-layer').style.display = 'block';
+    document.querySelector("button").addEventListener("click", reload);
+}
 
+function reload() {
+    location.reload();
+}
+
+function nearObstacles(obj, obstacles, offset) {
+    // want to check for all obstacles
+    let near = false;
+    for(let i = 0; i < obstacles.length; i++) {
+        let check = obstacles[i];
+        // ensure not within distance range of check size
+        if(check.nearObstacle(obj.position.x, obj.position.y, offset)) near = true;
+    }
+    return near;
 }
 
 export function moveSnake(badFood) {
-
-    const { snakeSegments, movingDirection, food} = this;
+    const { snakeSegments, movingDirection, food, obstacles} = this;
     // construct a new head segment according to the moving direction
     let nx = snakeSegments[0].position.x;
     let ny = snakeSegments[0].position.y;
@@ -88,18 +126,13 @@ export function moveSnake(badFood) {
     else if (movingDirection === UP) ny -= 1;
     else if (movingDirection === DOWN) ny += 1;
 
-    // check collision with itself or crosses the wall
-    if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)) {
+    // check collision with itself, crosses the wall, or hits an obstacle
+    if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)
+        || isCollidesObstacle({x: nx, y: ny}, obstacles)) {
         updateLocalStorage(this.score);
 
-        // ask the user to refresh to replay the game
-        if (window.confirm('Game over. Click OK to play again.')) {
-            location.reload();
-        } else {
-            clearInterval(this.timer);
-            return snakeSegments;
-            showRestartLayer();
-        }
+        clearInterval(this.timer);
+        showRestartLayer();
     }
     let head = new Segment({}, { x: nx, y: ny });
     // check if it eats food
@@ -125,23 +158,27 @@ export function checkFood(food, isBad) {
     if (food == null){
         return null;
     }
-    const { snakeSegments } = this;
+    const { snakeSegments, obstacles } = this;
     let pos = snakeSegments[0].position;
 
-    var newFood = food;
+    let newFood = food;
     // check if it eats food
     if (isCollidesFood(pos, food.position, null) != 0) {
         if(isBad){
             return null;
         }
-        newFood = initFood();
-    }
+        newFood = initFood(obstacles);
     return newFood;
 }
-export function  initFood() {
-    var xPos = getRandomNumber(COLS);
-    var yPos = getRandomNumber(ROWS);
-    return new Food({}, {x:xPos, y:yPos});
+export function initFood(obstacles) {
+    let food = null;
+    do {
+        let xPos = getRandomNumber(COLS);
+        let yPos = getRandomNumber(ROWS);
+        food = new Food({}, {x:xPos, y:yPos});
+    } while(nearObstacles(food, obstacles, FOOD_FROM_OBSTACLE));
+    
+    return food;
 }
 
 export function drawFood(context, food, badFood) {
@@ -153,4 +190,34 @@ export function drawFood(context, food, badFood) {
         context.fillRect(badFood.position.x * SEGMENT_WIDTH, badFood.position.y * SEGMENT_WIDTH, SEGMENT_WIDTH, SEGMENT_WIDTH);
     }
     context.restore();
+}
+
+export function initObstacles(num_obs) {
+    let obstacles = new Array();
+    
+    for(let i = 0; i < num_obs; i++){
+        let x = 0;
+        let y = 0;
+        let obs = null;
+        do {
+            x = getRandomNumber(COLS);
+            y = getRandomNumber(ROWS);
+            obs = new Obstacle('', OBSTACLE_SIZE / SEGMENT_WIDTH, { x, y });
+        } while(nearObstacles(obs, obstacles, getRandomNumber(OBSTACLE_FROM_OBSTACLE))
+                || x > COLS - SEGMENT_WIDTH || y > ROWS - SEGMENT_WIDTH 
+                || (x <= OBSTACLE_SIZE / SEGMENT_WIDTH && y <= OBSTACLE_SIZE / SEGMENT_WIDTH));
+        obstacles.push(obs);
+    }
+
+    return obstacles;
+}
+
+export function drawObstacles(context, obstacles) {
+    for(let i = 0; i < obstacles.length; i++) {
+        let obstacle = obstacles[i];
+        context.save();
+        context.fillStyle = 'black';
+        context.fillRect(obstacle.position.x * SEGMENT_WIDTH, obstacle.position.y * SEGMENT_WIDTH, OBSTACLE_SIZE, OBSTACLE_SIZE);
+        context.restore();
+    }
 }

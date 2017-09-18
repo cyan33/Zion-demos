@@ -1,7 +1,9 @@
-import { drawWalls, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood, initBadFood} from './helper'
+import { drawWalls, drawObstacles, initObstacles, initSnake, drawSnake, moveSnake, initFood, drawFood, checkFood, initBadFood} from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
-    MOVING_SPEED, BAD_FOOD_TIMEOUT
+    MOVING_SPEED, 
+    CANVAS_WIDTH, CANVAS_HEIGHT,
+    BAD_FOOD_TIMEOUT
 } from './options'
 var badFood;
 class Game {
@@ -9,13 +11,15 @@ class Game {
         this.canvas = document.querySelector('#snake');
         this.context = this.canvas.getContext('2d');
 
-        // this.canvas.height = parseInt(window.innerHeight) - 20;
-        // this.canvas.width = this.canvas.height;
+        this.canvas.height = CANVAS_HEIGHT;
+        this.canvas.width = CANVAS_WIDTH;
 
         this.snakeSegments = initSnake();
-        this.food = initFood();
-        badFood = initFood();
-        setTimeout(removeSpoiledFood, BAD_FOOD_TIMEOUT);
+
+        this.obstacles = initObstacles(5);
+        this.food = initFood(this.obstacles);
+        badFood = initFood(this.obstacles);
+        setTimeout(removeSpoiledFood, BAD_FOOD_TIMEOUT, this.obstacles);
         this.movingDirection = RIGHT;
         this.currScore = 0;
         // this.isAccelerating = false;
@@ -56,12 +60,14 @@ class Game {
         // background
         drawWalls(this.context, width, height);
 
+        // obstacles
+        drawObstacles(this.context, this.obstacles);
+
         // the snake
         drawSnake(this.context, this.snakeSegments);
 
         // the food
         drawFood(this.context, this.food, badFood);
-        
     }
 
     gameloop() {
@@ -84,13 +90,13 @@ class Game {
     }
 }
 
-function removeSpoiledFood(){
+function removeSpoiledFood(obstacles){
     badFood = null;
-    setTimeout(createSpoiledFood, BAD_FOOD_TIMEOUT);
+    setTimeout(createSpoiledFood, BAD_FOOD_TIMEOUT, obstacles);
 }
 
-function createSpoiledFood(){
-    badFood = initFood();
-    setTimeout(removeSpoiledFood, BAD_FOOD_TIMEOUT);
+function createSpoiledFood(obstacles){
+    badFood = initFood(obstacles);
+    setTimeout(removeSpoiledFood, BAD_FOOD_TIMEOUT, obstacles);
 }
 export default Game;
