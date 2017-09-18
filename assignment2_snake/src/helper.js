@@ -3,7 +3,7 @@ import {
     SEGMENT_WIDTH, SNAKE_INIT_LENGTH, LEFT, UP, RIGHT, DOWN,
     ROWS, COLS, OBSTACLE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT,
     FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX,
-    SPOILED_FOOD_TIMEOUT
+    SPOILED_FOOD_TIMEOUT, BOUNDARY_PROX
 } from './options'
 import Food from "./Food";
 import { getRandomNumber, getDistance } from './utils/operations'
@@ -69,8 +69,10 @@ function isCollidesItself(head, snakeSegments) {
 
 function isCollidesObstacle(head, obstacles) {
     // do collision check for each obstacle
-    let closest = getClosestObstacle(head, obstacles);
-    if(closest.getCollision(head.x, head.y, OBSTACLE_SIZE / OBSTACLE_PROX, 0.5)) return true;
+    let centerX = head.x + (.5 * head.size);
+    let centerY = head.y + (.5 * head.size);
+    let closest = getClosestObstacle({x: centerX, y: centerY}, obstacles);
+    if(closest.getCollision(centerX, centerY, OBSTACLE_SIZE / OBSTACLE_PROX, BOUNDARY_PROX)) return true;
     return false;
 }
 
@@ -109,7 +111,7 @@ function nearObstacles(obj, obstacles, offset) {
     let near = false;
     for(let i = 0; i < obstacles.length; i++) {
         let check = obstacles[i];
-        // ensure not within distance range of check size
+        // ensure we're not within distance range of check size
         if(check.nearObstacle(obj.position.x, obj.position.y, offset)) near = true;
     }
     return near;
@@ -135,7 +137,7 @@ export function moveSnake() {
 
     // check collision with itself, crosses the wall, or hits an obstacle
     if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)
-        || isCollidesObstacle({x: nx, y: ny}, obstacles)) {
+        || isCollidesObstacle({x: nx, y: ny, size: 1}, obstacles)) {
         updateLocalStorage(this.currScore);
 
         clearInterval(this.timer);
@@ -185,8 +187,9 @@ export function initFood(obstacles) {
         let xPos = getRandomNumber(COLS);
         let yPos = getRandomNumber(ROWS);
         food = new Food({}, {x:xPos, y:yPos});
-    } while(nearObstacles(food, obstacles, FOOD_FROM_OBSTACLE));
-    
+    } while(nearObstacles(food, obstacles, FOOD_FROM_OBSTACLE)
+            || food.x >= COLS - 2 || food.y >= ROWS - 2);
+    console.log(`(${food.position.x},${food.position.y})`);
     return food;
 }
 
@@ -225,6 +228,7 @@ export function initObstacles(num_obs) {
         } while(nearObstacles(obs, obstacles, getRandomNumber(OBSTACLE_FROM_OBSTACLE))
                 || x > COLS - SEGMENT_WIDTH || y > ROWS - SEGMENT_WIDTH 
                 || (x <= OBSTACLE_SIZE / SEGMENT_WIDTH && y <= OBSTACLE_SIZE / SEGMENT_WIDTH));
+        console.log(`(${obs.position.x},${obs.position.y})`);
         obstacles.push(obs);
     }
 
