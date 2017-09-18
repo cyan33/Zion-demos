@@ -137,7 +137,7 @@ export function moveSnake() {
     // check collision with itself, crosses the wall, or hits an obstacle
     if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)
         || isCollidesObstacle({x: nx, y: ny}, obstacles)) {
-        updateLocalStorage(this.score);
+        updateLocalStorage(this.currScore);
 
         clearInterval(this.timer);
         showRestartLayer();
