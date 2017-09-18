@@ -10,7 +10,7 @@ export const SEGMENT_WIDTH = 15;
 export const CANVAS_WIDTH = 600;
 export const CANVAS_HEIGHT = 620;
 
-export const OBSTACLE_SIZE = 50;
+export const OBSTACLE_SIZE = 45;
 export const OBSTACLE_PROX = 2;
 export const FOOD_FROM_OBSTACLE = 1;
 export const OBSTACLE_FROM_OBSTACLE = OBSTACLE_SIZE;

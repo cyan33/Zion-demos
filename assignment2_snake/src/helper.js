@@ -63,7 +63,7 @@ function isCollidesItself(head, snakeSegments) {
 function isCollidesObstacle(head, obstacles) {
     // do collision check for each obstacle
     let closest = getClosestObstacle(head, obstacles);
-    if(closest.getCollision(head.x, head.y, OBSTACLE_SIZE / OBSTACLE_PROX)) return true;
+    if(closest.getCollision(head.x, head.y, OBSTACLE_SIZE / OBSTACLE_PROX, 0.5)) return true;
     return false;
 }
 
@@ -78,7 +78,6 @@ function getClosestObstacle(head, obstacles) {
             closest_obs = obs;
         }
     }
-    
     return closest_obs;
 }
 
