@@ -15,7 +15,7 @@ class Game {
         this.snakeSegments = initSnake();
         this.food = initFood();
         badFood = initFood();
-        setTimeout(removeSpoiledFood, 3000);
+        setTimeout(removeSpoiledFood, BAD_FOOD_TIMEOUT);
         this.movingDirection = RIGHT;
         this.currScore = 0;
         // this.isAccelerating = false;
@@ -46,8 +46,9 @@ class Game {
     update() {
         // make the snake move one more step every 1 second
         // according to the direction
-        this.snakeSegments = moveSnake.call(this, this.snakeSegments, this.movingDirection);
-        this.food = checkFood.call(this, this.snakeSegments, this.food);
+        this.snakeSegments = moveSnake.call(this, badFood);
+        this.food = checkFood.call(this, this.food, false);
+        badFood = checkFood.call(this, badFood, true);
     }
 
     render() {
@@ -84,7 +85,12 @@ class Game {
 }
 
 function removeSpoiledFood(){
-    console.log("TEST");
     badFood = null;
+    setTimeout(createSpoiledFood, BAD_FOOD_TIMEOUT);
+}
+
+function createSpoiledFood(){
+    badFood = initFood();
+    setTimeout(removeSpoiledFood, BAD_FOOD_TIMEOUT);
 }
 export default Game;

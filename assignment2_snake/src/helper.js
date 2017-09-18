@@ -46,8 +46,14 @@ function isCollidesWall(head) {
     return head.x >= ROWS || head.x < 0 || head.y >= COLS || head.y < 0;
 }
 
-function isCollidesFood(head, food) {
-    return head.x === food.x && head.y === food.y;
+function isCollidesFood(head, food, badFood) {
+    if(head.x === food.x && head.y === food.y){
+        return 1;
+    } else if (badFood != null && head.x === badFood.position.x && head.y === badFood.position.y) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 function isCollidesItself(head, snakeSegments) {
@@ -70,7 +76,8 @@ function showRestartLayer() {
 
 }
 
-export function moveSnake() {
+export function moveSnake(badFood) {
+
     const { snakeSegments, movingDirection, food} = this;
     // construct a new head segment according to the moving direction
     let nx = snakeSegments[0].position.x;
@@ -96,10 +103,16 @@ export function moveSnake() {
     }
     let head = new Segment({}, { x: nx, y: ny });
     // check if it eats food
-    if (isCollidesFood({x: nx, y: ny}, food.position)) {
+    var collision = isCollidesFood({x: nx, y: ny}, food.position, badFood);
+    if (collision == 1) {
         // score++ and call this.initScorePanel()
         this.currScore++;
         this.initScorePanel();
+    } else if (collision == -1){
+        this.currScore--;
+        this.initScorePanel();
+        snakeSegments.pop();
+        snakeSegments.pop();
     } else {
         snakeSegments.pop();
     }
@@ -108,14 +121,20 @@ export function moveSnake() {
     return snakeSegments;
 }
 
-export function checkFood() {
-    const { snakeSegments, food} = this;
+export function checkFood(food, isBad) {
+    if (food == null){
+        return null;
+    }
+    const { snakeSegments } = this;
     let pos = snakeSegments[0].position;
 
     var newFood = food;
     // check if it eats food
-    if (isCollidesFood(pos, food.position)) {
-        newFood = initFood()
+    if (isCollidesFood(pos, food.position, null) != 0) {
+        if(isBad){
+            return null;
+        }
+        newFood = initFood();
     }
     return newFood;
 }
