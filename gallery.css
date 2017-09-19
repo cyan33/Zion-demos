@@ -1,0 +1,22 @@
+.container {
+    width: 400px;    
+    margin: 0 auto;
+}
+
+.header {
+    color: #f99222;
+}
+
+.section a {
+    color: #55bbb3;
+    text-decoration: underline;
+}
+
+.section a:focus, .section a:active {
+    color: #55bbb3;
+}
+
+.demo-pic {
+    width: 330px;
+    height: 250px;
+}
