@@ -1,7 +1,6 @@
 import Sprite from './Sprite'
 import { getDistance } from './operations'
 const NUM_SECTIONS = 9;
-const COLLISION_PROX = 1;
 
 class Obstacle extends Sprite {
     constructor(src, size, { x, y }) {
@@ -33,13 +32,12 @@ class Obstacle extends Sprite {
     }
 
     // Gets the collision for this obstacle and the given object
-    getCollision(objX, objY, prox) {
+    getCollision(objX, objY, prox, boundary_prox) {
         // check if we're near this obstacle
         if(this.nearObstacle(objX, objY, prox)) {
             for(let i = 0; i < this.boundaries.length; i++) {
                 let boundary = this.boundaries[i];
-                let collided = this.nearBoundary(objX, objY, boundary.x, boundary.y);
-                if(collided) return true;
+                if(this.nearBoundary(objX, objY, boundary.x, boundary.y, boundary_prox)) return true;
             }
         }
         return false;
@@ -51,9 +49,9 @@ class Obstacle extends Sprite {
     }
 
     // Checks if an object is near this boundary
-    nearBoundary(objX, objY, boundX, boundY) {
+    nearBoundary(objX, objY, boundX, boundY, prox) {
         let distance = getDistance(objX, objY, boundX, boundY);
-        return (distance <= COLLISION_PROX)? true : false;
+        return distance <= prox;
     }
 }
 
