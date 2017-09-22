@@ -1,4 +1,4 @@
-import { drawWalls, drawObstacles, initObstacles, initSnake, drawSnake, moveSnake,
+import { drawWalls, drawObstacles, initAudio, initObstacles, initSnake, drawSnake, moveSnake,
     initFood, drawFood, checkFood, removeSpoiledFood, createSpoiledFood, initSpoiledFood} from './helper'
 import { 
     UP, DOWN, RIGHT, LEFT,
@@ -20,12 +20,12 @@ class Game {
         this.obstacles = initObstacles(NUM_OBSTACLES);
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
+        this.audio = initAudio();
 
         setTimeout(removeSpoiledFood.bind(this), SPOILED_FOOD_TIMEOUT, this.obstacles);
         
         this.movingDirection = RIGHT;
         this.currScore = 0;
-        // this.isAccelerating = false;
     }
 
     initScorePanel() {

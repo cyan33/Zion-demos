@@ -3,17 +3,24 @@ import {
     SEGMENT_WIDTH, SNAKE_INIT_LENGTH, LEFT, UP, RIGHT, DOWN,
     ROWS, COLS, OBSTACLE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT,
     FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX,
-    SPOILED_FOOD_TIMEOUT, BOUNDARY_PROX
+    SPOILED_FOOD_TIMEOUT, BOUNDARY_PROX, AUDIO
 } from './options'
 import Food from "./Food";
 import { getRandomNumber, getDistance } from './utils/operations'
 import Obstacle from './utils/Obstacle'
+import AudioManager from './utils/AudioManager'
 
 export function drawWalls(context, width, height) {
     context.fillStyle = 'white';
     context.fillRect(0, 0, width, height);
     context.strokeStyle = 'black';
     context.strokeRect(0, 0, width, height);
+}
+
+export function initAudio() {
+    let audio = new AudioManager();
+    audio.loadAudio(AUDIO);
+    return audio;
 }
 
 export function initSnake() {
@@ -124,8 +131,8 @@ export function moveSnake() {
         food,
         spoiledFood,
         obstacles,
+        audio
     } = this;
-
     // construct a new head segment according to the moving direction
     let nx = snakeSegments[0].position.x;
     let ny = snakeSegments[0].position.y;
@@ -140,6 +147,7 @@ export function moveSnake() {
         || isCollidesObstacle({x: nx, y: ny, size: 1}, obstacles)) {
         updateLocalStorage(this.currScore);
 
+        audio.getAudioByName('collision.mp3').play();
         clearInterval(this.timer);
         showRestartLayer();
     }
@@ -148,9 +156,11 @@ export function moveSnake() {
     var collision = isCollidesFood({x: nx, y: ny}, food.position, spoiledFood);
     if (collision == 1) {
         // score++ and call this.initScorePanel()
+        audio.getAudioByName('powerup.mp3').play();
         this.currScore++;
         this.initScorePanel();
     } else if (collision == -1){
+        audio.getAudioByName('powerdown.mp3').play();
         this.currScore--;
         this.initScorePanel();
         snakeSegments.pop();

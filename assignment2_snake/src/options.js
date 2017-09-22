@@ -14,12 +14,14 @@ export const OBSTACLE_SIZE = 45;
 export const BOUNDARY_PROX = 0.7;
 export const OBSTACLE_PROX = 2;
 export const FOOD_FROM_OBSTACLE = 5;
-export const OBSTACLE_FROM_OBSTACLE = 20;
+export const OBSTACLE_FROM_OBSTACLE = 5;
 
 export const ROWS = CANVAS_WIDTH / SEGMENT_WIDTH;
 export const COLS = CANVAS_HEIGHT / SEGMENT_WIDTH;
 
 export const MOVING_SPEED = 250; // 1000ms interval for setTimeout
 export const ACCELERATING_SPEED = 400;
+
+export const AUDIO = ['collision.mp3', 'powerup.mp3', 'powerdown.mp3'];
 
 export const SPOILED_FOOD_TIMEOUT = 7000;
