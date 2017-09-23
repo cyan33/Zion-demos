@@ -3,7 +3,8 @@ import {
     SEGMENT_WIDTH, SNAKE_INIT_LENGTH, LEFT, UP, RIGHT, DOWN,
     ROWS, COLS, OBSTACLE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT,
     FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX,
-    SPOILED_FOOD_TIMEOUT, BOUNDARY_PROX, AUDIO
+    SPOILED_FOOD_TIMEOUT, BOUNDARY_PROX, AUDIO, COLLISION_AUDIO,
+    POWERUP_AUDIO, POWERDOWN_AUDIO
 } from './options'
 import Food from "./Food";
 import { getRandomNumber, getDistance } from './utils/operations'
@@ -29,7 +30,7 @@ export function initSnake() {
     let snakeSegments = []
     for (let i = SNAKE_INIT_LENGTH - 1; i >= 0; i--) {
         // the position is the relative index, not the exact pixel
-        snakeSegments.push(new Segment({}, { x: i, y: 0 }));
+        snakeSegments.push(new Segment(1, { x: i, y: 0 }));
     }
     return snakeSegments;
 }
@@ -119,7 +120,7 @@ function nearObstacles(obj, obstacles, offset) {
     for(let i = 0; i < obstacles.length; i++) {
         let check = obstacles[i];
         // ensure we're not within distance range of check size
-        if(check.nearObstacle(obj.position.x, obj.position.y, offset)) near = true;
+        if(check.nearObstacle(obj.center.x, obj.center.y, offset)) near = true;
     }
     return near;
 }
@@ -134,8 +135,9 @@ export function moveSnake() {
         audio
     } = this;
     // construct a new head segment according to the moving direction
-    let nx = snakeSegments[0].position.x;
-    let ny = snakeSegments[0].position.y;
+    let head = snakeSegments[0];
+    let nx = head.position.x;
+    let ny = head.position.y;
 
     if (movingDirection === LEFT) nx -= 1;
     else if (movingDirection === RIGHT) nx += 1;
@@ -144,23 +146,23 @@ export function moveSnake() {
 
     // check collision with itself, crosses the wall, or hits an obstacle
     if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)
-        || isCollidesObstacle({x: nx, y: ny, size: 1}, obstacles)) {
+        || isCollidesObstacle({x: nx, y: ny, size: head.size}, obstacles)) {
         updateLocalStorage(this.currScore);
 
-        audio.getAudioByName('collision.mp3').play();
+        audio.getAudioByName(COLLISION_AUDIO).play();
         clearInterval(this.timer);
         showRestartLayer();
     }
-    let head = new Segment({}, { x: nx, y: ny });
+    head = new Segment(1, { x: nx, y: ny });
     // check if it eats food
     var collision = isCollidesFood({x: nx, y: ny}, food.position, spoiledFood);
     if (collision == 1) {
         // score++ and call this.initScorePanel()
-        audio.getAudioByName('powerup.mp3').play();
+        audio.getAudioByName(POWERUP_AUDIO).play();
         this.currScore++;
         this.initScorePanel();
     } else if (collision == -1){
-        audio.getAudioByName('powerdown.mp3').play();
+        audio.getAudioByName(POWERDOWN_AUDIO).play();
         this.currScore--;
         this.initScorePanel();
         snakeSegments.pop();
@@ -196,10 +198,10 @@ export function initFood(obstacles) {
     do {
         let xPos = getRandomNumber(COLS);
         let yPos = getRandomNumber(ROWS);
-        food = new Food({}, {x:xPos, y:yPos});
+        food = new Food(1, {x:xPos, y:yPos});
     } while(nearObstacles(food, obstacles, FOOD_FROM_OBSTACLE)
-            || food.x >= COLS - 2 || food.y >= ROWS - 2);
-    return food;
+            || food.position.x >= COLS - 2 || food.position.y >= ROWS - 2);
+            return food;
 }
 
 export function drawFood(context, food, spoiledFood) {
@@ -234,7 +236,7 @@ export function initObstacles(num_obs) {
             x = getRandomNumber(COLS);
             y = getRandomNumber(ROWS);
             obs = new Obstacle('', OBSTACLE_SIZE / SEGMENT_WIDTH, { x, y });
-        } while(nearObstacles(obs, obstacles, getRandomNumber(OBSTACLE_FROM_OBSTACLE))
+        } while(nearObstacles(obs, obstacles, OBSTACLE_FROM_OBSTACLE)
                 || x > COLS - SEGMENT_WIDTH || y > ROWS - SEGMENT_WIDTH 
                 || (x <= OBSTACLE_SIZE / SEGMENT_WIDTH && y <= OBSTACLE_SIZE / SEGMENT_WIDTH));
         obstacles.push(obs);

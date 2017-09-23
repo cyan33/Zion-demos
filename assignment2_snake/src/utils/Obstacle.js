@@ -1,17 +1,11 @@
 import Sprite from './Sprite'
-import { getDistance } from './operations'
+import { getDistance, calculateCenter } from './operations'
 const NUM_SECTIONS = 9;
 
 class Obstacle extends Sprite {
     constructor(src, size, { x, y }) {
         super(src, size, { x, y });
-        this.center = this.calculateCenter(this.position.x, this.position.y, this.size);
         this.calculateBoundaries();
-    }
-
-    // calculates the center for this boundary
-    calculateCenter(x_coord, y_coord, width) {
-        return {x: x_coord + (.5 * width), y: y_coord + (.5 * width)}; 
     }
 
     // subdivides this obstacle into boundaries for collision detection
@@ -23,7 +17,7 @@ class Obstacle extends Sprite {
         // Define boundaries based on number of sections
         for(let i = 0; i < sections_rc; i++) {
             for(let j = 0; j < sections_rc; j++) {
-                this.boundaries.push(this.calculateCenter(x, y, width));
+                this.boundaries.push(calculateCenter(x, y, width));
                 x += width;
             }
             x = this.position.x;

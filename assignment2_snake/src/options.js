@@ -22,6 +22,9 @@ export const COLS = CANVAS_HEIGHT / SEGMENT_WIDTH;
 export const MOVING_SPEED = 250; // 1000ms interval for setTimeout
 export const ACCELERATING_SPEED = 400;
 
-export const AUDIO = ['collision.mp3', 'powerup.mp3', 'powerdown.mp3'];
+export const COLLISION_AUDIO = 'collision.mp3';
+export const POWERUP_AUDIO = 'powerup.mp3';
+export const POWERDOWN_AUDIO = 'powerdown.mp3';
+export const AUDIO = [COLLISION_AUDIO, POWERUP_AUDIO, POWERDOWN_AUDIO];
 
 export const SPOILED_FOOD_TIMEOUT = 7000;
