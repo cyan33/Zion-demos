@@ -15,3 +15,7 @@ export function getRandomNumber(max) {
 export function getDistance(x1, y1, x2, y2) {
     return Math.abs(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
 }
+
+export function calculateCenter(x_coord, y_coord, width) {
+    return {x: x_coord + (.5 * width), y: y_coord + (.5 * width)};
+}
