@@ -166,9 +166,6 @@ class AlchemyGame extends Game {
 
     initAudio() {
         this.audio.loadAudio(GAME_AUDIO);
-        // for(let i = 0; i < GAME_AUDIO.length; i++) {
-        //     this.audio.addAudio(GAME_AUDIO[i]);
-        // }
     }
     
     addClearAllHandler() {
