@@ -1,4 +1,4 @@
-import Game from './game'
+import AlchemyGame from './AlchemyGame'
 
-let game = new Game();
+let game = new AlchemyGame();
 game.init();

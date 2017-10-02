@@ -1,3 +1,4 @@
+import Game from './utils/Game'
 import Element from './Element'
 import dndWrapper from './utils/dnd'
 import AudioManager from './utils/AudioManager'
@@ -21,8 +22,9 @@ import {
 import { getCombinationIndex } from './helper'
 import { removeMultiElementFromArray } from './utils/operations'
 
-class Game {
+class AlchemyGame extends Game {
     constructor() {
+        super();
         this.canvas = document.getElementById('alchemy_table');
         this.canvas.width = parseInt(window.innerWidth) - 150;
         this.canvas.height = parseInt(window.innerHeight);
@@ -163,9 +165,10 @@ class Game {
     }
 
     initAudio() {
-        for(let i = 0; i < GAME_AUDIO.length; i++) {
-            this.audio.addAudio(GAME_AUDIO[i]);
-        }
+        this.audio.loadAudio(GAME_AUDIO);
+        // for(let i = 0; i < GAME_AUDIO.length; i++) {
+        //     this.audio.addAudio(GAME_AUDIO[i]);
+        // }
     }
     
     addClearAllHandler() {
@@ -220,4 +223,4 @@ class Game {
     }
 }
 
-export default Game;
+export default AlchemyGame;
