@@ -1,4 +1,4 @@
-import Game from './game'
+import SnakeGame from './SnakeGame'
 
-let game = new Game();
+let game = new SnakeGame();
 game.init();

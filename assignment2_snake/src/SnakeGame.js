@@ -1,3 +1,4 @@
+import Game from './utils/Game'
 import { drawWalls, drawObstacles, initAudio, initObstacles, initSnake, drawSnake, moveSnake,
     initFood, drawFood, checkFood, removeSpoiledFood, createSpoiledFood, initSpoiledFood} from './helper'
 import { 
@@ -8,8 +9,9 @@ import {
 } from './options'
 
 const NUM_OBSTACLES = 6;
-class Game {
+class SnakeGame extends Game {
     constructor() {
+        super();
         this.canvas = document.querySelector('#snake');
         this.context = this.canvas.getContext('2d');
 
@@ -73,11 +75,6 @@ class Game {
         drawFood(this.context, this.food, this.spoiledFood);
     }
 
-    gameloop() {
-        this.update();
-        this.render();
-    }
-
     debug() {
         window.snakeSegments = this.snakeSegments;
         window.update = this.update.bind(this);
@@ -93,4 +90,4 @@ class Game {
     }
 }
 
-export default Game;
+export default SnakeGame;
