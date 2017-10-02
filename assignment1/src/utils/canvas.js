@@ -3,7 +3,7 @@ export function clearCanvas(canvas, context) {
 }
 
 export function coordinateConversion(canvas, x, y) {
-    var box = canvas.getBoundingRect();
+    let box = canvas.getBoundingRect();
     return {
         x: Math.round(x - box.left),
         y: Math.round(y - box.right)
