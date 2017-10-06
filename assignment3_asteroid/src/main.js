@@ -21,12 +21,6 @@ class Asteroid extends Game {
     
   }
 
-  // The game loop managed by the engine
-  gameloop() {
-      this.update();
-      this.render();
-  }
-
   // Optional debugging
   debug() {
     window.store = store
