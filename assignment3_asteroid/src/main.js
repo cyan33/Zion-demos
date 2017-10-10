@@ -2,7 +2,7 @@ import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
 import { drawWalls, drawShip } from './helper.js'
-import { CANVAS_HEIGHT, CANVAS_WIDTH, SHIP_SIZE, SHIP_SPRITE, CLOCKWISE, COUNTERCLOCKWISE } from './options'
+import { CANVAS_HEIGHT, CANVAS_WIDTH, SHIP_SIZE, SHIP_SPRITE, CLOCKWISE, COUNTERCLOCKWISE, VELOCITY, ROTATION_SPEED } from './options'
 import Ship from './Ship'
 
 class AsteroidGame extends Game {
@@ -40,9 +40,9 @@ class AsteroidGame extends Game {
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
-    // console.log('prev:', store.getState().score) // 10
-    // increaseScore()
-    // console.log('after:', store.getState().score) // 20
+    console.log('prev:', store.getState().score) // 10
+    increaseScore()
+    console.log('after:', store.getState().score) // 20
   }
 
   // render the game according to 
@@ -69,11 +69,10 @@ class AsteroidGame extends Game {
 
   // Initializes base game components
   init() {
-    this.timer = setInterval(this.gameloop.bind(this), 30);
+    this.timer = requestAnimationFrame(this.gameloop.bind(this));
     this.debug();
     this.addKeyboardHandlers();
     this.initScorePanel();
-    //this.gameloop(); // once for testing purposes
   }
 }
 
