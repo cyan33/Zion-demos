@@ -17,6 +17,6 @@
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@changyan/mini-observer": "^0.1.4"
+    "redux": "^3.7.2"
   }
 }
