@@ -8,6 +8,7 @@ export const CANVAS_WIDTH = 620;
 // Game parameters
 export const ASTEROID_SIZE = 30; // will vary
 export const SHIP_SPRITE = './src/images/ship.png'; // Ship sprite by Millionth Vector
+export const UNIVERSE_BG = './src/images/universe_bg.png';
 export const VELOCITY = 5;
 export const ROTATION_SPEED = 6;
 export const SHIP_SIZE = {

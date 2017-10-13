@@ -1,7 +1,7 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip } from './helper.js'
+import { drawWalls, drawShip, drawUniverse } from './helper.js'
 import { CANVAS_HEIGHT, CANVAS_WIDTH, SHIP_SIZE, SHIP_SPRITE, CLOCKWISE, COUNTERCLOCKWISE, VELOCITY, ROTATION_SPEED } from './options'
 import Ship from './Ship'
 
@@ -10,6 +10,8 @@ class AsteroidGame extends Game {
     super();
     this.canvas = document.querySelector('#asteroids');
     this.context = this.canvas.getContext('2d');
+
+    this.currScore = 0;
 
     this.canvas.height = CANVAS_HEIGHT;
     this.canvas.width = CANVAS_WIDTH;
@@ -48,8 +50,9 @@ class AsteroidGame extends Game {
   // render the game according to 
   render() {
     const { width, height } = this.canvas;
-    // Render walls
+    // Render walls, background
     drawWalls(this.context, width, height);
+    drawUniverse(this.context, width, height);
 
     // Render ship
     drawShip(this.context, this.ship);
@@ -58,6 +61,7 @@ class AsteroidGame extends Game {
   // Optional debugging
   debug() {
     window.store = store
+    window.ctx = this.context
   }
 
   // Initialize the score panel based on the current highest score or 0 otherwise
