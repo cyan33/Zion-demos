@@ -17,3 +17,13 @@ export function drawShip(context, ship) {
     drawImageByUrl.call(context, ship.src, ship.position.x, ship.position.y, ship.size.width, ship.size.height);
     context.restore();
 }
+
+export function drawAsteroids(context, asteroids) {
+    console.log(asteroids);
+    context.save();
+    for(let i = 0; i < asteroids.length; i++) {
+        let asteroid = asteroids[i];
+        drawImageByUrl.call(context, asteroid.src, asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
+    }
+    context.restore();
+}

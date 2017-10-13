@@ -45,6 +45,11 @@ export function drawImageByUrl(url, x, y, width, height) {
         this.drawImage(img, x, y, width, height);
     }
     img.src = url;
+    // console.log(`url: ${img.src}
+    // x: ${x}
+    // y: ${y}
+    // width: ${width}
+    // height: ${height}`);
 }
 
 export function insertText(context, options = { }) {

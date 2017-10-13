@@ -1,9 +1,12 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip } from './helper.js'
-import { CANVAS_HEIGHT, CANVAS_WIDTH, SHIP_SIZE, SHIP_SPRITE, CLOCKWISE, COUNTERCLOCKWISE, VELOCITY, ROTATION_SPEED } from './options'
+import { drawWalls, drawShip, drawAsteroids } from './helper.js'
+import { CANVAS_HEIGHT, CANVAS_WIDTH, SHIP_SIZE, SHIP_SPRITE, CLOCKWISE, COUNTERCLOCKWISE, VELOCITY, ROTATION_SPEED,
+         NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
+         ASTEROID_SPEED } from './options'
 import Ship from './Ship'
+import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
 
 class AsteroidGame extends Game {
   constructor() {
@@ -16,6 +19,7 @@ class AsteroidGame extends Game {
     let x = CANVAS_WIDTH / 2;
     let y = CANVAS_HEIGHT / 2;
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, { x, y }, 5, 6);
+    this.partSystem = new ParticleSystem();
   }
   
   // Specifies keyboard handlers
@@ -53,6 +57,9 @@ class AsteroidGame extends Game {
 
     // Render ship
     drawShip(this.context, this.ship);
+
+    // Render asteroids
+    drawAsteroids(this.context, this.partSystem.particles);
   }
 
   // Optional debugging
@@ -67,12 +74,18 @@ class AsteroidGame extends Game {
     document.querySelector('.score-panel .highest .score').innerHTML = highestScore;
   }
 
+  // Initialize asteroids
+  initAsteroids() {
+    this.partSystem.createRandomizedParticles(ASTEROID_1, ASTEROID_LARGE, CANVAS_HEIGHT, CANVAS_WIDTH, ASTEROID_SPEED, NUM_ASTEROIDS);
+  }
+
   // Initializes base game components
   init() {
     this.timer = requestAnimationFrame(this.gameloop.bind(this));
     this.debug();
     this.addKeyboardHandlers();
     this.initScorePanel();
+    this.initAsteroids();
   }
 }
 
