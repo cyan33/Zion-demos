@@ -21,7 +21,7 @@ class AsteroidGame extends Game {
     this.canvas = document.querySelector('#asteroids');
     this.context = this.canvas.getContext('2d');
 
-    this.firstTimeRender = true;
+    this.gameover = false;  // indicate game is over or not
 
     this.gameloop = this.gameloop.bind(this);
 
@@ -71,9 +71,19 @@ class AsteroidGame extends Game {
     return false; // to prevent the default behavior of the browser
   }
 
+  updateScore() {
+    setInterval(() => {
+      if (!this.gameover) {
+        this.currScore++;
+        this.initScorePanel();
+      }
+    }, 1000);
+  }
+  
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
+    
   }
 
   // render the game according to 
@@ -110,6 +120,7 @@ class AsteroidGame extends Game {
     this.debug();
     this.addKeyboardHandlers();
     this.initScorePanel();
+    this.updateScore();
   }
 }
 
