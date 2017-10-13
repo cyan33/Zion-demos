@@ -1,10 +1,20 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip, drawAsteroids } from './helper.js'
-import { CANVAS_HEIGHT, CANVAS_WIDTH, SHIP_SIZE, SHIP_SPRITE, CLOCKWISE, COUNTERCLOCKWISE, VELOCITY, ROTATION_SPEED,
-         NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
-         ASTEROID_SPEED } from './options'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids } from './helper.js'
+import { 
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  SHIP_SIZE,
+  SHIP_SPRITE,
+  CLOCKWISE,
+  COUNTERCLOCKWISE,
+  VELOCITY,
+  ROTATION_STEP,
+  MOVE_STEP,
+  NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
+  ASTEROID_SPEED
+} from './options'
 import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
 
@@ -14,11 +24,18 @@ class AsteroidGame extends Game {
     this.canvas = document.querySelector('#asteroids');
     this.context = this.canvas.getContext('2d');
 
-    this.canvas.height = CANVAS_HEIGHT;
-    this.canvas.width = CANVAS_WIDTH;
-    let x = CANVAS_WIDTH / 2;
-    let y = CANVAS_HEIGHT / 2;
-    this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, { x, y }, 5, 6);
+    this.gameover = false;  // indicate game is over or not
+
+    this.gameloop = this.gameloop.bind(this);
+
+    this.currScore = 0;
+
+    this.shipPosition = {
+      x: CANVAS_WIDTH / 2 - SHIP_SIZE.width / 2,
+      y: CANVAS_HEIGHT / 2 - SHIP_SIZE.height / 2
+    }
+
+    this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
     this.partSystem = new ParticleSystem();
   }
   
@@ -28,32 +45,54 @@ class AsteroidGame extends Game {
   }
 
   moveShip(e) {
+    e.preventDefault();
     // Ship updates should all be done in the Ship class
     if(e.keyCode === 37) {
       // Increment ship's rotation counter clockwise
-      this.ship.rotate(COUNTERCLOCKWISE);
+      this.ship.theta = this.ship.theta - ROTATION_STEP; 
+
+      console.log(this.ship.theta);
+
     } else if(e.keyCode === 38) {
-      // Update ship's position in the forward direction
-      this.ship.move();
+      // arrow up
+      
+      this.shipPosition.y = this.shipPosition.y < 0 ? 0 : this.shipPosition.y - MOVE_STEP
+      
+      this.ship.updatePosition(this.shipPosition);
+      
     } else if(e.keyCode === 39) {
       // Increment ship's rotation clockwise
-      this.ship.rotate(CLOCKWISE);
+      this.ship.theta += ROTATION_STEP;
+      console.log(this.ship.theta);
+    } else if (e.keyCode === 40) {
+      // arrow down
+      this.shipPosition.y = this.shipPosition.y > this.canvas.height ? this.canvas.height : this.shipPosition.y + MOVE_STEP
+      this.ship.updatePosition(this.shipPosition);
     }
+    return false; // to prevent the default behavior of the browser
   }
 
+  updateScore() {
+    setInterval(() => {
+      if (!this.gameover) {
+        this.currScore++;
+        this.initScorePanel();
+      }
+    }, 1000);
+  }
+  
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
-    console.log('prev:', store.getState().score) // 10
-    increaseScore()
-    console.log('after:', store.getState().score) // 20
+    
   }
 
   // render the game according to 
   render() {
     const { width, height } = this.canvas;
-    // Render walls
+    // Render walls, background
     drawWalls(this.context, width, height);
+    drawUniverse(this.context, width, height);
 
     // Render ship
     drawShip(this.context, this.ship);
@@ -65,6 +104,8 @@ class AsteroidGame extends Game {
   // Optional debugging
   debug() {
     window.store = store
+    window.ctx = this.context
+    window.ship = this.ship
   }
 
   // Initialize the score panel based on the current highest score or 0 otherwise
@@ -81,11 +122,14 @@ class AsteroidGame extends Game {
 
   // Initializes base game components
   init() {
-    this.timer = requestAnimationFrame(this.gameloop.bind(this));
+    this.timer = setInterval(() => {
+      this.gameloop();
+    }, 120);
     this.debug();
     this.addKeyboardHandlers();
     this.initScorePanel();
     this.initAsteroids();
+    this.updateScore();
   }
 }
 

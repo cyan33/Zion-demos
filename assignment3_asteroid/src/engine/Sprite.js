@@ -5,7 +5,6 @@ class Sprite {
         // if(size.width === undefined || size.width === null || size.height === undefined || size.height === null) {
         //     throw 'size must be provided';
         // }
-        //console.log(`dimensions: ${width} x ${height}`);
         this.src = src;
         this.size = { width, height };
         this.position = { x, y };
