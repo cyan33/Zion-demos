@@ -94,11 +94,11 @@ class AsteroidGame extends Game {
     drawWalls(this.context, width, height);
     drawUniverse(this.context, width, height);
 
-    // Render ship
-    drawShip(this.context, this.ship);
-
     // Render asteroids
     drawAsteroids(this.context, this.partSystem.particles);
+
+    // Render ship
+    drawShip(this.context, this.ship);
   }
 
   // Optional debugging
