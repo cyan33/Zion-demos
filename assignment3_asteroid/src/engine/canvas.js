@@ -47,6 +47,15 @@ export function drawImageByUrl(url, x, y, width, height) {
     img.src = url;
 }
 
+export function drawRotate(context, img, x, y, degrees) {
+    context.save();
+    context.translate(x + img.width / 2, y + img.height / 2);
+    context.rotate(degrees * Math.PI / 180);
+    context.drawImage(img, 0, 0, img.width, img.height,
+      -img.width / 2, -img.height / 2, img.width, img.height);
+    context.restore();
+  }
+
 export function insertText(context, options = { }) {
     const { text, font, position: { x, y }, color } = options;
 
