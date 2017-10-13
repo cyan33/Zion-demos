@@ -12,16 +12,17 @@ class Obstacle extends Sprite {
     calculateBoundaries() {
         this.boundaries = new Array();
         let sections_rc = Math.sqrt(NUM_SECTIONS);
-        let width = this.size / sections_rc;
+        let width = this.size.width / sections_rc;
+        let height = this.size.height / sections_rc;
         let x = this.position.x, y = this.position.y;
         // Define boundaries based on number of sections
         for(let i = 0; i < sections_rc; i++) {
             for(let j = 0; j < sections_rc; j++) {
-                this.boundaries.push(calculateCenter(x, y, width));
+                this.boundaries.push(calculateCenter(x, y, width, height));
                 x += width;
             }
             x = this.position.x;
-            y += width;
+            y += height;
         }
     }
 

@@ -1,7 +1,7 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -11,9 +11,12 @@ import {
   COUNTERCLOCKWISE,
   VELOCITY,
   ROTATION_STEP,
-  MOVE_STEP
+  MOVE_STEP,
+  NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
+  ASTEROID_SPEED
 } from './options'
 import Ship from './Ship'
+import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
 
 class AsteroidGame extends Game {
   constructor() {
@@ -32,10 +35,8 @@ class AsteroidGame extends Game {
       y: CANVAS_HEIGHT / 2 - SHIP_SIZE.height / 2
     }
 
-    this.canvas.height = CANVAS_HEIGHT;
-    this.canvas.width = CANVAS_WIDTH;
-
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
+    this.partSystem = new ParticleSystem();
   }
   
   // Specifies keyboard handlers
@@ -93,6 +94,9 @@ class AsteroidGame extends Game {
     drawWalls(this.context, width, height);
     drawUniverse(this.context, width, height);
 
+    // Render asteroids
+    drawAsteroids(this.context, this.partSystem.particles);
+
     // Render ship
     drawShip(this.context, this.ship);
   }
@@ -111,6 +115,32 @@ class AsteroidGame extends Game {
     document.querySelector('.score-panel .highest .score').innerHTML = highestScore;
   }
 
+  // Initialize asteroids
+  initAsteroids() {
+    // Some example values for testing
+    let options = {
+      src: ASTEROID_1,
+      size: ASTEROID_LARGE,
+      maxHorizontal: CANVAS_WIDTH,
+      maxVertical: CANVAS_HEIGHT,
+      speed: ASTEROID_SPEED,
+      numParticles: 1
+    }
+    this.partSystem.createRandomizedParticles(options);
+    
+    options.src = ASTEROID_2;
+    options.size = ASTEROID_SMALL;
+    this.partSystem.createRandomizedParticles(options);
+    
+    options.src = ASTEROID_3;
+    options.size = ASTEROID_MEDIUM;
+    this.partSystem.createRandomizedParticles(options);
+
+    options.src = ASTEROID_4;
+    options.size = ASTEROID_LARGE;
+    this.partSystem.createRandomizedParticles(options);
+  }
+
   // Initializes base game components
   init() {
     this.timer = setInterval(() => {
@@ -119,6 +149,7 @@ class AsteroidGame extends Game {
     this.debug();
     this.addKeyboardHandlers();
     this.initScorePanel();
+    this.initAsteroids();
     this.updateScore();
   }
 }

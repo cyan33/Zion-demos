@@ -37,3 +37,12 @@ export function marchForward(ship) {
 
     return {x,y}
 }
+
+export function drawAsteroids(context, asteroids) {
+    context.save();
+    for(let i = 0; i < asteroids.length; i++) {
+        let asteroid = asteroids[i];
+        drawImageByUrl.call(context, asteroid.src, asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
+    }
+    context.restore();
+}
