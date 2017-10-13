@@ -16,12 +16,12 @@ class ParticleSystem {
         }
     }
 
-    createRandomizedParticles(src, size, max_hor, max_vert, max_speed, numParts) {
-        for(let i = 0; i < numParts; i++) {
-            let x = getRandomNumber(max_hor);
-            let y =  getRandomNumber(max_vert);
-            let speed = getRandomNumber(max_speed);
-            this.particles.push(new Particle(src, size, { x, y }, speed));
+    createRandomizedParticles(options) {
+        for(let i = 0; i < options.numParticles; i++) {
+            let x = getRandomNumber(options.maxHorizontal);
+            let y =  getRandomNumber(options.maxVertical);
+            let speed = getRandomNumber(options.speed);
+            this.particles.push(new Particle(options.src, options.size, { x, y }, speed));
         }
     }
 }

@@ -117,7 +117,28 @@ class AsteroidGame extends Game {
 
   // Initialize asteroids
   initAsteroids() {
-    this.partSystem.createRandomizedParticles(ASTEROID_1, ASTEROID_LARGE, CANVAS_HEIGHT, CANVAS_WIDTH, ASTEROID_SPEED, NUM_ASTEROIDS);
+    // Some example values for testing
+    let options = {
+      src: ASTEROID_1,
+      size: ASTEROID_LARGE,
+      maxHorizontal: CANVAS_WIDTH,
+      maxVertical: CANVAS_HEIGHT,
+      speed: ASTEROID_SPEED,
+      numParticles: 1
+    }
+    this.partSystem.createRandomizedParticles(options);
+    
+    options.src = ASTEROID_2;
+    options.size = ASTEROID_SMALL;
+    this.partSystem.createRandomizedParticles(options);
+    
+    options.src = ASTEROID_3;
+    options.size = ASTEROID_MEDIUM;
+    this.partSystem.createRandomizedParticles(options);
+
+    options.src = ASTEROID_4;
+    options.size = ASTEROID_LARGE;
+    this.partSystem.createRandomizedParticles(options);
   }
 
   // Initializes base game components
