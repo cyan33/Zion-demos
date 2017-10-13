@@ -116,7 +116,6 @@ class AsteroidGame extends Game {
     this.timer = setInterval(() => {
       this.gameloop();
     }, 120);
-    this.gameloop();
     this.debug();
     this.addKeyboardHandlers();
     this.initScorePanel();
