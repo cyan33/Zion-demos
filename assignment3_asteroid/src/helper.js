@@ -55,16 +55,16 @@ export function checkBounds(position, width, height, offset) {
     const { x, y } = position;
     var newX = x;
     var newY = y;
-    if (x + offset.width > width) {
-        newX = width - offset.width;
-    } else if (x < 0) {
+    if (x > width) {
         newX = 0;
+    } else if (x + offset.width < 0) {
+        newX = width - offset.width;
     }
 
-    if(y + offset.height > height) {
-        newY = height - offset.height;
-    } else if (y < 0) {
+    if(y > height) {
         newY = 0;
+    } else if (y + offset.height < 0) {
+        newY = height - offset.height;
     }
     return{x: newX, y: newY}
 
