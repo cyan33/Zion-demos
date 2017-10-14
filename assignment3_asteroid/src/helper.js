@@ -28,16 +28,47 @@ export function drawUniverse(context, width, height) {
     drawImageByUrl.call(context, UNIVERSE_BG, 0, 0, width, height);
 }
 
-export function marchForward(ship) {
+export function calculateMovement(ship, moveAmount, isForward) {
     const { theta } = ship;
     const { x, y } = ship.position;
+    //Convert theta to radians
+    let thetaRad = theta * PI/180;
 
-    // let dis = 10
-    // let deltaX = 10 * sin()
+    //Calculate changes to x and y
+    let deltaX = moveAmount * sin(thetaRad);
+    let deltaY = moveAmount * cos(thetaRad);
 
-    return {x,y}
+    //Calculate new position values
+    var newX = x;
+    var newY = y;
+    if (isForward) {
+        newX += deltaX;
+        newY -= deltaY;
+    } else {
+        newX -= deltaX;
+        newY += deltaY;
+    }
+    return {x:newX, y:newY}
 }
 
+export function checkBounds(position, width, height, offset) {
+    const { x, y } = position;
+    var newX = x;
+    var newY = y;
+    if (x > width) {
+        newX = 0 - offset.width;
+    } else if (x + offset.width < 0) {
+        newX = width;
+    }
+
+    if(y > height) {
+        newY = 0 - offset.height;
+    } else if (y + offset.height < 0) {
+        newY = height;
+    }
+    return{x: newX, y: newY}
+
+}
 export function drawAsteroids(context, asteroids) {
     context.save();
     for(let i = 0; i < asteroids.length; i++) {

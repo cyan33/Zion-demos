@@ -1,7 +1,7 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse, drawAsteroids } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -49,24 +49,22 @@ class AsteroidGame extends Game {
     // Ship updates should all be done in the Ship class
     if(e.keyCode === 37) {
       // Increment ship's rotation counter clockwise
-      this.ship.theta = this.ship.theta - ROTATION_STEP; 
-
-      console.log(this.ship.theta);
+      this.ship.theta = this.ship.theta - ROTATION_STEP;
 
     } else if(e.keyCode === 38) {
       // arrow up
-      
-      this.shipPosition.y = this.shipPosition.y < 0 ? 0 : this.shipPosition.y - MOVE_STEP
-      
+      this.shipPosition = calculateMovement(this.ship, MOVE_STEP, true);
+      this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
       
     } else if(e.keyCode === 39) {
       // Increment ship's rotation clockwise
       this.ship.theta += ROTATION_STEP;
-      console.log(this.ship.theta);
+
     } else if (e.keyCode === 40) {
       // arrow down
-      this.shipPosition.y = this.shipPosition.y > this.canvas.height ? this.canvas.height : this.shipPosition.y + MOVE_STEP
+      this.shipPosition = calculateMovement(this.ship, MOVE_STEP, false);
+      this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
     }
     return false; // to prevent the default behavior of the browser
