@@ -12,10 +12,6 @@ class Particle extends Obstacle {
     setSpeed(speed) {
         this.speed = speed;
     }
-
-    updatePosition({x, y}) {
-        this.position = { x, y };
-    }
 }
 
 export default Particle;

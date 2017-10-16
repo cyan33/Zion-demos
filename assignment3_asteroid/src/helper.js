@@ -13,7 +13,7 @@ export function drawWalls(context, width, height) {
     context.strokeRect(0, 0, width, height);
 }
 
-export function drawShip(context, ship) {
+export function drawShip(context, ship, effect) {
     // drawShip according to its angle
     const { x, y } = ship.position;
     const { width, height } = ship.size;
@@ -21,7 +21,7 @@ export function drawShip(context, ship) {
     let img = new Image();
     img.src = SHIP_SPRITE;
     img.onload = () => {
-        drawRotate(context, img, x, y, ship.theta);
+        drawRotate(context, img, x, y, ship.theta, effect);
     }
 }
 
@@ -52,13 +52,24 @@ export function calculateMovement(ship, moveAmount, isForward) {
     return {x:newX, y:newY}
 }
 
+export function getSpawnLocation(ship, asteroids) {
+    let sum = 0;
+    for(let i = 0; i < asteroids.length; i++) {
+        let asteroid = asteroids[i];
+        // Get distance to center of the canvas
+        let dist = getDistance(asteroid.center.x, asteroid.center.y, ship.center.x, ship.center.y);
+        sum += dist;
+    }
+    // get average
+    let avrg = sum / asteroids.length;
+    return {x: avrg, y: avrg};
+}
+
 export function checkCollision(asteroids, ship) {
     for(let i = 0; i < asteroids.length; i++) {
         // Check collision for each asteroid to ship
-        // console.log(`collision for asteroid: ${i}`);
-        let hit = asteroids[i].getCollision(ship.center.x, ship.center.y, 50, 0.5);
+        let hit = asteroids[i].getCollision(ship, 20, 30);
         if(hit){
-            console.log(`collision with asteroid ${i}`);
             return true;
         } 
     }

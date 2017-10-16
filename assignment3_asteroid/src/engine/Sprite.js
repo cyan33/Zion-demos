@@ -8,6 +8,10 @@ class Sprite {
         this.src = src;
         this.size = { width, height };
         this.position = { x, y };
+        this.updateCenter();
+    }
+
+    updateCenter() {
         this.center = calculateCenter(this.position.x, this.position.y, this.size.width, this.size.height);
     }
 }

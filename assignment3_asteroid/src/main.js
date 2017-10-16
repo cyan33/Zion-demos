@@ -1,7 +1,7 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -13,10 +13,12 @@ import {
   ROTATION_STEP,
   MOVE_STEP,
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
-  ASTEROID_SPEED
+  ASTEROID_SPEED,
+  EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET
 } from './options'
 import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
+import Spritesheet from './engine/Spritesheet'
 
 class AsteroidGame extends Game {
   constructor() {
@@ -37,6 +39,7 @@ class AsteroidGame extends Game {
 
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
     this.partSystem = new ParticleSystem();
+    this.spriteSheet = new Spritesheet(EXHAUST_SRC, EFFECT_SIZE, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET);
   }
   
   // Specifies keyboard handlers
@@ -85,15 +88,15 @@ class AsteroidGame extends Game {
       let asteroidPos = calculateMovement(asteroid, MOVE_STEP, true);
       asteroidPos = checkBounds(asteroidPos, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE, asteroid.size);
       asteroid.updatePosition(asteroidPos);
+      asteroid[i] = asteroid;
     }
   }
 
   checkAsteroidsCollisions() {
     let hit = checkCollision(this.partSystem.particles, this.ship);
     if(hit) {
-      let x = CANVAS_WIDTH / 2;
-      let y = CANVAS_HEIGHT / 2;
-      this.ship.updatePosition({ x, y });
+      let update = getSpawnLocation(this.ship, this.partSystem.particles);
+      this.ship.updatePosition(update);
     }
   }
 
@@ -101,7 +104,8 @@ class AsteroidGame extends Game {
   // the update is only responsible to dispatch actions
   update(){
     this.updateAsteroidPositions();
-    //this.checkAsteroidsCollisions();
+    this.checkAsteroidsCollisions();
+    this.spriteSheet.update();
   }
 
   // render the game according to 
@@ -115,7 +119,7 @@ class AsteroidGame extends Game {
     drawAsteroids(this.context, this.partSystem.particles);
 
     // Render ship
-    drawShip(this.context, this.ship);
+    drawShip(this.context, this.ship, this.spriteSheet);
   }
 
   // Optional debugging
@@ -134,7 +138,7 @@ class AsteroidGame extends Game {
 
   // Initialize asteroids
   initAsteroids() {
-    // Some example values for testing
+    // Test 1 asteroid for now
     let options = {
       src: ASTEROID_1,
       size: ASTEROID_LARGE,

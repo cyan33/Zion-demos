@@ -15,6 +15,7 @@ class Ship extends Sprite {
 
     updatePosition({x, y}) {
         this.position = { x, y };
+        this.updateCenter();
     }
 
     // Rotates the ship an angle theta clockwise or counterclockwise
