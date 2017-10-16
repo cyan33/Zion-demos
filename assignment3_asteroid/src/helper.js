@@ -1,5 +1,6 @@
 import { drawImageByUrl, drawRotate } from './engine/canvas'
 import { UNIVERSE_BG, SHIP_SPRITE } from './options'
+import { getDistance } from './engine/operations'
 
 const sin = Math.sin
 const cos = Math.cos
@@ -49,6 +50,19 @@ export function calculateMovement(ship, moveAmount, isForward) {
         newY += deltaY;
     }
     return {x:newX, y:newY}
+}
+
+export function checkCollision(asteroids, ship) {
+    for(let i = 0; i < asteroids.length; i++) {
+        // Check collision for each asteroid to ship
+        // console.log(`collision for asteroid: ${i}`);
+        let hit = asteroids[i].getCollision(ship.center.x, ship.center.y, 50, 0.5);
+        if(hit){
+            console.log(`collision with asteroid ${i}`);
+            return true;
+        } 
+    }
+    return false;
 }
 
 export function checkBounds(position, width, height, offset) {
