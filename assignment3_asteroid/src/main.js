@@ -13,10 +13,12 @@ import {
   ROTATION_STEP,
   MOVE_STEP,
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
-  ASTEROID_SPEED
+  ASTEROID_SPEED,
+  EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET
 } from './options'
 import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
+import Spritesheet from './engine/Spritesheet'
 
 class AsteroidGame extends Game {
   constructor() {
@@ -37,6 +39,7 @@ class AsteroidGame extends Game {
 
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
     this.partSystem = new ParticleSystem();
+    this.spriteSheet = new Spritesheet(EXHAUST_SRC, EFFECT_SIZE, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET);
   }
   
   // Specifies keyboard handlers
@@ -102,6 +105,7 @@ class AsteroidGame extends Game {
   update(){
     this.updateAsteroidPositions();
     this.checkAsteroidsCollisions();
+    this.spriteSheet.update();
   }
 
   // render the game according to 
@@ -115,7 +119,7 @@ class AsteroidGame extends Game {
     drawAsteroids(this.context, this.partSystem.particles);
 
     // Render ship
-    drawShip(this.context, this.ship);
+    drawShip(this.context, this.ship, this.spriteSheet);
   }
 
   // Optional debugging
