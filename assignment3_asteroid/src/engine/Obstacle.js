@@ -32,7 +32,9 @@ class Obstacle extends Sprite {
         if(this.nearObstacle(objX, objY, prox)) {
             for(let i = 0; i < this.boundaries.length; i++) {
                 let boundary = this.boundaries[i];
-                if(this.nearBoundary(objX, objY, boundary.x, boundary.y, boundary_prox)) return true;
+                if(this.nearBoundary(objX, objY, boundary.x, boundary.y, boundary_prox)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -40,12 +42,14 @@ class Obstacle extends Sprite {
 
     nearObstacle(objX, objY, prox) {
         let distance = getDistance(objX, objY, this.center.x, this.center.y);
+        console.log(`distance to obstacle: ${distance}`);
         return (distance <= prox)? true : false;
     }
 
     // Checks if an object is near this boundary
     nearBoundary(objX, objY, boundX, boundY, prox) {
         let distance = getDistance(objX, objY, boundX, boundY);
+        console.log(`distance to closest boundary: ${distance}`);
         return distance <= prox;
     }
 }

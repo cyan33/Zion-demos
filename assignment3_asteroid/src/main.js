@@ -1,7 +1,7 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -79,10 +79,29 @@ class AsteroidGame extends Game {
     }, 1000);
   }
   
+  updateAsteroidPositions() {
+    for(let i = 0; i < this.partSystem.particles.length; i++) {
+      let asteroid = this.partSystem.particles[i];
+      let asteroidPos = calculateMovement(asteroid, MOVE_STEP, true);
+      asteroidPos = checkBounds(asteroidPos, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE, asteroid.size);
+      asteroid.updatePosition(asteroidPos);
+    }
+  }
+
+  checkAsteroidsCollisions() {
+    let hit = checkCollision(this.partSystem.particles, this.ship);
+    if(hit) {
+      let x = CANVAS_WIDTH / 2;
+      let y = CANVAS_HEIGHT / 2;
+      this.ship.updatePosition({ x, y });
+    }
+  }
+
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
-    
+    this.updateAsteroidPositions();
+    //this.checkAsteroidsCollisions();
   }
 
   // render the game according to 
