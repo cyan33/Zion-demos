@@ -52,13 +52,24 @@ export function calculateMovement(ship, moveAmount, isForward) {
     return {x:newX, y:newY}
 }
 
+export function getSpawnLocation(ship, asteroids) {
+    let sum = 0;
+    for(let i = 0; i < asteroids.length; i++) {
+        let asteroid = asteroids[i];
+        // Get distance to center of the canvas
+        let dist = getDistance(asteroid.center.x, asteroid.center.y, ship.center.x, ship.center.y);
+        sum += dist;
+    }
+    // get average
+    let avrg = sum / asteroids.length;
+    return {x: avrg, y: avrg};
+}
+
 export function checkCollision(asteroids, ship) {
     for(let i = 0; i < asteroids.length; i++) {
         // Check collision for each asteroid to ship
-        // console.log(`collision for asteroid: ${i}`);
-        let hit = asteroids[i].getCollision(ship.center.x, ship.center.y, 50, 0.5);
+        let hit = asteroids[i].getCollision(ship, 20, 30);
         if(hit){
-            console.log(`collision with asteroid ${i}`);
             return true;
         } 
     }

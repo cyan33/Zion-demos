@@ -1,7 +1,7 @@
 import Game from './engine/Game'
 import { increaseScore } from './actions'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -85,15 +85,15 @@ class AsteroidGame extends Game {
       let asteroidPos = calculateMovement(asteroid, MOVE_STEP, true);
       asteroidPos = checkBounds(asteroidPos, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE, asteroid.size);
       asteroid.updatePosition(asteroidPos);
+      asteroid[i] = asteroid;
     }
   }
 
   checkAsteroidsCollisions() {
     let hit = checkCollision(this.partSystem.particles, this.ship);
     if(hit) {
-      let x = CANVAS_WIDTH / 2;
-      let y = CANVAS_HEIGHT / 2;
-      this.ship.updatePosition({ x, y });
+      let update = getSpawnLocation(this.ship, this.partSystem.particles);
+      this.ship.updatePosition(update);
     }
   }
 
@@ -101,7 +101,7 @@ class AsteroidGame extends Game {
   // the update is only responsible to dispatch actions
   update(){
     this.updateAsteroidPositions();
-    //this.checkAsteroidsCollisions();
+    this.checkAsteroidsCollisions();
   }
 
   // render the game according to 
@@ -134,7 +134,7 @@ class AsteroidGame extends Game {
 
   // Initialize asteroids
   initAsteroids() {
-    // Some example values for testing
+    // Test 1 asteroid for now
     let options = {
       src: ASTEROID_1,
       size: ASTEROID_LARGE,
