@@ -9,7 +9,7 @@ export const CANVAS_WIDTH = 600;
 export const SHIP_SPRITE = './src/images/ship.png'; // Ship sprite by Millionth Vector
 export const UNIVERSE_BG = './src/images/universe_bg.png';
 
-export const VELOCITY = 5;
+export const VELOCITY = 3;
 export const ROTATION_STEP = 3;
 export const MOVE_STEP = 3;
 

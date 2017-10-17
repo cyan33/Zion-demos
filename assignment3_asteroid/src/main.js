@@ -1,17 +1,17 @@
 import Game from './engine/Game'
-import { increaseScore } from './actions'
+import { createImageCache } from './engine/canvas'
 import store from './state'
 import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   SHIP_SIZE,
-  SHIP_SPRITE,
   CLOCKWISE,
   COUNTERCLOCKWISE,
   VELOCITY,
   ROTATION_STEP,
   MOVE_STEP,
+  UNIVERSE_BG, SHIP_SPRITE,
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
   ASTEROID_SPEED
 } from './options'
@@ -37,8 +37,28 @@ class AsteroidGame extends Game {
 
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
     this.partSystem = new ParticleSystem();
+
   }
   
+  initImageCache() {
+    this.imageCache = createImageCache();
+    
+    const IMAGE_DICT = {
+      'universe': UNIVERSE_BG,
+      'ship': SHIP_SPRITE,
+      'ast1': ASTEROID_1,
+      'ast2': ASTEROID_2,
+      'ast3': ASTEROID_3,
+      'ast4': ASTEROID_4
+    }
+
+    Object.keys(IMAGE_DICT).forEach(name => {
+      this.imageCache.loadImage(name, IMAGE_DICT[name]);
+    })
+
+    this.imageCache.imagesOnLoad(() => this.timer = setInterval(this.gameloop, 30));
+  }
+
   // Specifies keyboard handlers
   addKeyboardHandlers(){
     document.addEventListener('keydown', (e) => this.moveShip(e));
@@ -107,15 +127,34 @@ class AsteroidGame extends Game {
   // render the game according to 
   render() {
     const { width, height } = this.canvas;
+
+    // here we can get all access of the loaded images:
+    let images = {};
+
+    this.imageCache.getImages().forEach(item => {
+      images[item.name] = item.img;
+    })
+
+    const {
+      universe,
+      ship,
+      ast1,
+      ast2,
+      ast3,
+      ast4
+    } = images;
+
+
     // Render walls, background
     drawWalls(this.context, width, height);
-    drawUniverse(this.context, width, height);
+    drawUniverse(this.context, universe, width, height);
 
     // Render asteroids
-    drawAsteroids(this.context, this.partSystem.particles);
+    // todo: modify the way of rendering particles
+    drawAsteroids(this.context, this.partSystem.particles, {ast1, ast2, ast3, ast4});
 
     // Render ship
-    drawShip(this.context, this.ship);
+    drawShip(this.context, ship, this.ship);
   }
 
   // Optional debugging
@@ -160,9 +199,7 @@ class AsteroidGame extends Game {
 
   // Initializes base game components
   init() {
-    this.timer = setInterval(() => {
-      this.gameloop();
-    }, 120);
+    this.initImageCache();
     this.debug();
     this.addKeyboardHandlers();
     this.initScorePanel();

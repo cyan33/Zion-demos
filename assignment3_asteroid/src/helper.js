@@ -1,4 +1,4 @@
-import { drawImageByUrl, drawRotate } from './engine/canvas'
+import { drawLoadedImage, drawRotate } from './engine/canvas'
 import { UNIVERSE_BG, SHIP_SPRITE } from './options'
 import { getDistance } from './engine/operations'
 
@@ -13,20 +13,16 @@ export function drawWalls(context, width, height) {
     context.strokeRect(0, 0, width, height);
 }
 
-export function drawShip(context, ship) {
+export function drawShip(context, shipImg, shipInstance) {
     // drawShip according to its angle
     const { x, y } = ship.position;
-    const { width, height } = ship.size;
+    const { width, height } = shipInstance.size;
 
-    let img = new Image();
-    img.src = SHIP_SPRITE;
-    img.onload = () => {
-        drawRotate(context, img, x, y, ship.theta);
-    }
+    drawRotate(context, shipImg, x, y, ship.theta);
 }
 
-export function drawUniverse(context, width, height) {
-    drawImageByUrl.call(context, UNIVERSE_BG, 0, 0, width, height);
+export function drawUniverse(context, universe, width, height) {
+    context.drawImage(universe, 0, 0, width, height)
 }
 
 export function calculateMovement(ship, moveAmount, isForward) {
@@ -83,11 +79,11 @@ export function checkBounds(position, width, height, offset) {
     return{x: newX, y: newY}
 
 }
-export function drawAsteroids(context, asteroids) {
+export function drawAsteroids(context, asteroids, astImages) {
     context.save();
     for(let i = 0; i < asteroids.length; i++) {
         let asteroid = asteroids[i];
-        drawImageByUrl.call(context, asteroid.src, asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
+        drawLoadedImage.call(context, astImages[`ast${i + 1}`], asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
     }
     context.restore();
 }
