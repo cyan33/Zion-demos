@@ -13,7 +13,7 @@ export function drawWalls(context, width, height) {
     context.strokeRect(0, 0, width, height);
 }
 
-export function drawShip(context, ship, effect) {
+export function drawShip(context, ship, effect, bullets) {
     // drawShip according to its angle
     const { x, y } = ship.position;
     const { width, height } = ship.size;
@@ -21,7 +21,7 @@ export function drawShip(context, ship, effect) {
     let img = new Image();
     img.src = SHIP_SPRITE;
     img.onload = () => {
-        drawRotate(context, img, x, y, ship.theta, effect);
+        drawRotate(context, img, x, y, ship.theta, effect, bullets);
     }
 }
 

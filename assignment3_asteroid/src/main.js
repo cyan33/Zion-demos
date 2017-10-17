@@ -14,11 +14,13 @@ import {
   MOVE_STEP,
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
   ASTEROID_SPEED,
-  EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET
+  EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET,
+  BULLET_SRC, MAX_BULLETS, BULLET_SIZE
 } from './options'
 import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
 import Spritesheet from './engine/Spritesheet'
+import Bullet from './Bullet'
 
 class AsteroidGame extends Game {
   constructor() {
@@ -40,6 +42,8 @@ class AsteroidGame extends Game {
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
     this.partSystem = new ParticleSystem();
     this.spriteSheet = new Spritesheet(EXHAUST_SRC, EFFECT_SIZE, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET);
+    this.initBullets();
+    this.nextBullet = 0;
   }
   
   // Specifies keyboard handlers
@@ -69,8 +73,35 @@ class AsteroidGame extends Game {
       this.shipPosition = calculateMovement(this.ship, MOVE_STEP, false);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
+    } else if (e.keyCode === 32) {
+      // spacebar
+      console.log('bullet fired');
+      let curr = this.bullets[this.nextBullet];
+      if(curr.available) {
+        curr.available = false;
+        curr.position.y -= 32;
+        this.bullets[this.nextBullet] = curr;
+      }
+      // update index accordingly
+      (this.nextBullet === MAX_BULLETS - 1)? this.nextBullet = 0 : this.nextBullet++;
     }
     return false; // to prevent the default behavior of the browser
+  }
+
+  initBullets() {
+    console.log('loading bullets');
+    this.bullets = [];
+    let index = 0;
+    for(let i = 0; i < MAX_BULLETS; i++) {
+      let pos = {
+        x: this.ship.center.x,
+        y: this.ship.center.y
+      };
+      this.bullets.push(new Bullet(BULLET_SRC, BULLET_SIZE, pos, 5, index));
+      console.log(this.bullets[i]);
+      index++;
+    }
+    //console.log(this.bullets);
   }
 
   updateScore() {
@@ -100,12 +131,31 @@ class AsteroidGame extends Game {
     }
   }
 
+  updateBullets() {
+    for(let i = 0; i < this.bullets.length; i++) {
+      let curr = this.bullets[i];
+      let newPos = calculateMovement(curr, MOVE_STEP, true);
+      newPos = checkBounds(newPos, CANVAS_WIDTH, CANVAS_HEIGHT, BULLET_SIZE);
+      // check if we're outside the screen bounds
+      if(newPos.x > CANVAS_WIDTH || newPos.x < 0 || newPos.y > CANVAS_HEIGHT || newPos.y < 0) {
+        // Reset bullet position and make it available
+        curr.updatePosition(this.ship.position.center);
+        curr.available = true;
+      } else {
+        curr.updatePosition(curr);
+      }
+      // udpate in the bullet array
+      this.bullets[i] = curr;
+    }
+  }
+
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
     this.updateAsteroidPositions();
     this.checkAsteroidsCollisions();
     this.spriteSheet.update();
+    this.updateBullets();
   }
 
   // render the game according to 
@@ -119,7 +169,7 @@ class AsteroidGame extends Game {
     drawAsteroids(this.context, this.partSystem.particles);
 
     // Render ship
-    drawShip(this.context, this.ship, this.spriteSheet);
+    drawShip(this.context, this.ship, this.spriteSheet, this.bullets);
   }
 
   // Optional debugging

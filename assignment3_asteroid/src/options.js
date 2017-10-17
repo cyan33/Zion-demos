@@ -18,6 +18,12 @@ export const OFFSET = {
     x: 25,
     y: 55
 };
+export const BULLET_SRC = './src/images/bullet.png';
+export const MAX_BULLETS = 4;
+export const BULLET_SIZE = {
+    width: 16,
+    height: 16
+};
 
 export const VELOCITY = 5;
 export const ROTATION_STEP = 3;
