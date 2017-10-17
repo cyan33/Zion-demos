@@ -93,14 +93,20 @@ export function drawImageByUrl(url, x, y, width, height) {
     img.src = url;
 }
 
-export function drawRotate(context, img, x, y, degrees) {
+export function drawRotate(context, img, x, y, degrees, effect) {
     context.save();
     context.translate(x + img.width / 2, y + img.height / 2);
     context.rotate(degrees * Math.PI / 180);
     context.drawImage(img, 0, 0, img.width, img.height,
       -img.width / 2, -img.height / 2, img.width, img.height);
+    if(effect !== undefined) {
+        let row = Math.floor(effect.currentFrame / effect.numFrames);
+        let col = Math.floor(effect.currentFrame % effect.numFrames);
+        context.drawImage(effect.img, col*effect.frameWidth, row*effect.frameHeight, effect.frameWidth, effect.frameHeight,
+            (-img.width / 2) + effect.offset.x, (-img.height / 2) + effect.offset.y, effect.frameWidth, effect.frameHeight);
+    }
     context.restore();
-  }
+}
 
 export function insertText(context, options = { }) {
     const { text, font, position: { x, y }, color } = options;

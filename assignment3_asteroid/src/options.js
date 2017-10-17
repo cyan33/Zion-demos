@@ -8,6 +8,16 @@ export const CANVAS_WIDTH = 600;
 // Game parameters
 export const SHIP_SPRITE = './src/images/ship.png'; // Ship sprite by Millionth Vector
 export const UNIVERSE_BG = './src/images/universe_bg.png';
+export const EXHAUST_SRC = './src/images/exhaust_animation.png';
+export const EFFECT_OFF_WIDTH = 25;
+export const EFFECT_OFF_HEIGHT = 55;
+export const EFFECT_SIZE = 16;
+export const EFFECT_SPEED = 5;
+export const EFFECT_FRAMES = 2;
+export const OFFSET = {
+    x: 25,
+    y: 55
+};
 
 export const VELOCITY = 3;
 export const ROTATION_STEP = 3;
