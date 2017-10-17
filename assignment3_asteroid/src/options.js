@@ -25,7 +25,7 @@ export const BULLET_SIZE = {
     height: 16
 };
 
-export const VELOCITY = 5;
+export const VELOCITY = 3;
 export const ROTATION_STEP = 3;
 export const MOVE_STEP = 3;
 

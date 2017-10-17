@@ -38,6 +38,52 @@ export function generateRandomPosition(canvas, middle = false, size) {
     return { x, y };
 }
 
+export function createImageCache() {
+    let images = [];
+    let imgPromises = [];
+  
+    function loadImage(name, src) {
+        imgPromises.push(new Promise((resolve, reject) => {
+            let img = new Image();
+            img.src = src;
+  
+            try {
+                img.onload = () => {
+                    resolve({
+                        name,
+                        img
+                    });
+                }
+            } catch (err) {
+               reject(err);
+            }
+        }));
+    }
+    
+    function imagesOnLoad(callback) {
+        Promise.all(imgPromises).then(imgArrays => {
+            images = imgArrays;
+        }).then(callback);
+    }
+
+    function getImages() {
+        return images;
+    }
+
+    return {
+      images,
+      loadImage,
+      getImages,
+      imagesOnLoad
+    }
+}
+
+export function drawLoadedImage(img, x, y, width, height) {
+    this.drawImage(img, x, y, width, height);
+}
+
+
+// todo: replace this function with drawLoadedImage
 export function drawImageByUrl(url, x, y, width, height) {
     // this refers to the canvas CONTEXT
     let img = new Image();
