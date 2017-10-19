@@ -90,6 +90,7 @@ export function checkBounds(position, width, height, offset) {
     return{x: newX, y: newY}
 
 }
+
 export function drawAsteroids(context, asteroids, astImages) {
     context.save();
     for(let i = 0; i < asteroids.length; i++) {
@@ -97,13 +98,6 @@ export function drawAsteroids(context, asteroids, astImages) {
         drawLoadedImage.call(context, astImages[`ast${i + 1}`], asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
     }
     context.restore();
-}
-
-export function updateLocalStorage(score) {
-    let highestScore = localStorage.getItem('highestScore') || 0;
-    if (score > highestScore) {
-        localStorage.setItem('highestScore', score);
-    }
 }
 
 export function showRestartLayer() {

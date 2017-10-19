@@ -1,7 +1,8 @@
 import Game from './engine/Game'
 import { createImageCache } from './engine/canvas'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation, updateLocalStorage, showRestartLayer, reload } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation, showRestartLayer, reload } from './helper.js'
+import { updateLocalStorage } from './engine/storage'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
