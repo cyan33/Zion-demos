@@ -1,7 +1,7 @@
 import Game from './engine/Game'
 import { createImageCache } from './engine/canvas'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation, updateLocalStorage, showRestartLayer, reload } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -114,8 +114,10 @@ class AsteroidGame extends Game {
   checkAsteroidsCollisions() {
     let hit = checkCollision(this.partSystem.particles, this.ship);
     if(hit) {
-      let update = getSpawnLocation(this.ship, this.partSystem.particles);
-      this.ship.updatePosition(update);
+      updateLocalStorage(this.currScore);
+      // insert audio here?
+      clearInterval(this.timer);
+      showRestartLayer();
     }
   }
 

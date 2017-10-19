@@ -98,3 +98,19 @@ export function drawAsteroids(context, asteroids, astImages) {
     }
     context.restore();
 }
+
+export function updateLocalStorage(score) {
+    let highestScore = localStorage.getItem('highestScore') || 0;
+    if (score > highestScore) {
+        localStorage.setItem('highestScore', score);
+    }
+}
+
+export function showRestartLayer() {
+    document.querySelector('.restart-layer').style.display = 'block';
+    document.querySelector("button").addEventListener("click", reload);
+}
+
+export function reload() {
+    location.reload();
+}
