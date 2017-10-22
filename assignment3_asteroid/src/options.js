@@ -7,6 +7,7 @@ export const CANVAS_WIDTH = 600;
 
 // Game parameters
 export const SHIP_SPRITE = './src/images/ship.png'; // Ship sprite by Millionth Vector
+export const BULLET_SPRITE = './src/images/bullet.png';
 export const UNIVERSE_BG = './src/images/universe_bg.png';
 export const EXHAUST_SRC = './src/images/exhaust_animation.png';
 export const EFFECT_OFF_WIDTH = 25;
@@ -28,6 +29,11 @@ export const SHIP_SIZE = {
     width: 64,
     height: 64
 };
+export const BULLET_SIZE = {
+    width: 10,
+    height: 10
+};
+export const BULLET_TIMEOUT = 5000;
 export const NUM_ASTEROIDS = 5;
 export const ASTEROID_SPEED = 5;
 export const ASTEROID_LARGE = {

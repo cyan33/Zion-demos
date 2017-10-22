@@ -1,17 +1,19 @@
 import Game from './engine/Game'
 import { createImageCache } from './engine/canvas'
 import store from './state'
-import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation } from './helper.js'
+import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, getSpawnLocation, drawBullets, createBullet, removeBullet } from './helper.js'
 import { 
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   SHIP_SIZE,
+  BULLET_SIZE,
+  BULLET_TIMEOUT,
   CLOCKWISE,
   COUNTERCLOCKWISE,
   VELOCITY,
   ROTATION_STEP,
   MOVE_STEP,
-  UNIVERSE_BG, SHIP_SPRITE,
+  UNIVERSE_BG, SHIP_SPRITE, BULLET_SPRITE,
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
   ASTEROID_SPEED,
   EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET
@@ -19,6 +21,7 @@ import {
 import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
 import Spritesheet from './engine/Spritesheet'
+import Bullet from './Bullet'
 
 class AsteroidGame extends Game {
   constructor() {
@@ -40,6 +43,7 @@ class AsteroidGame extends Game {
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
     this.partSystem = new ParticleSystem();
     this.spriteSheet = new Spritesheet(EXHAUST_SRC, EFFECT_SIZE, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET);
+    this.bullets = [];
   }
   
   initImageCache() {
@@ -51,7 +55,8 @@ class AsteroidGame extends Game {
       'ast1': ASTEROID_1,
       'ast2': ASTEROID_2,
       'ast3': ASTEROID_3,
-      'ast4': ASTEROID_4
+      'ast4': ASTEROID_4,
+      'bullet': BULLET_SPRITE
     }
 
     Object.keys(IMAGE_DICT).forEach(name => {
@@ -75,7 +80,7 @@ class AsteroidGame extends Game {
 
     } else if(e.keyCode === 38) {
       // arrow up
-      this.shipPosition = calculateMovement(this.ship, MOVE_STEP, true);
+      this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, true);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
       
@@ -85,9 +90,12 @@ class AsteroidGame extends Game {
 
     } else if (e.keyCode === 40) {
       // arrow down
-      this.shipPosition = calculateMovement(this.ship, MOVE_STEP, false);
+      this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, false);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
+    } else if (e.keyCode === 32) {
+      this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
+      setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
     }
     return false; // to prevent the default behavior of the browser
   }
@@ -104,12 +112,22 @@ class AsteroidGame extends Game {
   updateAsteroidPositions() {
     for(let i = 0; i < this.partSystem.particles.length; i++) {
       let asteroid = this.partSystem.particles[i];
-      let asteroidPos = calculateMovement(asteroid, MOVE_STEP, true);
+      let asteroidPos = calculateMovement(asteroid, asteroid.position, MOVE_STEP, true);
       asteroidPos = checkBounds(asteroidPos, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE, asteroid.size);
       asteroid.updatePosition(asteroidPos);
       asteroid[i] = asteroid;
     }
   }
+
+    updateBulletPositions() {
+        for(let i = 0; i < this.bullets.length; i++) {
+            let bullet = this.bullets[i];
+            let bulletPos = calculateMovement(bullet, bullet.position, MOVE_STEP, true);
+            bulletPos = checkBounds(bulletPos, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE, bullet.size);
+            bullet.position = bulletPos
+            this.bullets[i] = bullet;
+        }
+    }
 
   checkAsteroidsCollisions() {
     let hit = checkCollision(this.partSystem.particles, this.ship);
@@ -123,6 +141,7 @@ class AsteroidGame extends Game {
   // the update is only responsible to dispatch actions
   update(){
     this.updateAsteroidPositions();
+    this.updateBulletPositions()
     this.checkAsteroidsCollisions();
     this.spriteSheet.update();
   }
@@ -144,7 +163,8 @@ class AsteroidGame extends Game {
       ast1,
       ast2,
       ast3,
-      ast4
+      ast4,
+      bullet
     } = images;
 
 
@@ -156,6 +176,7 @@ class AsteroidGame extends Game {
     // todo: modify the way of rendering particles
     drawAsteroids(this.context, this.partSystem.particles, {ast1, ast2, ast3, ast4});
 
+    drawBullets(this.context, this.bullets, bullet);
     // Render ship
     drawShip(this.context, ship, this.ship, this.spriteSheet);
   }
