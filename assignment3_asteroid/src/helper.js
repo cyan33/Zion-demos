@@ -53,7 +53,7 @@ export function createBullet(sprite, size, ship) {
     const { theta } = ship;
     let location = calculateMovement(ship, ship.center, 60, true);
 
-    return new Bullet(sprite, size, location, 10, theta);
+    return new Bullet(sprite, size, location, theta);
 }
 
 export function removeBullet() {
