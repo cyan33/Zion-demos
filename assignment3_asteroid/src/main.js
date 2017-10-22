@@ -21,6 +21,17 @@ import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
 import Spritesheet from './engine/Spritesheet'
 
+var RIGHT = 39;
+var LEFT = 37;
+var UP = 38;
+var DOWN = 40;
+
+var keysPressed = {};
+keysPressed[RIGHT] = false;
+keysPressed[LEFT] = false;
+keysPressed[UP] = false;
+keysPressed[DOWN] = false;
+
 class AsteroidGame extends Game {
   constructor() {
     super();
@@ -64,11 +75,45 @@ class AsteroidGame extends Game {
 
   // Specifies keyboard handlers
   addKeyboardHandlers(){
-    document.addEventListener('keydown', (e) => this.moveShip(e));
+    document.addEventListener('keydown', (e) => this.keyDown(e));
+    document.addEventListener('keyup', (e) => this.keyUp(e));
   }
 
-  moveShip(e) {
-    e.preventDefault();
+  keyDown(e) {
+    if (e.keyCode in keysPressed) {
+      keysPressed[e.keyCode] = true;
+    }
+  }
+
+  keyUp(e) {
+    if (e.keyCode in keysPressed) {
+      keysPressed[e.keyCode] = false;
+    }
+  }
+
+  moveShip() {
+
+    if (keysPressed[LEFT]) {
+      this.ship.theta = this.ship.theta - ROTATION_STEP;
+    }
+
+    if (keysPressed[RIGHT]) {
+      this.ship.theta += ROTATION_STEP;
+    }
+
+    if (keysPressed[UP]) {
+      this.shipPosition = calculateMovement(this.ship, MOVE_STEP, true);
+      this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
+      this.ship.updatePosition(this.shipPosition);
+    }
+
+    if (keysPressed[DOWN]) {
+      this.shipPosition = calculateMovement(this.ship, MOVE_STEP, false);
+      this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
+      this.ship.updatePosition(this.shipPosition);
+    }
+
+   /** e.preventDefault();
     // Ship updates should all be done in the Ship class
     if(e.keyCode === 37) {
       // Increment ship's rotation counter clockwise
@@ -90,7 +135,7 @@ class AsteroidGame extends Game {
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
     }
-    return false; // to prevent the default behavior of the browser
+    return false; // to prevent the default behavior of the browser*/
   }
 
   updateScore() {
@@ -116,7 +161,8 @@ class AsteroidGame extends Game {
     let hit = checkCollision(this.partSystem.particles, this.ship);
     if(hit) {
       updateLocalStorage(this.currScore);
-      // insert audio here?
+      this.ship.src = ASTEROID_1;
+
       clearInterval(this.timer);
       showRestartLayer();
     }
@@ -127,6 +173,7 @@ class AsteroidGame extends Game {
   update(){
     this.updateAsteroidPositions();
     this.checkAsteroidsCollisions();
+    this.moveShip();
     this.spriteSheet.update();
   }
 
