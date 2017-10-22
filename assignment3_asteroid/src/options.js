@@ -30,8 +30,8 @@ export const SHIP_SIZE = {
     height: 64
 };
 export const BULLET_SIZE = {
-    width: 10,
-    height: 10
+    width: 16,
+    height: 16
 };
 export const BULLET_TIMEOUT = 5000;
 export const NUM_ASTEROIDS = 5;
