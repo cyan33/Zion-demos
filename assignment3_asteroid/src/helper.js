@@ -1,6 +1,7 @@
 import { drawLoadedImage, drawRotate } from './engine/canvas'
 import { UNIVERSE_BG, SHIP_SPRITE } from './options'
 import { getDistance } from './engine/operations'
+import Bullet from './Bullet'
 
 const sin = Math.sin
 const cos = Math.cos
@@ -25,11 +26,12 @@ export function drawUniverse(context, universe, width, height) {
     context.drawImage(universe, 0, 0, width, height)
 }
 
-export function calculateMovement(ship, moveAmount, isForward) {
+export function calculateMovement(ship, location, moveAmount, isForward) {
     const { theta } = ship;
-    const { x, y } = ship.position;
+    const { x, y } = location;
     //Convert theta to radians
     let thetaRad = theta * PI/180;
+
 
     //Calculate changes to x and y
     let deltaX = moveAmount * sin(thetaRad);
@@ -47,7 +49,16 @@ export function calculateMovement(ship, moveAmount, isForward) {
     }
     return {x:newX, y:newY}
 }
+export function createBullet(sprite, size, ship) {
+    const { theta } = ship;
+    let location = calculateMovement(ship, ship.center, 60, true);
 
+    return new Bullet(sprite, size, location, 10, theta);
+}
+
+export function removeBullet() {
+    this.bullets.shift();
+}
 export function getSpawnLocation(ship, asteroids) {
     let sum = 0;
     for(let i = 0; i < asteroids.length; i++) {
@@ -95,6 +106,14 @@ export function drawAsteroids(context, asteroids, astImages) {
     for(let i = 0; i < asteroids.length; i++) {
         let asteroid = asteroids[i];
         drawLoadedImage.call(context, astImages[`ast${i + 1}`], asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
+    }
+    context.restore();
+}
+export function drawBullets(context, bullets, src) {
+    context.save();
+    for(let i = 0; i < bullets.length; i++) {
+        let bullet = bullets[i];
+        drawLoadedImage.call(context, src, bullet.position.x, bullet.position.y, bullet.size.width, bullet.size.height);
     }
     context.restore();
 }
