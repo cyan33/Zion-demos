@@ -93,7 +93,7 @@ export function drawImageByUrl(url, x, y, width, height) {
     img.src = url;
 }
 
-export function drawRotate(context, img, x, y, degrees, effect) {
+export function drawRotate(context, img, x, y, degrees, effect, bullets) {
     context.save();
     context.translate(x + img.width / 2, y + img.height / 2);
     context.rotate(degrees * Math.PI / 180);
@@ -104,6 +104,13 @@ export function drawRotate(context, img, x, y, degrees, effect) {
         let col = Math.floor(effect.currentFrame % effect.numFrames);
         context.drawImage(effect.img, col*effect.frameWidth, row*effect.frameHeight, effect.frameWidth, effect.frameHeight,
             (-img.width / 2) + effect.offset.x, (-img.height / 2) + effect.offset.y, effect.frameWidth, effect.frameHeight);
+    }
+    if(bullets !== undefined) {
+        for(let i = 0; i < bullets.length; i++) {
+            let bullet = bullets[i];
+            //console.log(`bullet_pos: ${bullet.position.x},${bullet.position.y}`);
+            context.drawImage(img, bullet.position.x, bullet.position.y, img.width, img.height);
+        }
     }
     context.restore();
 }

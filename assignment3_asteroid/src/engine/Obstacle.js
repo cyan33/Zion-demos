@@ -1,6 +1,7 @@
 import Sprite from './Sprite'
 import { getDistance, calculateCenter } from './operations'
 const NUM_SECTIONS = 9;
+import Bullet from '../Bullet'
 
 class Obstacle extends Sprite {
     constructor(src, size, { x, y }) {
@@ -30,12 +31,11 @@ class Obstacle extends Sprite {
     getCollision(obj, objOffset, boundsOffset) {
         // check if we're near this obstacle
         // Let prox be the distance between the centers of the object and obstacle at neutral positions
-        let prox = getDistance(obj.size.width / 2, obj.size.height / 2, this.size.width / 2, this.size.height / 2);
+        let prox = getDistance(obj.size.width / 3 , obj.size.height / 3, this.size.width / 2, this.size.height / 2);
         if(this.nearObstacle(obj.center.x, obj.center.y, prox + objOffset)) {
             for(let i = 0; i < this.boundaries.length; i++) {
-                let boundary = this.boundaries[i];  
-                let boundary_prox = getDistance(obj.size.width / 2, obj.size.height / 2, boundary.x, boundary.y);
-                if(this.nearBoundary(obj.center.x, obj.center.y, boundary.x, boundary.y, boundary_prox + boundsOffset)) {
+                let boundary = this.boundaries[i];
+                if(this.nearBoundary(obj.center.x, obj.center.y, boundary.x, boundary.y, prox + boundsOffset)) {
                     return true;
                 }
             }
@@ -50,7 +50,9 @@ class Obstacle extends Sprite {
 
     // Checks if an object is near this boundary
     nearBoundary(objX, objY, boundX, boundY, prox) {
+        //console.log(`check within prox: ${prox}`);
         let distance = getDistance(objX, objY, boundX, boundY);
+        //console.log(`distance to boundary: ${distance}`);
         return distance <= prox;
     }
 

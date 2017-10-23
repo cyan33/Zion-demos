@@ -1,6 +1,6 @@
 import { drawLoadedImage, drawRotate } from './engine/canvas'
-import { UNIVERSE_BG, SHIP_SPRITE } from './options'
-import { getDistance } from './engine/operations'
+import { UNIVERSE_BG, SHIP_SPRITE, ASTEROID_SOURCES, ASTEROID_SIZES } from './options'
+import { getDistance, getRandomNumber } from './engine/operations'
 import Bullet from './Bullet'
 
 const sin = Math.sin
@@ -14,9 +14,9 @@ export function drawWalls(context, width, height) {
     context.strokeRect(0, 0, width, height);
 }
 
-export function drawShip(context, shipImg, shipInstance, effect) {
+export function drawShip(context, shipImg, shipInstance, effect, bullets) {
     // drawShip according to its angle
-    const { x, y } = ship.position;
+    const { x, y } = shipInstance.position;
     const { width, height } = shipInstance.size;
 
     drawRotate(context, shipImg, x, y, ship.theta, effect);
@@ -59,25 +59,27 @@ export function createBullet(sprite, size, ship) {
 export function removeBullet() {
     this.bullets.shift();
 }
-export function getSpawnLocation(ship, asteroids) {
-    let sum = 0;
+export function getSpawnLocation(ship, asteroids, width, height, hit) {
+    let nextX = getRandomNumber(width);
+    let nextY = getRandomNumber(height);
     for(let i = 0; i < asteroids.length; i++) {
+        if(hit === i) continue;
+        // Get distance to asteroid
         let asteroid = asteroids[i];
-        // Get distance to center of the canvas
-        let dist = getDistance(asteroid.center.x, asteroid.center.y, ship.center.x, ship.center.y);
-        sum += dist;
+        let dist = getDistance(ship.position.x, ship.position.y, asteroid.position.x, asteroid.position.y);
+        if(dist >= asteroid.size.width + ship.size.width + 10 && dist >= asteroid.size.height + ship.size.height + 10) {
+            break;
+        }
     }
-    // get average
-    let avrg = sum / asteroids.length;
-    return {x: avrg, y: avrg};
+    return {x: nextX, y: nextY};
 }
 
-export function checkCollision(asteroids, ship) {
+export function checkCollision(asteroids, obj, objOffset, boundsOffset) {
     for(let i = 0; i < asteroids.length; i++) {
         // Check collision for each asteroid to ship
-        let hit = asteroids[i].getCollision(ship, 20, 30);
+        let hit = asteroids[i].getCollision(obj, 20, 30);
         if(hit){
-            return true;
+            return {hit: true, asteroid: i};
         } 
     }
     return false;
@@ -101,6 +103,13 @@ export function checkBounds(position, width, height, offset) {
     return{x: newX, y: newY}
 
 }
+
+export function getRandomAsteroid() {
+    let image = ASTEROID_SOURCES[getRandomNumber(ASTEROID_SOURCES.length)];
+    let dimensions = ASTEROID_SIZES[getRandomNumber(ASTEROID_SIZES.length)];
+    return {src: image, size: dimensions};
+}
+
 export function drawAsteroids(context, asteroids, astImages) {
     context.save();
     for(let i = 0; i < asteroids.length; i++) {

@@ -19,12 +19,13 @@ export const OFFSET = {
     x: 25,
     y: 55
 };
+export const BULLET_SRC = './src/images/bullet.png';
+export const MAX_BULLETS = 4;
 
 export const VELOCITY = 3;
 export const ROTATION_STEP = 3;
 export const MOVE_STEP = 3;
 
-export const ASTEROID_SIZE = 30; // will vary
 export const SHIP_SIZE = {
     width: 64,
     height: 64
@@ -48,11 +49,13 @@ export const ASTEROID_SMALL = {
     width: 64,
     height: 64  
 };
+export const ASTEROID_SIZES = [ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_LARGE];
 // Asteroid sprites by Peter Robinson
 export const ASTEROID_1 = './src/images/ast1.png';
 export const ASTEROID_2 = './src/images/ast2.png';
 export const ASTEROID_3 = './src/images/ast3.png';
 export const ASTEROID_4 = './src/images/ast4.png';
+export const ASTEROID_SOURCES = [ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4];
 export const CLOCKWISE = 'CLOCKWISE';
 export const COUNTERCLOCKWISE = 'COUNTERCLOCKWISE';
 
