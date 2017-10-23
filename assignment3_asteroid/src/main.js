@@ -34,7 +34,6 @@ keysPressed[LEFT] = false;
 keysPressed[UP] = false;
 keysPressed[RIGHT] = false;
 keysPressed[DOWN] = false;
-keysPressed[SPACE] = false;
 
 class AsteroidGame extends Game {
   constructor() {
@@ -88,7 +87,9 @@ class AsteroidGame extends Game {
   keyDown(e) {
     if (e.keyCode in keysPressed) {
       keysPressed[e.keyCode] = true;
-    } 
+    } else if (e.keyCode == SPACE) {
+      this.shootBullet();
+    }
   }
 
   keyUp(e) {
@@ -118,12 +119,11 @@ class AsteroidGame extends Game {
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
     }
-    // shoot bullet
-    if (keysPressed[SPACE]) {
-      this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
-      setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
-    }
+  }
 
+  shootBullet() {
+    this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
+    setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
   }
 
   updateScore() {
