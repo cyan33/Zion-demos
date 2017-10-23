@@ -85,7 +85,7 @@ class AsteroidGame extends Game {
   keyDown(e) {
     if (e.keyCode in this.keysPressed) {
       this.keysPressed[e.keyCode] = true;
-    } else if (e.keyCode == SPACE) {
+    } else if (e.keyCode === SPACE) {
       this.shootBullet();
     }
   }

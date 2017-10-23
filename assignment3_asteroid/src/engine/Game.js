@@ -5,11 +5,6 @@ class Game {
         throw new Error('Keyboard handlers must be implemented');
     }
 
-    // Keeps track of keys pressed
-    initKeysPressed() {
-        throw new Error('Keys pressed must be implemented');
-    }
-
     // Sets the update loop
     update(){
         throw new Error('Update must be implemented');
