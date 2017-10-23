@@ -23,6 +23,19 @@ import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
 import Spritesheet from './engine/Spritesheet'
 import Bullet from './Bullet'
 
+var LEFT = 37;
+var UP = 38;
+var RIGHT = 39;
+var DOWN = 40;
+var SPACE = 32;
+
+var keysPressed = {};
+keysPressed[LEFT] = false;
+keysPressed[UP] = false;
+keysPressed[RIGHT] = false;
+keysPressed[DOWN] = false;
+keysPressed[SPACE] = false;
+
 class AsteroidGame extends Game {
   constructor() {
     super();
@@ -68,36 +81,49 @@ class AsteroidGame extends Game {
 
   // Specifies keyboard handlers
   addKeyboardHandlers(){
-    document.addEventListener('keydown', (e) => this.moveShip(e));
+    document.addEventListener('keydown', (e) => this.keyDown(e));
+    document.addEventListener('keyup', (e) => this.keyUp(e))
+  }
+  
+  keyDown(e) {
+    if (e.keyCode in keysPressed) {
+      keysPressed[e.keyCode] = true;
+    } 
   }
 
-  moveShip(e) {
-    e.preventDefault();
-    // Ship updates should all be done in the Ship class
-    if(e.keyCode === 37) {
-      // Increment ship's rotation counter clockwise
-      this.ship.theta = this.ship.theta - ROTATION_STEP;
+  keyUp(e) {
+    if (e.keyCode in keysPressed) {
+      keysPressed[e.keyCode] = false;
+    }
+  }
 
-    } else if(e.keyCode === 38) {
-      // arrow up
+  moveShip() {
+    // rotate left
+    if (keysPressed[LEFT]) {
+      this.ship.theta = this.ship.theta - ROTATION_STEP;
+    }
+    // rotate right
+    if (keysPressed[RIGHT]) {
+      this.ship.theta += ROTATION_STEP;
+    }
+    // move up
+    if (keysPressed[UP]) {
       this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, true);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
-      
-    } else if(e.keyCode === 39) {
-      // Increment ship's rotation clockwise
-      this.ship.theta += ROTATION_STEP;
-
-    } else if (e.keyCode === 40) {
-      // arrow down
+    }
+    // move down
+    if (keysPressed[DOWN]) {
       this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, false);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
-    } else if (e.keyCode === 32) {
+    }
+    // shoot bullet
+    if (keysPressed[SPACE]) {
       this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
       setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
     }
-    return false; // to prevent the default behavior of the browser
+
   }
 
   updateScore() {
@@ -143,6 +169,7 @@ class AsteroidGame extends Game {
     this.updateAsteroidPositions();
     this.updateBulletPositions()
     this.checkAsteroidsCollisions();
+    this.moveShip();
     this.spriteSheet.update();
   }
 
