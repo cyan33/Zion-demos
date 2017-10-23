@@ -18,11 +18,15 @@ class ParticleSystem {
 
     createRandomizedParticles(options) {
         for(let i = 0; i < options.numParticles; i++) {
-            let x = getRandomNumber(options.maxHorizontal);
-            let y =  getRandomNumber(options.maxVertical);
-            let speed = getRandomNumber(options.speed);
-            this.particles.push(new Particle(options.src, options.size, { x, y }, speed));
+            this.generateRandomParticle(options);
         }
+    }
+
+    generateRandomParticle(options) {
+        let x = getRandomNumber(options.maxHorizontal);
+        let y =  getRandomNumber(options.maxVertical);
+        let speed = getRandomNumber(options.speed);
+        this.particles.push(new Particle(options.src, options.size, { x, y }, speed));
     }
 }
 

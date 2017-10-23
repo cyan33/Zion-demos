@@ -1,6 +1,7 @@
 import Sprite from './Sprite'
 import { getDistance, calculateCenter } from './operations'
 const NUM_SECTIONS = 9;
+import Bullet from '../Bullet'
 
 class Obstacle extends Sprite {
     constructor(src, size, { x, y }) {
@@ -32,6 +33,7 @@ class Obstacle extends Sprite {
         // Let prox be the distance between the centers of the object and obstacle at neutral positions
         let prox = getDistance(obj.size.width / 2, obj.size.height / 2, this.size.width / 2, this.size.height / 2);
         if(this.nearObstacle(obj.center.x, obj.center.y, prox + objOffset)) {
+            if(obj instanceof Bullet) console.log(`near an asteroid`);
             for(let i = 0; i < this.boundaries.length; i++) {
                 let boundary = this.boundaries[i];  
                 let boundary_prox = getDistance(obj.size.width / 2, obj.size.height / 2, boundary.x, boundary.y);
