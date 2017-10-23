@@ -16,7 +16,8 @@ import {
   UNIVERSE_BG, SHIP_SPRITE, BULLET_SPRITE,
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
   ASTEROID_SPEED,
-  EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET
+  EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET,
+  LEFT, RIGHT, UP, DOWN, SPACE
 } from './options'
 import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
@@ -44,6 +45,7 @@ class AsteroidGame extends Game {
     this.partSystem = new ParticleSystem();
     this.spriteSheet = new Spritesheet(EXHAUST_SRC, EFFECT_SIZE, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET);
     this.bullets = [];
+    this.keysPressed = {};
   }
   
   initImageCache() {
@@ -66,38 +68,60 @@ class AsteroidGame extends Game {
     this.imageCache.imagesOnLoad(() => this.timer = setInterval(this.gameloop, 30));
   }
 
-  // Specifies keyboard handlers
-  addKeyboardHandlers(){
-    document.addEventListener('keydown', (e) => this.moveShip(e));
+  // Keeps track of pressed keys
+  initKeysPressed() {
+    this.keysPressed[LEFT] = false;
+    this.keysPressed[UP] = false;
+    this.keysPressed[RIGHT] = false;
+    this.keysPressed[DOWN] = false;
   }
 
-  moveShip(e) {
-    e.preventDefault();
-    // Ship updates should all be done in the Ship class
-    if(e.keyCode === 37) {
-      // Increment ship's rotation counter clockwise
-      this.ship.theta = this.ship.theta - ROTATION_STEP;
+  // Specifies keyboard handlers
+  addKeyboardHandlers(){
+    document.addEventListener('keydown', (e) => this.keyDown(e));
+    document.addEventListener('keyup', (e) => this.keyUp(e))
+  }
+  
+  keyDown(e) {
+    if (e.keyCode in this.keysPressed) {
+      this.keysPressed[e.keyCode] = true;
+    } else if (e.keyCode === SPACE) {
+      this.shootBullet();
+    }
+  }
 
-    } else if(e.keyCode === 38) {
-      // arrow up
+  keyUp(e) {
+    if (e.keyCode in this.keysPressed) {
+      this.keysPressed[e.keyCode] = false;
+    }
+  }
+
+  moveShip() {
+    // rotate left
+    if (this.keysPressed[LEFT]) {
+      this.ship.theta = this.ship.theta - ROTATION_STEP;
+    }
+    // rotate right
+    if (this.keysPressed[RIGHT]) {
+      this.ship.theta += ROTATION_STEP;
+    }
+    // move up
+    if (this.keysPressed[UP]) {
       this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, true);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
-      
-    } else if(e.keyCode === 39) {
-      // Increment ship's rotation clockwise
-      this.ship.theta += ROTATION_STEP;
-
-    } else if (e.keyCode === 40) {
-      // arrow down
+    }
+    // move down
+    if (this.keysPressed[DOWN]) {
       this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, false);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       this.ship.updatePosition(this.shipPosition);
-    } else if (e.keyCode === 32) {
-      this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
-      setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
     }
-    return false; // to prevent the default behavior of the browser
+  }
+
+  shootBullet() {
+    this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
+    setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
   }
 
   updateScore() {
@@ -143,6 +167,7 @@ class AsteroidGame extends Game {
     this.updateAsteroidPositions();
     this.updateBulletPositions()
     this.checkAsteroidsCollisions();
+    this.moveShip();
     this.spriteSheet.update();
   }
 
@@ -228,6 +253,7 @@ class AsteroidGame extends Game {
     this.addKeyboardHandlers();
     this.initScorePanel();
     this.initAsteroids();
+    this.initKeysPressed();
     this.updateScore();
   }
 }
