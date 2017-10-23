@@ -174,7 +174,7 @@ class AsteroidGame extends Game {
             asteroid.size = ASTEROID_MEDIUM;
             this.partSystem.particles[result.asteroid] = asteroid;
             break;
-          case ASTEROID_MEDIUM:
+          case ASTEROID_MEDIUM.width:
             asteroid.size = ASTEROID_SMALL;
             this.partSystem.particles[result.asteroid] = asteroid;
             break;
