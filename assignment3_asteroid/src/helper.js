@@ -59,20 +59,22 @@ export function createBullet(sprite, size, ship) {
 export function removeBullet() {
     this.bullets.shift();
 }
-export function getSpawnLocation(ship, asteroids) {
-    let sum = 0;
+export function getSpawnLocation(ship, asteroids, width, height, hit) {
+    let nextX = getRandomNumber(width);
+    let nextY = getRandomNumber(height);
     for(let i = 0; i < asteroids.length; i++) {
+        if(hit === i) continue;
+        // Get distance to asteroid
         let asteroid = asteroids[i];
-        // Get distance to center of the canvas
-        let dist = getDistance(asteroid.center.x, asteroid.center.y, ship.center.x, ship.center.y);
-        sum += dist;
+        let dist = getDistance(ship.position.x, ship.position.y, asteroid.position.x, asteroid.position.y);
+        if(dist >= asteroid.size.width + ship.size.width + 10 && dist >= asteroid.size.height + ship.size.height + 10) {
+            break;
+        }
     }
-    // get average
-    let avrg = sum / asteroids.length;
-    return {x: avrg, y: avrg};
+    return {x: nextX, y: nextY};
 }
 
-export function checkCollision(asteroids, obj) {
+export function checkCollision(asteroids, obj, objOffset, boundsOffset) {
     for(let i = 0; i < asteroids.length; i++) {
         // Check collision for each asteroid to ship
         let hit = asteroids[i].getCollision(obj, 20, 30);

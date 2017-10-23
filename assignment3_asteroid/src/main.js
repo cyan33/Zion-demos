@@ -17,7 +17,8 @@ import {
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
   ASTEROID_SPEED,
   EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET,
-  BULLET_SRC, MAX_BULLETS, BULLET_SIZE
+  BULLET_SRC, MAX_BULLETS, BULLET_SIZE,
+  LEFT, RIGHT, UP, DOWN, SPACE
 } from './options'
 import Ship from './Ship'
 import ParticleSystem from './engine/ParticleSystem/ParticleSystem'
@@ -45,6 +46,7 @@ class AsteroidGame extends Game {
     this.partSystem = new ParticleSystem();
     this.spriteSheet = new Spritesheet(EXHAUST_SRC, EFFECT_SIZE, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET);
     this.bullets = [];
+    this.keysPressed = {};
   }
   
   initImageCache() {
@@ -67,62 +69,68 @@ class AsteroidGame extends Game {
     this.imageCache.imagesOnLoad(() => this.timer = setInterval(this.gameloop, 30));
   }
 
+  // Keeps track of pressed keys
+  initKeysPressed() {
+    this.keysPressed[LEFT] = false;
+    this.keysPressed[UP] = false;
+    this.keysPressed[RIGHT] = false;
+    this.keysPressed[DOWN] = false;
+  }
+
   // Specifies keyboard handlers
   addKeyboardHandlers(){
-    document.addEventListener('keydown', (e) => this.moveShip(e));
+    document.addEventListener('keydown', (e) => this.keyDown(e));
+    document.addEventListener('keyup', (e) => this.keyUp(e))
+  }
+  
+  keyDown(e) {
+    if (e.keyCode in this.keysPressed) {
+      this.keysPressed[e.keyCode] = true;
+    } else if (e.keyCode === SPACE) {
+      this.shootBullet();
+    }
   }
 
-  moveShip(e) {
-    e.preventDefault();
-    // Ship updates should all be done in the Ship class
-    if(e.keyCode === 37) {
-      // Increment ship's rotation counter clockwise
-      this.ship.theta = this.ship.theta - ROTATION_STEP;
+  keyUp(e) {
+    if (e.keyCode in this.keysPressed) {
+      this.keysPressed[e.keyCode] = false;
+    }
+  }
 
-    } else if(e.keyCode === 38) {
-      // arrow up
+  moveShip() {
+    // rotate left
+    if (this.keysPressed[LEFT]) {
+      this.ship.theta = this.ship.theta - ROTATION_STEP;
+    }
+    // rotate right
+    if (this.keysPressed[RIGHT]) {
+      this.ship.theta += ROTATION_STEP;
+    }
+    // move up
+    if (this.keysPressed[UP]) {
       this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, true);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
-      this.ship.updatePosition(this.shipPosition);
-      
-    } else if(e.keyCode === 39) {
-      // Increment ship's rotation clockwise
-      this.ship.theta += ROTATION_STEP;
-
-    } else if (e.keyCode === 40) {
-      // arrow down
+    }
+    // move down
+    if (this.keysPressed[DOWN]) {
       this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, false);
       this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
-      this.ship.updatePosition(this.shipPosition);
-    } else if (e.keyCode === 32) {
-      this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
-      setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
     }
-    return false; // to prevent the default behavior of the browser
+
+    this.checkAsteroidsCollisions();
+    this.ship.updatePosition(this.shipPosition);
   }
 
-  initBullets() {
-    console.log('loading bullets');
-    this.bullets = [];
-    let index = 0;
-    for(let i = 0; i < MAX_BULLETS; i++) {
-      let pos = {
-        x: this.ship.center.x,
-        y: this.ship.center.y
-      };
-      this.bullets.push(new Bullet(BULLET_SRC, BULLET_SIZE, pos, 5, index));
-      console.log(this.bullets[i]);
-      index++;
-    }
+  shootBullet() {
+    this.bullets[this.bullets.length] = createBullet(BULLET_SPRITE, BULLET_SIZE, this.ship);
+    setTimeout(removeBullet.bind(this), BULLET_TIMEOUT);
   }
 
   updateScore() {
-    setInterval(() => {
+      this.currScore++;
       if (!this.gameover) {
-        this.currScore++;
         this.initScorePanel();
       }
-    }, 1000);
   }
   
   updateAsteroidPositions() {
@@ -146,17 +154,17 @@ class AsteroidGame extends Game {
     }
 
   checkAsteroidsCollisions() {
-    let result = checkCollision(this.partSystem.particles, this.ship);
+    let result = checkCollision(this.partSystem.particles, this.ship, 30, 30);
     if(result.hit) {
-      let update = getSpawnLocation(this.ship, this.partSystem.particles);
-      this.ship.updatePosition(update);
+      console.log(`hit an asteroid`);
+      this.shipPosition = { x: this.ship.position.x + 100, y: this.ship.position.y + 100 };//getSpawnLocation(this.ship, this.partSystem.particles, CANVAS_WIDTH, CANVAS_HEIGHT, result.asteroid);
     }
   }
 
   checkBulletCollisions() {
     for(let i = 0; i < this.bullets.length; i++) {
       let bullet = this.bullets[i];
-      let result = checkCollision(this.partSystem.particles, bullet);
+      let result = checkCollision(this.partSystem.particles, bullet, 20, 30);
       if(result.hit) {
         // Destroy bullet and respawn asteroid at random location with size one level down
         this.bullets.splice(i, 1);
@@ -182,7 +190,9 @@ class AsteroidGame extends Game {
               speed: ASTEROID_SPEED,
               numParticles: 1
             }
-            this.partSystem.generateRandomParticle(options);
+            this.partSystem.generateRandomParticle(options); // needs updating (want to spawn outside of game area)
+            // update score
+            this.updateScore();
         }
       }
     }
@@ -191,10 +201,11 @@ class AsteroidGame extends Game {
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
-    this.updateAsteroidPositions();
-    this.updateBulletPositions()
     this.checkAsteroidsCollisions();
+    this.updateAsteroidPositions();
+    this.updateBulletPositions();
     if(this.bullets.length !== 0) this.checkBulletCollisions();
+    this.moveShip();
     this.spriteSheet.update();
   }
 
@@ -280,6 +291,7 @@ class AsteroidGame extends Game {
     this.addKeyboardHandlers();
     this.initScorePanel();
     this.initAsteroids();
+    this.initKeysPressed();
     this.updateScore();
   }
 }
