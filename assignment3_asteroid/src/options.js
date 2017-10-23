@@ -55,3 +55,10 @@ export const ASTEROID_3 = './src/images/ast3.png';
 export const ASTEROID_4 = './src/images/ast4.png';
 export const CLOCKWISE = 'CLOCKWISE';
 export const COUNTERCLOCKWISE = 'COUNTERCLOCKWISE';
+
+// Keycodes
+export const LEFT = 37;
+export const UP = 38;
+export const RIGHT = 39;
+export const DOWN = 40;
+export const SPACE = 32;
