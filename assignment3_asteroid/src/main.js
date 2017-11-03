@@ -87,6 +87,7 @@ class AsteroidGame extends Game {
   }
   
   keyDown(e) {
+    e.preventDefault(); // this prevents that the global scrolling of the screen
     if (e.keyCode in this.keysPressed) {
       this.keysPressed[e.keyCode] = true;
     } else if (e.keyCode === SPACE) {
