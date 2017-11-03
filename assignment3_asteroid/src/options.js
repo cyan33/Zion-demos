@@ -14,7 +14,7 @@ export const EXHAUST_SRC = './src/images/exhaust_animation.png';
 export const EFFECT_OFF_WIDTH = 25;
 export const EFFECT_OFF_HEIGHT = 55;
 export const EFFECT_SIZE = 16;
-export const EFFECT_SPEED = 5;
+export const EFFECT_SPEED = 4;
 export const EFFECT_FRAMES = 3;
 export const EXPLOSION_SRC = './src/images/ship_explosion.png';
 export const EXPLOSION_EFFECT_SIZE = 130;
@@ -43,6 +43,7 @@ export const BULLET_SIZE = {
     height: 10
 };
 export const SHIP_TIMEOUT = 7000;
+export const INITIAL_TIMEOUT = 2000;
 export const BULLET_TIMEOUT = 5000;
 export const NUM_ASTEROIDS = 5;
 export const ASTEROID_SPEED = 5;

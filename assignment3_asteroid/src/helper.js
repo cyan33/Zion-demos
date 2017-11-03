@@ -143,7 +143,6 @@ export function drawAsteroids(context, asteroids, astImages) {
     for(let i = 0; i < asteroids.length; i++) {
         let asteroid = asteroids[i];
         drawLoadedImage.call(context, astImages[`ast${i + 1}`], asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
-        asteroid.drawBoundariesDebug(context);
     }
     context.restore();
 }
@@ -157,11 +156,11 @@ export function drawBullets(context, bullets, src) {
 }
 
 export function showRemainingLivesBanner(canvas, context, remainLives) {
-    const liveText = `Remaining times of retries: ${remainLives}`;
+    const liveText = `Remaining lives: ${remainLives}`;
     insertText(context, {
         text: liveText,
         font: '25px serif',
-        position: { x: canvas.width / 2 - 150, y: canvas.height / 2 },
+        position: { x: canvas.width / 2 - 100, y: canvas.height / 2 },
         color: 'white'
     });
 }

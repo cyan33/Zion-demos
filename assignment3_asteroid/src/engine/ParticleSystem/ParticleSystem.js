@@ -10,9 +10,9 @@ class ParticleSystem {
         this.particles = [];
     }
 
-    createUniformParticles(src, size, { x, y }, speed, numParts) {
+    createUniformParticles(src, size, { x, y }, speed, numParts, divisionType) {
         for(let i = 0; i < numParts; i++) {
-            this.particles.push(new Particle(src, size, { x, y }, speed));
+            this.particles.push(new Particle(src, size, { x, y }, speed, divisionType));
         }
     }
 
@@ -26,7 +26,7 @@ class ParticleSystem {
         let x = getRandomNumber(options.maxHorizontal);
         let y =  getRandomNumber(options.maxVertical);
         let speed = getRandomNumber(options.speed);
-        this.particles.push(new Particle(options.src, options.size, { x, y }, speed));
+        this.particles.push(new Particle(options.src, options.size, { x, y }, speed, options.divisionType));
     }
 }
 
