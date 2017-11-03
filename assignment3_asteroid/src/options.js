@@ -6,6 +6,7 @@ export const CANVAS_HEIGHT = 600;
 export const CANVAS_WIDTH = 600;
 
 // Game parameters
+export const REMAINING_LIVES = 3;
 export const SHIP_SPRITE = './src/images/ship.png'; // Ship sprite by Millionth Vector
 export const BULLET_SPRITE = './src/images/bullet.png';
 export const UNIVERSE_BG = './src/images/universe_bg.png';
