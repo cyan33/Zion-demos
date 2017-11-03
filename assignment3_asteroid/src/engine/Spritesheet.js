@@ -26,15 +26,10 @@ class Spritesheet {
         }
         this.counter = (this.counter + 1) % this.frameSpeed;
     }
-    
-    
-    
-    //   this.draw = function(x, y){
-    //       var row = Math.floor(currentFrame / numFrames);
-    //     var col = Math.floor(currentFrame % numFrames);
-        
-    //     context.drawImage(image, col*frameWidth, row*frameHeight, frameWidth, frameHeight, x, y, frameWidth, frameHeight);
-      
+
+    toString() {
+        return `url: ${this.url}\nframeWidth: ${this.frameWidth}\nframeHeight: ${this.frameHeight}\nframeSpeed: ${this.frameSpeed}\nendFrame: ${this.endFrame}\noffset_x: ${this.offset.x}\noffset_y: ${this.offset.y}`;
+    }
 }
 
 export default Spritesheet;

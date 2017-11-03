@@ -6,6 +6,7 @@ import Bullet from './Bullet'
 const sin = Math.sin
 const cos = Math.cos
 const PI = Math.PI
+const RESPAWN_OFFSET = 80;
 
 export function drawWalls(context, width, height) {
     context.fillStyle = 'white';
@@ -14,12 +15,27 @@ export function drawWalls(context, width, height) {
     context.strokeRect(0, 0, width, height);
 }
 
-export function drawShip(context, shipImg, shipInstance, effect, bullets) {
+export function drawShip(context, shipImg, shipInstance, effect, shipStatus) {
     // drawShip according to its angle
     const { x, y } = shipInstance.position;
     const { width, height } = shipInstance.size;
 
-    drawRotate(context, shipImg, x, y, ship.theta, effect);
+    if(shipStatus.shipDestroyed) {
+        drawExplosion(context, shipImg, x, y, ship.theta, shipStatus.spriteSheet);
+    } else {
+        drawRotate(context, shipImg, x, y, ship.theta, effect);
+    }
+}
+
+function drawExplosion(context, img, x, y, degrees, effect) {
+    context.save();
+    context.translate(x + img.width / 2, y + img.height / 2);
+    context.rotate(degrees * Math.PI / 180);
+    let row = Math.floor(effect.currentFrame / effect.numFrames);
+    let col = Math.floor(effect.currentFrame % effect.numFrames);
+    context.drawImage(effect.img, col*effect.frameWidth, row*effect.frameHeight, effect.frameWidth, effect.frameHeight,
+            (-img.width / 2) + effect.offset.x, (-img.height / 2) + effect.offset.y, effect.frameWidth, effect.frameHeight);
+    context.restore();
 }
 
 export function drawUniverse(context, universe, width, height) {
@@ -60,15 +76,24 @@ export function removeBullet() {
     this.bullets.shift();
 }
 export function getSpawnLocation(ship, asteroids, width, height, hit) {
-    let nextX = getRandomNumber(width);
-    let nextY = getRandomNumber(height);
-    for(let i = 0; i < asteroids.length; i++) {
-        if(hit === i) continue;
-        // Get distance to asteroid
-        let asteroid = asteroids[i];
-        let dist = getDistance(ship.position.x, ship.position.y, asteroid.position.x, asteroid.position.y);
-        if(dist >= asteroid.size.width + ship.size.width + 10 && dist >= asteroid.size.height + ship.size.height + 10) {
-            break;
+    let safeSpawn = false;
+    let nextX;
+    let nextY;
+    while(!safeSpawn) {
+        console.log('getting next position');
+        nextX = getRandomNumber(width);
+        nextY = getRandomNumber(height);
+        for(let i = 0; i < asteroids.length; i++) {
+            if(hit === i) continue;
+            // Get distance to asteroid
+            let asteroid = asteroids[i];
+            let dist = getDistance(nextX, nextY, asteroid.position.x, asteroid.position.y);
+            console.log(`distance from next respawn: ${dist}`);
+            if(dist >= asteroid.size.width + ship.size.width + RESPAWN_OFFSET || dist >= asteroid.size.height + ship.size.height + RESPAWN_OFFSET) {
+                safeSpawn = true;
+            } else {
+                safeSpawn = false;
+            }
         }
     }
     return {x: nextX, y: nextY};

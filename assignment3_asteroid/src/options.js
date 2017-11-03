@@ -14,7 +14,14 @@ export const EFFECT_OFF_WIDTH = 25;
 export const EFFECT_OFF_HEIGHT = 55;
 export const EFFECT_SIZE = 16;
 export const EFFECT_SPEED = 5;
-export const EFFECT_FRAMES = 2;
+export const EFFECT_FRAMES = 3;
+export const EXPLOSION_SRC = './src/images/ship_explosion.png';
+export const EXPLOSION_EFFECT_SIZE = 130;
+export const EXPLOSION_EFFECT_FRAMES = 10;
+export const EXPLOSION_OFFSET = {
+    x: -25,
+    y: -25
+}
 export const OFFSET = {
     x: 25,
     y: 55
