@@ -6,7 +6,7 @@ import Bullet from './Bullet'
 const sin = Math.sin
 const cos = Math.cos
 const PI = Math.PI
-const RESPAWN_OFFSET = 80;
+const RESPAWN_OFFSET = 30;
 
 export function drawWalls(context, width, height) {
     context.fillStyle = 'white';
@@ -79,8 +79,7 @@ export function getSpawnLocation(ship, asteroids, width, height, hit) {
     let safeSpawn = false;
     let nextX;
     let nextY;
-    while(!safeSpawn) {
-        console.log('getting next position');
+    while(!safeSpawn || nextX >= width || nextY >= height || nextX <= 20 || nextY <= 20) {
         nextX = getRandomNumber(width);
         nextY = getRandomNumber(height);
         for(let i = 0; i < asteroids.length; i++) {
@@ -88,7 +87,6 @@ export function getSpawnLocation(ship, asteroids, width, height, hit) {
             // Get distance to asteroid
             let asteroid = asteroids[i];
             let dist = getDistance(nextX, nextY, asteroid.position.x, asteroid.position.y);
-            console.log(`distance from next respawn: ${dist}`);
             if(dist >= asteroid.size.width + ship.size.width + RESPAWN_OFFSET || dist >= asteroid.size.height + ship.size.height + RESPAWN_OFFSET) {
                 safeSpawn = true;
             } else {

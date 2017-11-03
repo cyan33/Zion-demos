@@ -27,7 +27,7 @@ class Spritesheet {
         this.counter = (this.counter + 1) % this.frameSpeed;
     }
 
-    toString() {
+    getDetails() {
         return `url: ${this.url}\nframeWidth: ${this.frameWidth}\nframeHeight: ${this.frameHeight}\nframeSpeed: ${this.frameSpeed}\nendFrame: ${this.endFrame}\noffset_x: ${this.offset.x}\noffset_y: ${this.offset.y}`;
     }
 }
