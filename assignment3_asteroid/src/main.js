@@ -2,8 +2,10 @@ import Game from './engine/Game'
 import { createImageCache } from './engine/canvas'
 import store from './state'
 import { drawWalls, drawShip, drawUniverse, drawAsteroids, calculateMovement, checkBounds, checkCollision, 
-         getSpawnLocation, drawBullets, createBullet, removeBullet, getRandomAsteroid } from './helper.js'
+         getSpawnLocation, drawBullets, createBullet, removeBullet, getRandomAsteroid,
+         showRemainingLivesBanner, showGameOverLayer } from './helper.js'
 import { 
+  REMAINING_LIVES,
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   SHIP_SIZE,
@@ -35,6 +37,9 @@ class AsteroidGame extends Game {
     this.gameover = false;  // indicate game is over or not
 
     this.gameloop = this.gameloop.bind(this);
+
+    this.remainingLives = REMAINING_LIVES;
+    this.showRemainingLives = false
 
     this.currScore = 0;
 
@@ -101,6 +106,11 @@ class AsteroidGame extends Game {
     }
   }
 
+  showAndRemoveBanner() {
+    this.showRemainingLives = true
+    setTimeout(() => this.showRemainingLives = false, 3000);
+  }
+
   moveShip() {
     if(!this.shipDestroyed) {
       // rotate left
@@ -164,6 +174,12 @@ class AsteroidGame extends Game {
     if(result.hit) {
       this.shipDestroyed = true;
       this.lastHit = result.hit;
+
+      this.remainingLives -= 1;
+
+      if (this.remainingLives) {
+        this.showAndRemoveBanner()
+      }
     }
   }
 
@@ -216,6 +232,13 @@ class AsteroidGame extends Game {
       if(this.shipExplosion.currentFrame === EXPLOSION_EFFECT_FRAMES - 1) {
         // Reset to first frame and respawn ship
         this.shipExplosion.currentFrame = 0;
+
+        // if no retries allowed, end the game and show gameover layer
+        if (!this.remainingLives) {
+          this.gameover = true
+          clearTimeout(this.timer);
+        }
+
         this.shipDestroyed = false;
         this.shipPosition = getSpawnLocation(this.ship, this.partSystem.particles, CANVAS_WIDTH, CANVAS_HEIGHT, this.lastHit);
       } else {
@@ -266,6 +289,13 @@ class AsteroidGame extends Game {
       spriteSheet: this.shipExplosion
     };
     drawShip(this.context, ship, this.ship, this.spriteSheet, shipStatus);
+
+    if (this.showRemainingLives && !this.gameover) {
+      showRemainingLivesBanner(this.canvas, this.context, this.remainingLives);
+    }
+    if (this.gameover) {
+      showGameOverLayer(this.canvas, this.context);
+    }
   }
 
   // Optional debugging

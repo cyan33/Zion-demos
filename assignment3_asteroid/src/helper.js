@@ -1,4 +1,4 @@
-import { drawLoadedImage, drawRotate } from './engine/canvas'
+import { drawLoadedImage, drawRotate, insertText } from './engine/canvas'
 import { UNIVERSE_BG, SHIP_SPRITE, ASTEROID_SOURCES, ASTEROID_SIZES } from './options'
 import { getDistance, getRandomNumber } from './engine/operations'
 import Bullet from './Bullet'
@@ -148,4 +148,25 @@ export function drawBullets(context, bullets, src) {
         drawLoadedImage.call(context, src, bullet.position.x, bullet.position.y, bullet.size.width, bullet.size.height);
     }
     context.restore();
+}
+
+export function showRemainingLivesBanner(canvas, context, remainLives) {
+    const liveText = `Remaining times of retries: ${remainLives}`;
+    insertText(context, {
+        text: liveText,
+        font: '25px serif',
+        position: { x: canvas.width / 2 - 150, y: canvas.height / 2 },
+        color: 'white'
+    });
+}
+
+export function showGameOverLayer(canvas, context) {
+    // todo: add restart layer, just as assignment 2.
+    const text = `Game over, refresh the page to restart.`
+    insertText(context, {
+        text,
+        font: '25px serif',
+        position: { x: canvas.width / 2 - 170, y: canvas.height / 2 },
+        color: 'white'
+    })
 }
