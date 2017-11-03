@@ -17,6 +17,7 @@ import {
   NUM_ASTEROIDS, ASTEROID_LARGE, ASTEROID_MEDIUM, ASTEROID_SMALL, ASTEROID_1, ASTEROID_2, ASTEROID_3, ASTEROID_4,
   ASTEROID_SPEED,
   EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET,
+  EXPLOSION_SRC, EXPLOSION_EFFECT_SIZE, EXPLOSION_EFFECT_FRAMES, EXPLOSION_OFFSET,
   BULLET_SRC, MAX_BULLETS, BULLET_SIZE,
   LEFT, RIGHT, UP, DOWN, SPACE
 } from './options'
@@ -45,8 +46,10 @@ class AsteroidGame extends Game {
     this.ship = new Ship(SHIP_SPRITE, SHIP_SIZE, this.shipPosition, 5, 6);
     this.partSystem = new ParticleSystem();
     this.spriteSheet = new Spritesheet(EXHAUST_SRC, EFFECT_SIZE, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET);
+    this.shipExplosion = new Spritesheet(EXPLOSION_SRC, EXPLOSION_EFFECT_SIZE, EXPLOSION_EFFECT_SIZE, EFFECT_SPEED, EXPLOSION_EFFECT_FRAMES, EXPLOSION_OFFSET);
     this.bullets = [];
     this.keysPressed = {};
+    this.shipDestroyed = false;
   }
   
   initImageCache() {
@@ -98,27 +101,29 @@ class AsteroidGame extends Game {
   }
 
   moveShip() {
-    // rotate left
-    if (this.keysPressed[LEFT]) {
-      this.ship.theta = this.ship.theta - ROTATION_STEP;
-    }
-    // rotate right
-    if (this.keysPressed[RIGHT]) {
-      this.ship.theta += ROTATION_STEP;
-    }
-    // move up
-    if (this.keysPressed[UP]) {
-      this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, true);
-      this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
-    }
-    // move down
-    if (this.keysPressed[DOWN]) {
-      this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, false);
-      this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
-    }
+    if(!this.shipDestroyed) {
+      // rotate left
+      if (this.keysPressed[LEFT]) {
+        this.ship.theta = this.ship.theta - ROTATION_STEP;
+      }
+      // rotate right
+      if (this.keysPressed[RIGHT]) {
+        this.ship.theta += ROTATION_STEP;
+      }
+      // move up
+      if (this.keysPressed[UP]) {
+        this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, true);
+        this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
+      }
+      // move down
+      if (this.keysPressed[DOWN]) {
+        this.shipPosition = calculateMovement(this.ship, this.shipPosition, MOVE_STEP, false);
+        this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
+      }
 
-    this.checkAsteroidsCollisions();
-    this.ship.updatePosition(this.shipPosition);
+      this.checkAsteroidsCollisions();
+      this.ship.updatePosition(this.shipPosition);
+    }
   }
 
   shootBullet() {
@@ -156,8 +161,8 @@ class AsteroidGame extends Game {
   checkAsteroidsCollisions() {
     let result = checkCollision(this.partSystem.particles, this.ship, 30, 30);
     if(result.hit) {
-      console.log(`hit an asteroid`);
-      this.shipPosition = { x: this.ship.position.x + 100, y: this.ship.position.y + 100 };//getSpawnLocation(this.ship, this.partSystem.particles, CANVAS_WIDTH, CANVAS_HEIGHT, result.asteroid);
+      this.shipDestroyed = true;
+      this.lastHit = result.hit;
     }
   }
 
@@ -201,15 +206,29 @@ class AsteroidGame extends Game {
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
-    this.checkAsteroidsCollisions();
+    // Do ship updates if not destroyed
+    if(!this.shipDestroyed) {
+      this.checkAsteroidsCollisions();
+      this.moveShip();
+      this.spriteSheet.update();
+    } else {
+      if(this.shipExplosion.currentFrame === EXPLOSION_EFFECT_FRAMES - 1) {
+        // Reset to first frame and respawn ship
+        this.shipExplosion.currentFrame = 0;
+        this.shipDestroyed = false;
+        this.shipPosition = getSpawnLocation(this.ship, this.partSystem.particles, CANVAS_WIDTH, CANVAS_HEIGHT, this.lastHit);
+      } else {
+        // Update explosion animation
+        this.shipExplosion.update();
+      }
+    }
+    // Always update asteroid and bullet positions
     this.updateAsteroidPositions();
     this.updateBulletPositions();
     if(this.bullets.length !== 0) this.checkBulletCollisions();
-    this.moveShip();
-    this.spriteSheet.update();
   }
 
-  // render the game according to 
+  // render the game
   render() {
     const { width, height } = this.canvas;
 
@@ -236,12 +255,16 @@ class AsteroidGame extends Game {
     drawUniverse(this.context, universe, width, height);
 
     // Render asteroids
-    // todo: modify the way of rendering particles
     drawAsteroids(this.context, this.partSystem.particles, {ast1, ast2, ast3, ast4});
 
     drawBullets(this.context, this.bullets, bullet);
+
     // Render ship
-    drawShip(this.context, ship, this.ship, this.spriteSheet);
+    let shipStatus = {
+      shipDestroyed: this.shipDestroyed,
+      spriteSheet: this.shipExplosion
+    };
+    drawShip(this.context, ship, this.ship, this.spriteSheet, shipStatus);
   }
 
   // Optional debugging
