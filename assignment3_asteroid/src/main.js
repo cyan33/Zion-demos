@@ -9,6 +9,7 @@ import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   SHIP_SIZE,
+  INITIAL_TIMEOUT,
   BULLET_TIMEOUT,
   CLOCKWISE,
   COUNTERCLOCKWISE,
@@ -353,7 +354,7 @@ class AsteroidGame extends Game {
     this.initKeysPressed();
     // Grant initial invincibility
     this.ship.setInvincibility(true);
-    setTimeout(() => this.ship.setInvincibility(false), 2000);
+    setTimeout(() => this.ship.setInvincibility(false), INITIAL_TIMEOUT);
   }
 }
 

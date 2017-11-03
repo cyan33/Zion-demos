@@ -43,6 +43,7 @@ export const BULLET_SIZE = {
     height: 10
 };
 export const SHIP_TIMEOUT = 7000;
+export const INITIAL_TIMEOUT = 2000;
 export const BULLET_TIMEOUT = 5000;
 export const NUM_ASTEROIDS = 5;
 export const ASTEROID_SPEED = 5;

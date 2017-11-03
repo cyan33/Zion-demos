@@ -143,7 +143,6 @@ export function drawAsteroids(context, asteroids, astImages) {
     for(let i = 0; i < asteroids.length; i++) {
         let asteroid = asteroids[i];
         drawLoadedImage.call(context, astImages[`ast${i + 1}`], asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
-        asteroid.drawBoundariesDebug(context);
     }
     context.restore();
 }
