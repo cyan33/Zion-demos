@@ -20,7 +20,7 @@ import {
   ASTEROID_SPEED,
   EXHAUST_SRC, EFFECT_OFF_WIDTH, EFFECT_OFF_HEIGHT, EFFECT_SIZE, EFFECT_SPEED, EFFECT_FRAMES, OFFSET,
   EXPLOSION_SRC, EXPLOSION_EFFECT_SIZE, EXPLOSION_EFFECT_FRAMES, EXPLOSION_OFFSET,
-  BULLET_SRC, MAX_BULLETS, BULLET_SIZE,
+  BULLET_SRC, MAX_BULLETS, BULLET_SIZE, SHIP_TIMEOUT,
   LEFT, RIGHT, UP, DOWN, SPACE
 } from './options'
 import Ship from './Ship'
@@ -132,7 +132,10 @@ class AsteroidGame extends Game {
         this.shipPosition = checkBounds(this.shipPosition, CANVAS_WIDTH, CANVAS_HEIGHT, SHIP_SIZE);
       }
 
-      this.checkAsteroidsCollisions();
+      // Only check collision if ship is not invincible
+      if(!this.ship.invincible) {
+        this.checkAsteroidsCollisions();
+      }
       this.ship.updatePosition(this.shipPosition);
     }
   }
@@ -173,6 +176,7 @@ class AsteroidGame extends Game {
     let result = checkCollision(this.partSystem.particles, this.ship, 30, 30);
     if(result.hit) {
       this.shipDestroyed = true;
+      this.ship.setInvincibility(true);
       this.lastHit = result.hit;
 
       this.remainingLives -= 1;
@@ -180,13 +184,15 @@ class AsteroidGame extends Game {
       if (this.remainingLives) {
         this.showAndRemoveBanner()
       }
+      setTimeout(() => this.ship.setInvincibility(false), SHIP_TIMEOUT);
     }
   }
 
   checkBulletCollisions() {
+    //console.log('start of bullet collision');
     for(let i = 0; i < this.bullets.length; i++) {
       let bullet = this.bullets[i];
-      let result = checkCollision(this.partSystem.particles, bullet, 20, 30);
+      let result = checkCollision(this.partSystem.particles, bullet, 10, 80);
       if(result.hit) {
         // Destroy bullet and respawn asteroid at random location with size one level down
         this.bullets.splice(i, 1);
@@ -212,19 +218,28 @@ class AsteroidGame extends Game {
               speed: ASTEROID_SPEED,
               numParticles: 1
             }
-            this.partSystem.generateRandomParticle(options); // needs updating (want to spawn outside of game area)
+            this.partSystem.generateRandomParticle(options);
             // update score
             this.updateScore();
         }
       }
     }
+    //console.log('end of bullet collision');
   }
 
   // the actuall state update is in "reducer"
   // the update is only responsible to dispatch actions
   update(){
+    // Always update asteroid and bullet positions
+    this.updateAsteroidPositions();
+    this.updateBulletPositions();
+    if(this.bullets.length !== 0) this.checkBulletCollisions();
+
     // Do ship updates if not destroyed
-    if(!this.shipDestroyed) {
+    if(this.ship.invincible && !this.shipDestroyed) {
+      this.moveShip();
+      this.spriteSheet.update();
+    } else if(!this.shipDestroyed && !this.ship.invincible) {
       this.checkAsteroidsCollisions();
       this.moveShip();
       this.spriteSheet.update();
@@ -240,16 +255,11 @@ class AsteroidGame extends Game {
         }
 
         this.shipDestroyed = false;
-        this.shipPosition = getSpawnLocation(this.ship, this.partSystem.particles, CANVAS_WIDTH, CANVAS_HEIGHT, this.lastHit);
       } else {
         // Update explosion animation
         this.shipExplosion.update();
       }
     }
-    // Always update asteroid and bullet positions
-    this.updateAsteroidPositions();
-    this.updateBulletPositions();
-    if(this.bullets.length !== 0) this.checkBulletCollisions();
   }
 
   // render the game
