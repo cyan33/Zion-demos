@@ -20,11 +20,16 @@ export function drawShip(context, shipImg, shipInstance, effect, shipStatus) {
     const { x, y } = shipInstance.position;
     const { width, height } = shipInstance.size;
 
+    // Reduce opacity if ship is invincible
+    if(shipInstance.invincible && !shipStatus.shipDestroyed) context.globalAlpha = 0.5;
+
     if(shipStatus.shipDestroyed) {
         drawExplosion(context, shipImg, x, y, ship.theta, shipStatus.spriteSheet);
     } else {
         drawRotate(context, shipImg, x, y, ship.theta, effect);
     }
+    // Reset global opacity
+    context.globalAlpha = 1.0;
 }
 
 function drawExplosion(context, img, x, y, degrees, effect) {
@@ -100,7 +105,7 @@ export function getSpawnLocation(ship, asteroids, width, height, hit) {
 export function checkCollision(asteroids, obj, objOffset, boundsOffset) {
     for(let i = 0; i < asteroids.length; i++) {
         // Check collision for each asteroid to ship
-        let hit = asteroids[i].getCollision(obj, 20, 30);
+        let hit = asteroids[i].getCollision(obj, objOffset, boundsOffset);
         if(hit){
             return {hit: true, asteroid: i};
         } 
@@ -138,6 +143,7 @@ export function drawAsteroids(context, asteroids, astImages) {
     for(let i = 0; i < asteroids.length; i++) {
         let asteroid = asteroids[i];
         drawLoadedImage.call(context, astImages[`ast${i + 1}`], asteroid.position.x, asteroid.position.y, asteroid.size.width, asteroid.size.height);
+        asteroid.drawBoundariesDebug(context);
     }
     context.restore();
 }

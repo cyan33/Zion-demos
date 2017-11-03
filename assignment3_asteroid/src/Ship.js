@@ -7,11 +7,16 @@ class Ship extends Sprite {
         this.rotation = rotation;
         this.heading = 0;
         this.theta = 90;
+        this.invincible = false;
     }
 
     updatePosition({x, y}) {
         this.position = { x, y };
         this.updateCenter();
+    }
+
+    setInvincibility(invincible) {
+        this.invincible = invincible;
     }
 }
 

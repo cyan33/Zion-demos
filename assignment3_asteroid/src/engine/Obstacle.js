@@ -1,6 +1,6 @@
 import Sprite from './Sprite'
 import { getDistance, calculateCenter } from './operations'
-const NUM_SECTIONS = 9;
+const NUM_SECTIONS = 16;
 import Bullet from '../Bullet'
 
 class Obstacle extends Sprite {
@@ -50,9 +50,8 @@ class Obstacle extends Sprite {
 
     // Checks if an object is near this boundary
     nearBoundary(objX, objY, boundX, boundY, prox) {
-        //console.log(`check within prox: ${prox}`);
         let distance = getDistance(objX, objY, boundX, boundY);
-        //console.log(`distance to boundary: ${distance}`);
+        //console.log(`dist: ${distance} <= prox: ${prox} check`);
         return distance <= prox;
     }
 
@@ -60,6 +59,14 @@ class Obstacle extends Sprite {
         this.position = { x, y };
         this.updateCenter();
         this.calculateBoundaries();
+    }
+
+    drawBoundariesDebug(context) {
+        for(let i = 0; i < this.boundaries.length; i++) {
+            let boundary = this.boundaries[i];
+            context.fillStyle = 'red';
+            context.fillRect(boundary.x, boundary.y, 5, 5);
+        }
     }
 }
 
