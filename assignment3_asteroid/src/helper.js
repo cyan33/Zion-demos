@@ -157,11 +157,11 @@ export function drawBullets(context, bullets, src) {
 }
 
 export function showRemainingLivesBanner(canvas, context, remainLives) {
-    const liveText = `Remaining times of retries: ${remainLives}`;
+    const liveText = `Remaining lives: ${remainLives}`;
     insertText(context, {
         text: liveText,
         font: '25px serif',
-        position: { x: canvas.width / 2 - 150, y: canvas.height / 2 },
+        position: { x: canvas.width / 2 - 100, y: canvas.height / 2 },
         color: 'white'
     });
 }

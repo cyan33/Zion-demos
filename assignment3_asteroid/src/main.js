@@ -96,7 +96,7 @@ class AsteroidGame extends Game {
     if (e.keyCode in this.keysPressed) {
       this.keysPressed[e.keyCode] = true;
     } else if (e.keyCode === SPACE) {
-      this.shootBullet();
+      if(!this.shipDestroyed) this.shootBullet();
     }
   }
 
@@ -137,6 +137,7 @@ class AsteroidGame extends Game {
         this.checkAsteroidsCollisions();
       }
       this.ship.updatePosition(this.shipPosition);
+      if(this.bullets.length !== 0) this.checkBulletCollisions();
     }
   }
 
@@ -189,10 +190,9 @@ class AsteroidGame extends Game {
   }
 
   checkBulletCollisions() {
-    //console.log('start of bullet collision');
     for(let i = 0; i < this.bullets.length; i++) {
       let bullet = this.bullets[i];
-      let result = checkCollision(this.partSystem.particles, bullet, 10, 80);
+      let result = checkCollision(this.partSystem.particles, bullet, 30, 10);
       if(result.hit) {
         // Destroy bullet and respawn asteroid at random location with size one level down
         this.bullets.splice(i, 1);
@@ -216,7 +216,8 @@ class AsteroidGame extends Game {
               maxHorizontal: CANVAS_WIDTH,
               maxVertical: CANVAS_HEIGHT,
               speed: ASTEROID_SPEED,
-              numParticles: 1
+              numParticles: 1,
+              divisionType: 2
             }
             this.partSystem.generateRandomParticle(options);
             // update score
@@ -224,7 +225,6 @@ class AsteroidGame extends Game {
         }
       }
     }
-    //console.log('end of bullet collision');
   }
 
   // the actuall state update is in "reducer"
@@ -233,14 +233,9 @@ class AsteroidGame extends Game {
     // Always update asteroid and bullet positions
     this.updateAsteroidPositions();
     this.updateBulletPositions();
-    if(this.bullets.length !== 0) this.checkBulletCollisions();
 
     // Do ship updates if not destroyed
-    if(this.ship.invincible && !this.shipDestroyed) {
-      this.moveShip();
-      this.spriteSheet.update();
-    } else if(!this.shipDestroyed && !this.ship.invincible) {
-      this.checkAsteroidsCollisions();
+    if((this.ship.invincible && !this.shipDestroyed) || (!this.shipDestroyed && !this.ship.invincible)) {
       this.moveShip();
       this.spriteSheet.update();
     } else {
@@ -324,14 +319,14 @@ class AsteroidGame extends Game {
 
   // Initialize asteroids
   initAsteroids() {
-    // Test 1 asteroid for now
     let options = {
       src: ASTEROID_1,
       size: ASTEROID_LARGE,
       maxHorizontal: CANVAS_WIDTH,
       maxVertical: CANVAS_HEIGHT,
       speed: ASTEROID_SPEED,
-      numParticles: 1
+      numParticles: 1,
+      divisionType: 2
     }
     this.partSystem.createRandomizedParticles(options);
     
@@ -356,7 +351,9 @@ class AsteroidGame extends Game {
     this.initScorePanel();
     this.initAsteroids();
     this.initKeysPressed();
-    this.updateScore();
+    // Grant initial invincibility
+    this.ship.setInvincibility(true);
+    setTimeout(() => this.ship.setInvincibility(false), 2000);
   }
 }
 
