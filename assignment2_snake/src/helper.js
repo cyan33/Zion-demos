@@ -24,13 +24,13 @@ export function initAudio() {
     return audio;
 }
 
-export function initSnake() {
+export function initSnake(row) {
     // 600 x 600 => 40 x 40
 
     let snakeSegments = []
     for (let i = SNAKE_INIT_LENGTH - 1; i >= 0; i--) {
         // the position is the relative index, not the exact pixel
-        snakeSegments.push(new Segment({width:1, height:1}, { x: i, y: 0 }));
+        snakeSegments.push(new Segment({width:1, height:1}, { x: i, y: row }));
     }
     return snakeSegments;
 }
@@ -127,10 +127,8 @@ function nearObstacles(obj, obstacles, offset) {
     return near;
 }
 
-export function moveSnake() {
-    const { 
-        snakeSegments,
-        movingDirection,
+export function moveSnake(snakeSegments, movingDirection) {
+    const {
         food,
         spoiledFood,
         obstacles,
@@ -179,12 +177,17 @@ export function checkFood(food, isSpoiled) {
     if (food == null){
         return null;
     }
-    const { snakeSegments, obstacles } = this;
+    const { snakeSegments2, snakeSegments, obstacles } = this;
     let pos = snakeSegments[0].position;
+    let collision2 = false;
+    if(snakeSegments2) {
+        collision2 = isCollidesFood(snakeSegments2[0].position, food.position) != 0;
+    }
+
 
     let newFood = food;
     // check if it eats food
-    if (isCollidesFood(pos, food.position) != 0) {
+    if (isCollidesFood(pos, food.position) != 0 || collision2) {
         if (isSpoiled) {
             return null;
         }
