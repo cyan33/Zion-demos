@@ -1,4 +1,4 @@
-import Sprite from './utils/Sprite'
+import Sprite from './engine/Sprite'
 
 class Food extends Sprite {
     constructor(size, { x, y }) {

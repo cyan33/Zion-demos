@@ -1,4 +1,4 @@
-import Game from './utils/Game'
+import Game from './engine/Game'
 import { drawWalls, drawObstacles, initAudio, initObstacles, initSnake, drawSnake, moveSnake,
     initFood, drawFood, checkFood, removeSpoiledFood, createSpoiledFood, initSpoiledFood} from './helper'
 import { 
