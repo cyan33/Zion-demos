@@ -11,8 +11,8 @@ export const CANVAS_WIDTH = 600;
 export const CANVAS_HEIGHT = 620;
 
 export const OBSTACLE_SIZE = 45;
-export const BOUNDARY_PROX = 0.7;
-export const OBSTACLE_PROX = 2;
+export const BOUNDARY_PROX = -0.9;
+export const OBSTACLE_PROX = 1;
 export const FOOD_FROM_OBSTACLE = 5;
 export const OBSTACLE_FROM_OBSTACLE = 5;
 
