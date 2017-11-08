@@ -250,7 +250,8 @@ export function drawObstacles(context, obstacles) {
         let obstacle = obstacles[i];
         context.save();
         context.fillStyle = 'black';
-        context.fillRect(obstacle.position.x * SEGMENT_WIDTH - 15, obstacle.position.y * SEGMENT_WIDTH - 15, OBSTACLE_SIZE + 15, OBSTACLE_SIZE + 15);
+        context.fillRect(obstacle.position.x * SEGMENT_WIDTH - SEGMENT_WIDTH, obstacle.position.y * SEGMENT_WIDTH - SEGMENT_WIDTH, 
+                         OBSTACLE_SIZE + SEGMENT_WIDTH, OBSTACLE_SIZE + SEGMENT_WIDTH);
         context.restore();
     }
 }
