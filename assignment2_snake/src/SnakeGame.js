@@ -19,7 +19,7 @@ class SnakeGame extends Game {
         this.canvas.height = CANVAS_HEIGHT;
         this.canvas.width = CANVAS_WIDTH;
 
-        this.snakeSegments = initSnake(0);
+        this.snakeSegments = initSnake();
         this.obstacles = initObstacles(NUM_OBSTACLES);
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
@@ -56,7 +56,7 @@ class SnakeGame extends Game {
         } else if (e.keyCode === 83 && this.movingDirection2 !== UP && this.snakeSegments2 != null) {
             this.movingDirection2 = DOWN;
         } else if (e.keyCode === 77 && this.snakeSegments2 == null) {
-            this.snakeSegments2 = initSnake(20);
+            this.snakeSegments2 = initSnake();
         }
     }
 

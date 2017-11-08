@@ -24,13 +24,13 @@ export function initAudio() {
     return audio;
 }
 
-export function initSnake(row) {
+export function initSnake() {
     // 600 x 600 => 40 x 40
 
     let snakeSegments = []
     for (let i = SNAKE_INIT_LENGTH - 1; i >= 0; i--) {
         // the position is the relative index, not the exact pixel
-        snakeSegments.push(new Segment({width:1, height:1}, { x: i, y: row }));
+        snakeSegments.push(new Segment({width:1, height:1}, { x: i, y: 0 }));
     }
     return snakeSegments;
 }
