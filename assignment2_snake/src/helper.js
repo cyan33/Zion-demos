@@ -127,10 +127,8 @@ function nearObstacles(obj, obstacles, offset) {
     return near;
 }
 
-export function moveSnake() {
-    const { 
-        snakeSegments,
-        movingDirection,
+export function moveSnake(snakeSegments, movingDirection) {
+    const {
         food,
         spoiledFood,
         obstacles,
@@ -179,12 +177,17 @@ export function checkFood(food, isSpoiled) {
     if (food == null){
         return null;
     }
-    const { snakeSegments, obstacles } = this;
+    const { snakeSegments2, snakeSegments, obstacles } = this;
     let pos = snakeSegments[0].position;
+    let collision2 = false;
+    if(snakeSegments2) {
+        collision2 = isCollidesFood(snakeSegments2[0].position, food.position) != 0;
+    }
+
 
     let newFood = food;
     // check if it eats food
-    if (isCollidesFood(pos, food.position) != 0) {
+    if (isCollidesFood(pos, food.position) != 0 || collision2) {
         if (isSpoiled) {
             return null;
         }

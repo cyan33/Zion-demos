@@ -9,6 +9,7 @@ import {
 } from './options'
 
 const NUM_OBSTACLES = 6;
+
 class SnakeGame extends Game {
     constructor() {
         super();
@@ -23,10 +24,11 @@ class SnakeGame extends Game {
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
         this.audio = initAudio();
-
+        this.snakeSegments2 = null;
         setTimeout(removeSpoiledFood.bind(this), SPOILED_FOOD_TIMEOUT, this.obstacles);
         
         this.movingDirection = RIGHT;
+        this.movingDirection2 = RIGHT;
         this.currScore = 0;
     }
 
@@ -45,6 +47,16 @@ class SnakeGame extends Game {
             this.movingDirection = RIGHT;
         } else if (e.keyCode === 40 && this.movingDirection !== UP) {
             this.movingDirection = DOWN;
+        }else if (e.keyCode === 65 && this.movingDirection2 !== RIGHT && this.snakeSegments2 != null) {
+            this.movingDirection2 = LEFT;
+        } else if (e.keyCode === 87 && this.movingDirection2 !== DOWN && this.snakeSegments2 != null) {
+            this.movingDirection2 = UP;
+        } else if (e.keyCode === 68 && this.movingDirection2 !== LEFT && this.snakeSegments2 != null) {
+            this.movingDirection2 = RIGHT;
+        } else if (e.keyCode === 83 && this.movingDirection2 !== UP && this.snakeSegments2 != null) {
+            this.movingDirection2 = DOWN;
+        } else if (e.keyCode === 77 && this.snakeSegments2 == null) {
+            this.snakeSegments2 = initSnake();
         }
     }
 
@@ -55,7 +67,11 @@ class SnakeGame extends Game {
     update() {
         // make the snake move one more step every 1 second
         // according to the direction
-        this.snakeSegments = moveSnake.call(this);
+        this.snakeSegments = moveSnake.call(this, this.snakeSegments, this.movingDirection);
+        if (this.snakeSegments2 != null) {
+            this.snakeSegments2 = moveSnake.call(this, this.snakeSegments2, this.movingDirection2);
+        }
+
         this.food = checkFood.call(this, this.food, false);
         this.spoiledFood = checkFood.call(this, this.spoiledFood, true);
     }
@@ -70,6 +86,10 @@ class SnakeGame extends Game {
 
         // the snake
         drawSnake(this.context, this.snakeSegments);
+
+        if (this.snakeSegments2 != null) {
+            drawSnake(this.context, this.snakeSegments2);
+        }
 
         // the food
         drawFood(this.context, this.food, this.spoiledFood);
