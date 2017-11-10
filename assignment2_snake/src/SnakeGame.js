@@ -128,6 +128,7 @@ class SnakeGame extends Game {
         document.querySelector('.score-panel .current2').style.display = 'none';
         this.initScorePanel();
         this.gameType = SINGLE;
+        this.configureParams();
     }
     
     initMultiplayer() {
@@ -137,16 +138,19 @@ class SnakeGame extends Game {
         this.currentSnake = 1;
         this.initScorePanel();
         this.gameType = LOCAL_MULT;
+        this.configureParams();
+    }
+
+    configureParams() {
+        this.timer = setInterval(this.gameloop.bind(this), MOVING_SPEED);
+        this.debug();
+        this.addKeyboardHandlers();
     }
     
     init() {
         //this.showGameTypes();
         // Test two players
         this.initMultiplayer();
-        // Configure other parameters
-        this.timer = setInterval(this.gameloop.bind(this), MOVING_SPEED);
-        this.debug();
-        this.addKeyboardHandlers();
     }
 }
 
