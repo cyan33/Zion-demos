@@ -28,3 +28,6 @@ export const POWERDOWN_AUDIO = 'powerdown.mp3';
 export const AUDIO = [COLLISION_AUDIO, POWERUP_AUDIO, POWERDOWN_AUDIO];
 
 export const SPOILED_FOOD_TIMEOUT = 7000;
+
+export const SINGLE = 'SINGLE';
+export const LOCAL_MULT = 'LOCAL_MULT';
