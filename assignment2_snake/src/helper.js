@@ -4,7 +4,7 @@ import {
     ROWS, COLS, OBSTACLE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT,
     FOOD_FROM_OBSTACLE, OBSTACLE_FROM_OBSTACLE, OBSTACLE_PROX,
     SPOILED_FOOD_TIMEOUT, BOUNDARY_PROX, AUDIO, COLLISION_AUDIO,
-    POWERUP_AUDIO, POWERDOWN_AUDIO
+    POWERUP_AUDIO, POWERDOWN_AUDIO, SINGLE, LOCAL_MULT
 } from './options'
 import Food from "./Food";
 import { getRandomNumber, getDistance } from './engine/operations'
@@ -24,13 +24,13 @@ export function initAudio() {
     return audio;
 }
 
-export function initSnake() {
+export function initSnake(startY) {
     // 600 x 600 => 40 x 40
 
-    let snakeSegments = []
+    let snakeSegments = [];
     for (let i = SNAKE_INIT_LENGTH - 1; i >= 0; i--) {
         // the position is the relative index, not the exact pixel
-        snakeSegments.push(new Segment({width:1, height:1}, { x: i, y: 0 }));
+        snakeSegments.push(new Segment({width:1, height:1}, { x: i, y: startY }));
     }
     return snakeSegments;
 }
@@ -75,6 +75,19 @@ function isCollidesItself(head, snakeSegments) {
     return false;
 }
 
+function isCollidesOpponent(head, otherSegments, gameType) {
+    // Only perform if its a multiplayer variant
+    if(gameType !== SINGLE) {
+        // Check collisions for the head to each opponent's segments
+        for(let i = 0; i < otherSegments.length; i++) {
+            if(head.x === otherSegments[i].position.x && head.y === otherSegments[i].position.y) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function isCollidesObstacle(head, obstacles) {
     // do collision check for each obstacle
     let centerX = head.x + (.5 * head.size.width);
@@ -107,9 +120,20 @@ function updateLocalStorage(score) {
     }
 }
 
-function showRestartLayer() {
+function showRestartLayer(gameType, snakes) {
+    if(gameType !== SINGLE) {
+        let winner = 'Winner: ';
+        if(snakes[0].currScore > snakes[1].currScore) {
+            winner += 'Player 1';
+        } else if(snakes[1].currScore > snakes[0].currScore) {
+            winner += 'Player 2';
+        } else {
+            winner = 'Draw';
+        }
+        document.querySelector('.restart-layer .winner').textContent = winner;
+    }
     document.querySelector('.restart-layer').style.display = 'block';
-    document.querySelector("button").addEventListener("click", reload);
+    document.querySelector(".restart-layer button").addEventListener("click", reload);
 }
 
 function reload() {
@@ -134,7 +158,10 @@ export function moveSnake() {
         food,
         spoiledFood,
         obstacles,
-        audio
+        audio,
+        snakes,
+        currentSnake,
+        gameType
     } = this;
     // construct a new head segment according to the moving direction
     let head = snakeSegments[0];
@@ -144,14 +171,21 @@ export function moveSnake() {
     else if (movingDirection === RIGHT) nx += 1;
     else if (movingDirection === UP) ny -= 1;
     else if (movingDirection === DOWN) ny += 1;
-    // check collision with itself, crosses the wall, or hits an obstacle
+    // check collision with itself, crosses the wall, hits the other player, or hits an obstacle
+    let other;
+    if(gameType === SINGLE) {
+        other = 0;
+    } else {
+        (currentSnake === 0)? other = 1 : other = 0;
+    }
     if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)
-        || isCollidesObstacle({x: nx, y: ny, size: head.size}, obstacles)) {
+        || isCollidesObstacle({x: nx, y: ny, size: head.size}, obstacles) 
+        || isCollidesOpponent({x: nx, y: ny}, snakes[other].snakeSegments, gameType)) {
         updateLocalStorage(this.currScore);
 
         audio.getAudioByName(COLLISION_AUDIO).play();
         clearInterval(this.timer);
-        showRestartLayer();
+        showRestartLayer(gameType, snakes);
     }
     head = new Segment({width: 1, height: 1}, { x: nx, y: ny });
     // check if it eats food
@@ -159,11 +193,14 @@ export function moveSnake() {
     if (collision == 1) {
         // score++ and call this.initScorePanel()
         audio.getAudioByName(POWERUP_AUDIO).play();
+        console.log(`updating score for snake: ${currentSnake}`);
         this.currScore++;
+        this.snakes[currentSnake].currScore = this.currScore;
         this.initScorePanel();
     } else if (collision == -1){
         audio.getAudioByName(POWERDOWN_AUDIO).play();
         this.currScore--;
+        this.snakes[currentSnake].currScore = this.currScore;
         this.initScorePanel();
         snakeSegments.pop();
         snakeSegments.pop();

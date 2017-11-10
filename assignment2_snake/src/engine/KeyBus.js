@@ -110,4 +110,4 @@ export default class KeyBus {
       }
     }
   }
-}
+} export default KeyBus;
