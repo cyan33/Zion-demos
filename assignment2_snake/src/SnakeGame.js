@@ -113,8 +113,8 @@ class SnakeGame extends Game {
 
     showGameTypes() {
         document.querySelector('.gameType-layer').style.display = 'block';
-        document.querySelector(".gameType-layer button[id='single-player']").addEventListener("click", this.initSinglePlayer());
-        //document.querySelector(".gameType-layer button[id='local-multiplayer']").addEventListener("click", this.initMultiplayer());
+        document.querySelector(".gameType-layer button[id='single-player']").addEventListener("click", () => {console.log('single player clicked');this.initSinglePlayer()});
+        document.querySelector(".gameType-layer button[id='local-multiplayer']").addEventListener("click", () => {console.log('multiplayer clicked'); this.initMultiplayer()});
     }
     
     setGameType(gameType) {
@@ -126,14 +126,15 @@ class SnakeGame extends Game {
     initSinglePlayer() {
         console.log('initializing single player game');
         this.snakes.push({snakeSegments:initSnake(0), movingDirection: RIGHT, currScore: 0}); // only load one snake
-        //document.querySelector('.score-panel .current2').style.display = 'none';
+        document.querySelector('.score-panel .current2').style.display = 'none';
         this.initScorePanel();
         this.gameType = SINGLE;
         this.configureParams();
-        //document.querySelector('.gameType-layer').style.display = 'none';
+        document.querySelector('.gameType-layer').style.display = 'none';
     }
     
     initMultiplayer() {
+        console.log('initializing multiplayer game');
         this.snakes.push({snakeSegments:initSnake(0), movingDirection: RIGHT, currScore: 0});
         this.snakes.push({snakeSegments:initSnake(30), movingDirection: RIGHT, currScore: 0});
         this.initScorePanel();
@@ -141,7 +142,7 @@ class SnakeGame extends Game {
         this.initScorePanel();
         this.gameType = LOCAL_MULT;
         this.configureParams();
-        //document.querySelector('.gameType-layer').style.display = 'none';
+        document.querySelector('.gameType-layer').style.display = 'none';
     }
 
     configureParams() {

@@ -121,6 +121,7 @@ function updateLocalStorage(score) {
 }
 
 function showRestartLayer(gameType, snakes) {
+    console.log('in show restart layer');
     if(gameType !== SINGLE) {
         let winner = 'Winner: ';
         if(snakes[0].currScore > snakes[1].currScore) {
