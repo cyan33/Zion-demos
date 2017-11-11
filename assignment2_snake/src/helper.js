@@ -121,7 +121,6 @@ function updateLocalStorage(score) {
 }
 
 function showRestartLayer(gameType, snakes) {
-    console.log('in show restart layer');
     if(gameType !== SINGLE) {
         let winner = 'Winner: ';
         if(snakes[0].currScore > snakes[1].currScore) {
@@ -194,7 +193,6 @@ export function moveSnake() {
     if (collision == 1) {
         // score++ and call this.initScorePanel()
         audio.getAudioByName(POWERUP_AUDIO).play();
-        console.log(`updating score for snake: ${currentSnake}`);
         this.currScore++;
         this.snakes[currentSnake].currScore = this.currScore;
         this.initScorePanel();
