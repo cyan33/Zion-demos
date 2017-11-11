@@ -193,7 +193,6 @@ export function moveSnake() {
     if (collision == 1) {
         // score++ and call this.initScorePanel()
         audio.getAudioByName(POWERUP_AUDIO).play();
-        console.log(`updating score for snake: ${currentSnake}`);
         this.currScore++;
         this.snakes[currentSnake].currScore = this.currScore;
         this.initScorePanel();
