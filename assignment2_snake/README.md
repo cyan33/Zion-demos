@@ -2,6 +2,18 @@
 
 > :snake: The greedy snake game implemented with Canvas
 
+## Usage
+
+```sh
+npm install # run all the dependencies
+npm run watch # run webpack for client-side code
+npm run server # run server
+```
+
+Note that if you modify the `server.js`, you don't have to re-run `npm run server`. It's automatically reloaded.
+
+Go to `http://localhost:3000` to see the game.
+
 ## Features
 
 ### Basic
