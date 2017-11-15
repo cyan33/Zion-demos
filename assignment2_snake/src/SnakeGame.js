@@ -1,4 +1,6 @@
 import Game from './engine/Game'
+import io from 'socket.io-client'
+import KeyBus from './engine/KeyBus'
 import { drawWalls, drawObstacles, initAudio, initObstacles, initSnake, drawSnake, moveSnake,
     initFood, drawFood, checkFood, removeSpoiledFood, createSpoiledFood, initSpoiledFood} from './helper'
 import { 
@@ -104,6 +106,20 @@ class SnakeGame extends Game {
         drawFood(this.context, this.food, this.spoiledFood);
     }
 
+    initNetwork() {
+        const socket = io();
+        const kb = new KeyBus(document);
+
+        
+        kb.down(13, () => {
+            const val = Math.random().toFixed(2);
+            socket.emit('player-press-enter', val)
+        });
+        socket.on('player-press-enter', ran => {
+            console.log('some player emits a random number: ', ran);
+        });
+    }
+
     debug() {
         window.snakeSegments = this.snakeSegments;
         window.update = this.update.bind(this);
@@ -127,6 +143,8 @@ class SnakeGame extends Game {
     }
     
     initMultiplayer() {
+        this.initNetwork();
+
         this.snakes.push({snakeSegments:initSnake(0), movingDirection: RIGHT, currScore: 0});
         this.snakes.push({snakeSegments:initSnake(30), movingDirection: RIGHT, currScore: 0});
         this.initScorePanel();
