@@ -1,4 +1,6 @@
 .container {
+    width: 400px;
+    margin: 0 auto;
 }
 
 .header {
@@ -11,6 +13,7 @@
 
 .sections {
     display: flex;
+    flex-direction: column;
 }
 
 .sections .section {
