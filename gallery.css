@@ -1,10 +1,20 @@
 .container {
-    width: 400px;    
-    margin: 0 auto;
 }
 
 .header {
     color: #f99222;
+}
+
+.info {
+    margin-bottom: 40px;
+}
+
+.sections {
+    display: flex;
+}
+
+.sections .section {
+    margin-right: 30px;
 }
 
 .section a {

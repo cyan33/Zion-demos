@@ -3,13 +3,18 @@
 <title>Snake</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="src/style.css">
 <body>
     <div class="container">
         <canvas id="snake" width="600px" height="600px">
             Canvas not supported
         </canvas>
+        <div class="gameType-layer">
+            <button class='gameType-button' id='single-player'>Single Player</button>
+            <button class='gameType-button' id='local-multiplayer'>Local Multiplayer</button>
+        </div>
         <div class="restart-layer">
+            <div class="winner"></div>
             <button class="restart-button">Restart</button>
         </div>
         <div class="score-panel">
@@ -17,12 +22,16 @@
                 <b>Highest Score</b>
                 <div class="score"></div>
             </div>
-            <div class="current">
-                <b>Current Score</b>
+            <div class="current1">
+                <b>Player 1 Score</b>
+                <div class="score"></div>
+            </div>
+            <div class="current2">
+                <b>Player 2 Score</b>
                 <div class="score"></div>
             </div>
         </div>
     </div>
-    <script src="bundle.js"></script>
+    <script src="dist/bundle.js"></script>
 </body>
 </html>
