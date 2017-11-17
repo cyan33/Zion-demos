@@ -8,7 +8,7 @@ import {
     MOVING_SPEED, 
     CANVAS_WIDTH, CANVAS_HEIGHT,
     SPOILED_FOOD_TIMEOUT,
-    SINGLE, LOCAL_MULT
+    SINGLE, LOCAL_MULT, ONLINE_MULT
 } from './options'
 const NUM_OBSTACLES = 6;
 
@@ -25,6 +25,7 @@ class SnakeGame extends Game {
 
         this.snakes = [];
         this.snakeSegments = null;
+        this.socket = null;
         this.obstacles = initObstacles(NUM_OBSTACLES);
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
@@ -56,7 +57,7 @@ class SnakeGame extends Game {
             this.snakes[0].movingDirection = RIGHT;
         } else if (e.keyCode === 40 && this.snakes[0].movingDirection !== UP) {
             this.snakes[0].movingDirection = DOWN;
-        } else if(this.snakes.length == 2) {
+        } else if(this.snakes.length == 2 && this.gameType !== ONLINE_MULT) { // allow 2 players locally if we're not online
             if (e.keyCode === 65 && this.snakes[1].movingDirection !== RIGHT) {
                 this.snakes[1].movingDirection = LEFT;
             } else if (e.keyCode === 87 && this.snakes[1].movingDirection !== DOWN) {
@@ -106,18 +107,35 @@ class SnakeGame extends Game {
         drawFood(this.context, this.food, this.spoiledFood);
     }
 
-    initNetwork() {
-        const socket = io();
-        const kb = new KeyBus(document);
+    initNetworkHandlers() {
+        this.socket = io();
 
-        
+        socket.on('hostCreateNewGame', this.hostCreateNewGame); // host function to create new game
+        socket.on('playerJoinedRoom', this.playerJoinedRoom); // handles when a player joins the game room
+        socket.on('newGameCreated', this.onNewGameCreated); // handles when a new game is created
+        socket.on('beginNewGame', this.newGame()); // begin a new game
+        // Note: this session ID stored at this.socket.sessionid
+        const kb = new KeyBus(document);
         kb.down(13, () => {
-            const val = Math.random().toFixed(2);
-            socket.emit('player-press-enter', val)
+            // On every update, send message to player containing the following:
+            // 1. position of opposing player
+            // 2. position of food/spoiled food
+            // **Note: Might want to bind as an object
+            //const val = Math.random().toFixed(2);
+            let val = {snakes:this.snakes};
+            socket.emit('player-press-enter', val);
         });
         socket.on('player-press-enter', ran => {
-            console.log('some player emits a random number: ', ran);
+            console.log('current snake data: ', ran);
         });
+    }
+
+    hostCreateNewGame() {
+        // Create a new game instance
+        let newGameId = (Math.random() * 10000) | 0;
+        // Return room Id and socket Id to the client
+        this.socket.emit('newGameCreated', {gameId:newGameId, mySocketId: this.socket.id});
+        this.socket.join(newGameId.toString());
     }
 
     debug() {
@@ -131,6 +149,10 @@ class SnakeGame extends Game {
         document.querySelector('.gameType-layer').style.display = 'block';
         document.querySelector(".gameType-layer button[id='single-player']").addEventListener("click", () => this.initSinglePlayer());
         document.querySelector(".gameType-layer button[id='local-multiplayer']").addEventListener("click", () => this.initMultiplayer());
+        document.querySelector(".gameType-layer button[id='online-multiplayer']").addEventListener("click", () => {
+            document.querySelector('.gameType-layer').style.display = 'none';
+            this.showOnlineGameOptions(); 
+        });
     }
 
     initSinglePlayer() {
@@ -143,8 +165,6 @@ class SnakeGame extends Game {
     }
     
     initMultiplayer() {
-        this.initNetwork();
-
         this.snakes.push({snakeSegments:initSnake(0), movingDirection: RIGHT, currScore: 0});
         this.snakes.push({snakeSegments:initSnake(30), movingDirection: RIGHT, currScore: 0});
         this.initScorePanel();
@@ -155,6 +175,22 @@ class SnakeGame extends Game {
         document.querySelector('.gameType-layer').style.display = 'none';
     }
 
+    showOnlineGameOptions() {
+        console.log('online multiplayer selected');
+        document.querySelector('.onlineGame-layer').style.display = 'block';
+        document.querySelector(".onlineGame-layer button[id='host-game']").addEventListener("click", () => {
+            document.querySelector('.onlineGame-layer').style.display = 'none';
+            this.initMultiplayer()});
+        document.querySelector(".onlineGame-layer button[id='join-game']").addEventListener("click", () => {
+            document.querySelector('.onlineGame-layer').style.display = 'none';
+            this.initMultiplayer()});
+    }
+
+    initOnlineMultiplayer() {
+        // TODO
+        this.initNetworkHandlers();
+    }
+
     configureParams() {
         this.timer = setInterval(this.gameloop.bind(this), MOVING_SPEED);
         this.debug();
@@ -163,6 +199,7 @@ class SnakeGame extends Game {
     
     init() {
         this.showGameTypes();
+        //this.initOnlineMultiplayer();
     }
 }
 
