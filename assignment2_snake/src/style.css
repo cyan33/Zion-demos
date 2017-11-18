@@ -103,6 +103,18 @@
     top: 50%;
 }
 
+.waitingRoom-layer {
+    display: none;
+    background-color: rgba(128,128,128, 0.8);
+    position: absolute;
+    height: 620px;
+    width: 800px;
+    color: white;
+    letter-spacing: 1px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
 .restart-layer {
     display: none;
     background-color: rgba(128,128,128, 0.8);

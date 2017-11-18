@@ -26,6 +26,7 @@ class SnakeGame extends Game {
         this.snakes = [];
         this.snakeSegments = null;
         this.socket = null;
+        this.isHost = false;
         this.obstacles = initObstacles(NUM_OBSTACLES);
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
@@ -108,34 +109,30 @@ class SnakeGame extends Game {
     }
 
     initNetworkHandlers() {
+        console.log('initializing network handlers');
         this.socket = io();
-
-        socket.on('hostCreateNewGame', this.hostCreateNewGame); // host function to create new game
-        socket.on('playerJoinedRoom', this.playerJoinedRoom); // handles when a player joins the game room
-        socket.on('newGameCreated', this.onNewGameCreated); // handles when a new game is created
-        socket.on('beginNewGame', this.newGame()); // begin a new game
-        // Note: this session ID stored at this.socket.sessionid
-        const kb = new KeyBus(document);
-        kb.down(13, () => {
-            // On every update, send message to player containing the following:
-            // 1. position of opposing player
-            // 2. position of food/spoiled food
-            // **Note: Might want to bind as an object
-            //const val = Math.random().toFixed(2);
-            let val = {snakes:this.snakes};
-            socket.emit('player-press-enter', val);
-        });
-        socket.on('player-press-enter', ran => {
-            console.log('current snake data: ', ran);
-        });
-    }
-
-    hostCreateNewGame() {
-        // Create a new game instance
-        let newGameId = (Math.random() * 10000) | 0;
-        // Return room Id and socket Id to the client
-        this.socket.emit('newGameCreated', {gameId:newGameId, mySocketId: this.socket.id});
-        this.socket.join(newGameId.toString());
+        console.log(this.socket);
+        // Define server-client operations
+        this.socket.on('hostCreateNewGame', () => {
+            console.log('creating new game');
+            // Create a new game instance
+            let newGameId = (Math.random() * 10000) | 0;
+            // Return room Id and socket Id to the client
+            this.socket.emit('newGameCreated', {gameId:newGameId, mySocketId: this.socket.id});
+        }); 
+        
+        //this.socket.on('playerJoinedRoom', this.playerJoinedRoom()); // handles when a player joins the game room
+        this.socket.on('newGameCreated', (data) => {
+            console.log('new game created');
+            console.log(data);
+            this.gameId = data.gameId;
+            this.socketId = data.mySocketId;
+            this.isHost = true;
+            this.numPlayers = 0;
+        }); 
+        
+        //this.socket.on('beginNewGame', this.newGame()); // begin a new game
+        console.log('created event handlers');
     }
 
     debug() {
@@ -146,6 +143,7 @@ class SnakeGame extends Game {
     }
 
     showGameTypes() {
+        this.initNetworkHandlers();
         document.querySelector('.gameType-layer').style.display = 'block';
         document.querySelector(".gameType-layer button[id='single-player']").addEventListener("click", () => this.initSinglePlayer());
         document.querySelector(".gameType-layer button[id='local-multiplayer']").addEventListener("click", () => this.initMultiplayer());
@@ -179,9 +177,16 @@ class SnakeGame extends Game {
         console.log('online multiplayer selected');
         document.querySelector('.onlineGame-layer').style.display = 'block';
         document.querySelector(".onlineGame-layer button[id='host-game']").addEventListener("click", () => {
+            console.log('waiting for next player');
             document.querySelector('.onlineGame-layer').style.display = 'none';
-            this.initMultiplayer()});
+            document.querySelector('.waitingRoom-layer').style.display = 'block';
+            console.log('calling hostCreateNewGame method');
+            this.socket.emit('hostCreateNewGame')});
         document.querySelector(".onlineGame-layer button[id='join-game']").addEventListener("click", () => {
+            let roomNum = prompt('Room number?'); // Prompt user for the connection information
+            // if(roomNum !== null) {
+            //     //this.socket.emit(); // join the room number
+            // }
             document.querySelector('.onlineGame-layer').style.display = 'none';
             this.initMultiplayer()});
     }
@@ -199,7 +204,6 @@ class SnakeGame extends Game {
     
     init() {
         this.showGameTypes();
-        //this.initOnlineMultiplayer();
     }
 }
 
