@@ -15,6 +15,16 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  
+  players[socket.id] = {}
+
+  socket.on('/INIT_MULTI', () => {
+    for (let id in players) {
+      if (id !== socket.id) {
+        io.emit('/INIT_MULTI')
+      }
+    }
+  })
 
   socket.on('player-press-enter', function(value){
     console.log('some player emits a random number: ', value);

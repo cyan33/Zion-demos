@@ -145,8 +145,9 @@ class SnakeGame extends Game {
     initMultiplayer() {
         this.initNetwork();
 
+        // one snake at a time
         this.snakes.push({snakeSegments:initSnake(0), movingDirection: RIGHT, currScore: 0});
-        this.snakes.push({snakeSegments:initSnake(30), movingDirection: RIGHT, currScore: 0});
+
         this.initScorePanel();
         this.currentSnake = 1;
         this.initScorePanel();

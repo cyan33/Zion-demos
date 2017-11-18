@@ -76,16 +76,13 @@ function isCollidesItself(head, snakeSegments) {
 }
 
 function isCollidesOpponent(head, otherSegments, gameType) {
-    // Only perform if its a multiplayer variant
-    if(gameType !== SINGLE) {
-        // Check collisions for the head to each opponent's segments
-        for(let i = 0; i < otherSegments.length; i++) {
-            if(head.x === otherSegments[i].position.x && head.y === otherSegments[i].position.y) {
-                return true;
-            }
+    if (gameType === SINGLE)    return false;
+    // Check collisions for the head to each opponent's segments
+    for (let i = 0; i < otherSegments.length; i++) {
+        if(head.x === otherSegments[i].position.x && head.y === otherSegments[i].position.y) {
+            return true;
         }
     }
-    return false;
 }
 
 function isCollidesObstacle(head, obstacles) {
@@ -182,6 +179,8 @@ export function moveSnake() {
         || isCollidesObstacle({x: nx, y: ny, size: head.size}, obstacles) 
         || isCollidesOpponent({x: nx, y: ny}, snakes[other].snakeSegments, gameType)) {
         updateLocalStorage(this.currScore);
+
+        console.log('collide:')
 
         audio.getAudioByName(COLLISION_AUDIO).play();
         clearInterval(this.timer);
