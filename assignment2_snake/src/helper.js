@@ -146,10 +146,11 @@ export function moveSnake() {
     else if (movingDirection === DOWN) ny += 1;
     // check collision with itself, crosses the wall, or hits an obstacle
     if (isCollidesWall({x: nx, y: ny}) || isCollidesItself({x: nx, y: ny}, snakeSegments)
-        || isCollidesObstacle({x: nx, y: ny, size: head.size}, obstacles)) {
+        // || isCollidesObstacle({x: nx, y: ny, size: head.size}, obstacles)
+    ) {
         updateLocalStorage(this.currScore);
 
-        audio.getAudioByName(COLLISION_AUDIO).play();
+        // audio.getAudioByName(COLLISION_AUDIO).play();
         clearInterval(this.timer);
         showRestartLayer();
     }
@@ -158,11 +159,11 @@ export function moveSnake() {
     var collision = isCollidesFood({x: nx, y: ny}, food.position, spoiledFood);
     if (collision == 1) {
         // score++ and call this.initScorePanel()
-        audio.getAudioByName(POWERUP_AUDIO).play();
+        // audio.getAudioByName(POWERUP_AUDIO).play();
         this.currScore++;
         this.initScorePanel();
     } else if (collision == -1){
-        audio.getAudioByName(POWERDOWN_AUDIO).play();
+        // audio.getAudioByName(POWERDOWN_AUDIO).play();
         this.currScore--;
         this.initScorePanel();
         snakeSegments.pop();

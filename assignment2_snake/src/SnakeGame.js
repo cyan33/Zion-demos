@@ -1,3 +1,6 @@
+import socket from 'socket.io-client'
+
+import KeyBus from './engine/KeyBus'
 import Game from './engine/Game'
 import { drawWalls, drawObstacles, initAudio, initObstacles, initSnake, drawSnake, moveSnake,
     initFood, drawFood, checkFood, removeSpoiledFood, createSpoiledFood, initSpoiledFood} from './helper'
@@ -19,14 +22,15 @@ class SnakeGame extends Game {
         this.canvas.width = CANVAS_WIDTH;
 
         this.snakeSegments = initSnake();
-        this.obstacles = initObstacles(NUM_OBSTACLES);
+        this.obstacles = [];
+        // this.obstacles = initObstacles(NUM_OBSTACLES);
         this.food = initFood(this.obstacles);
         this.spoiledFood = initFood(this.obstacles);
         this.audio = initAudio();
 
         setTimeout(removeSpoiledFood.bind(this), SPOILED_FOOD_TIMEOUT, this.obstacles);
         
-        this.movingDirection = RIGHT;
+        this.direction = RIGHT;
         this.currScore = 0;
     }
 
@@ -37,14 +41,14 @@ class SnakeGame extends Game {
     }
 
     setMovingDirection(e) {
-        if (e.keyCode === 37 && this.movingDirection !== RIGHT) {
-            this.movingDirection = LEFT;
-        } else if (e.keyCode === 38 && this.movingDirection !== DOWN) {
-            this.movingDirection = UP;
-        } else if (e.keyCode === 39 && this.movingDirection !== LEFT) {
-            this.movingDirection = RIGHT;
-        } else if (e.keyCode === 40 && this.movingDirection !== UP) {
-            this.movingDirection = DOWN;
+        if (e.keyCode === 37 && this.direction !== RIGHT) {
+            this.direction = LEFT;
+        } else if (e.keyCode === 38 && this.direction !== DOWN) {
+            this.direction = UP;
+        } else if (e.keyCode === 39 && this.direction !== LEFT) {
+            this.direction = RIGHT;
+        } else if (e.keyCode === 40 && this.direction !== UP) {
+            this.direction = DOWN;
         }
     }
 
@@ -60,16 +64,21 @@ class SnakeGame extends Game {
         this.spoiledFood = checkFood.call(this, this.spoiledFood, true);
     }
 
-    render() {
+    render(state) {
         const { width, height } = this.canvas;
+        const { scene } = state
+
         // background
         drawWalls(this.context, width, height);
 
         // obstacles
         drawObstacles(this.context, this.obstacles);
 
-        // the snake
-        drawSnake(this.context, this.snakeSegments);
+        // could be multiple snakes
+        for (let key in state) {
+            if (key === 'scene') continue
+            drawSnake(this.context, state[key].segments)
+        }
 
         // the food
         drawFood(this.context, this.food, this.spoiledFood);
@@ -83,10 +92,19 @@ class SnakeGame extends Game {
     }
     
     init() {
-        this.timer = setInterval(this.gameloop.bind(this), MOVING_SPEED);
+        this.io = socket()
+        this.timer = setInterval(() => {
+            this.io.emit('change_direction', this.direction)
+        }, MOVING_SPEED);
+
         this.debug();
         this.addKeyboardHandlers();
         this.initScorePanel();
+
+        this.io.on('render', (state) => {
+            console.log(state)
+            this.render(state)
+        })
     }
 }
 
