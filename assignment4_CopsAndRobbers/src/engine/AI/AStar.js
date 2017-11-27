@@ -1,8 +1,11 @@
+import VertexRecord from './VertexRecord'
+import Vertex from './Vertex'
+import Edge from './Edge'
+
 /** the type of heuristic to use */
 const HEUR_TYPE = 0;
 
 class AStar {
-    
     constructor(){
 		this.total_open = 0;
 		this.total_closed = 0;
@@ -19,40 +22,40 @@ class AStar {
      */
 	AStarPathfind(graph, start, end){
 		// Establish open and closed lists (may want to change to priority queue implementation
-		let open = new ArrayList<VertexRecord>(); // VertexRecord list
-		let closed = new ArrayList<VertexRecord>(); // VertexRecord list
+		let open = []; // VertexRecord list
+		let closed = []; // VertexRecord list
 		let next = new VertexRecord(start); // VertexRecord
 		next.setEstCost(useHeuristic(start, end));
-		open.add(next); // Get the initial vertex
-		VertexRecord current = null; // VertexRecord
+		open.push(next); // Get the initial vertex
+		let current = null; // VertexRecord
 		
-		while(open.size() > 0){
+		while(open.length > 0){
 			// Get the smallest edge record in the open list
-			current = getSmallest(open);
+			current = this.getSmallest(open);
 			// Break if we are at the goal node
 			if(current.getNode().equals(end)) break;
 			// Get connections for this node
-			ArrayList<Edge> neighbors = current.getNode().getNeighbors();
+			let neighbors = current.getNode().getNeighbors();
 			// Loop through node's neighbors
-			for(Edge n : neighbors){
+			for(let n in neighbors){
 				let endNode = n.getNeighbor(); // Vertex
 				let endCost = current.getCost() + n.getWeight();
 				let endHeuristic = 0.0;
 				
 				// Check if on the closed list
-				let endRecord = listContains(closed, endNode); // VertexRecord
+				let endRecord = this.listContains(closed, endNode); // VertexRecord
 				if(endRecord != null){
 					// Continue if record_cost <= endCost
 					if(endRecord.getCost() <= endCost) continue;
 					// Otherwise remove from close list
-					closed.remove(endRecord);
+					closed.splice(closed.indexOf(endRecord), 1); // remove at index
 					// Use this node's old cost value to calculate heuristic
 					// endNodeHeuristic = endNodeRecord.cost - endNodeRecord.costSoFar?
 					endHeuristic = endRecord.getConn().getWeight() - endRecord.getCost();
 				}
 				
 				// Check if on the open list
-				endRecord = listContains(open, endNode);
+				endRecord = this.listContains(open, endNode);
 				if(endRecord != null){
 					if(endRecord.getCost() <= endCost) continue;
 					// Use this node's old cost value to calculate heuristic
@@ -61,7 +64,7 @@ class AStar {
 				} else {
 					// Else we have an unvisited node, so make a new record
 					endRecord = new VertexRecord(endNode);
-					endHeuristic = useHeuristic(endNode, end);
+					endHeuristic = this.useHeuristic(endNode, end);
 				}
 				
 				// Update connection and cost
@@ -69,41 +72,41 @@ class AStar {
 				endRecord.setConn(n);
 				// Update parent of this node in the graph
 				let index = graph.indexOf(endNode);
-				endNode = graph.get(index);
+				endNode = graph[index];
 				endNode.setParent(endRecord.getConn().getOrigin());
-				graph.set(index, endNode);
+				graph.splice(index, 0, endNode);
 				// Update estimated total
 				endRecord.setEstCost(endCost + endHeuristic);
 				
 				// Then add to the open list
-				if(!open.contains(endRecord)) open.add(endRecord);
+				if(!open.indexOf(endRecord) == -1) open.push(endRecord);
 			}
 			
 			// Finished this node, so remove from open
-			open.remove(current);
+			open.splice(open.indexOf(current), 1);
 			// And add it to closed
-			closed.add(current);
+			closed.push(current);
 		}
 		
 		// Out of nodes so check for goal
 		if(!current.getNode().equals(end)) return null;
 		
 		// Otherwise compile path connections
-		let path = new ArrayList<Vertex>(); // Vertex list
+		let path = []; // Vertex list
 		let prev = current.getNode(); // Vertex
 		while(!prev.equals(start)){
 			// Add the node to the path
-			path.add(prev);
+			path.push(prev);
 			// Update to the next connection
-			prev = graph.get(graph.indexOf(prev)).getParent();
+			prev = graph[graph.indexOf(prev)].getParent();
 		}
 		
 		// Update total closed and open nodes
-		total_open += open.size();
-		total_closed += closed.size();
+		total_open += open.length;
+		total_closed += closed.length;
 		
 		// Return reversed path
-		Collections.reverse(path);
+		path = path.reverse();
 		return path;
 	}
 	
@@ -114,15 +117,15 @@ class AStar {
 	 */
 	getSmallest(open){
 		// If only one element, return it
-		if(open.size() == 1) return open.get(0);
+		if(open.length == 1) return open[0];
 		
 		// Smallest edge
-		let smallest = open.get(0); // VertexRecord
+		let smallest = open[0]; // VertexRecord
 		
 		// Search through the graph for the smallest estimated cost
-		for(let i = 0; i < open.size(); i++){
-			if(open.get(i).getEstCost() < smallest.getEstCost()){
-				smallest = open.get(i);
+		for(let i = 0; i < open.length; i++){
+			if(open.get[i].getEstCost() < smallest.getEstCost()){
+				smallest = open[i];
 			}
 		}
 		// Return smallest edge
@@ -137,9 +140,9 @@ class AStar {
 	 * @return the vertex to search in the specified list, null otherwise
 	 */
 	listContains(list, v){
-		for(let i = 0; i < list.size(); i++){
+		for(let i = 0; i < list.length; i++){
 			// Check if node exists on list
-			if(list.get(i).getNode().equals(v)) return list.get(i);
+			if(list[i].getNode().equals(v)) return list[i];
 		}
 		return null;
 	}
