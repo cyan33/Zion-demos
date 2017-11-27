@@ -121,7 +121,11 @@ class SnakeGame extends Game {
             this.socket.emit('newGameCreated', {gameId:newGameId, mySocketId: this.socket.id});
         }); 
         
-        //this.socket.on('playerJoinedRoom', this.playerJoinedRoom()); // handles when a player joins the game room
+        // this.socket.on('playerJoinedRoom', () => {
+        //     console.log('player joined room');
+        //     this.socket.emit('beginGame');
+        // }); // handles when a player joins the game room
+
         this.socket.on('newGameCreated', (data) => {
             console.log('new game created');
             console.log(data);
