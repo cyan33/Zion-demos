@@ -31,3 +31,4 @@ export const SPOILED_FOOD_TIMEOUT = 7000;
 
 export const SINGLE = 'SINGLE';
 export const LOCAL_MULT = 'LOCAL_MULT';
+export const ONLINE_MULT = 'ONLINE_MULT';
