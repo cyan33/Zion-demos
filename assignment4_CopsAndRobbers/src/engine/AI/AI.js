@@ -11,7 +11,8 @@ const offset = 10;
 
 // *Note: all vector related methods will need to be updated
 class AI extends Sprite {
-    constructor (pos, vel, accel, maxForce, maxSpeed) {
+    constructor (src, size, pos, vel, accel, maxForce, maxSpeed) {
+        super(src, size, pos);
         this.random = new Random(); // random variable for setting new targets
         this.position = pos; // position
         this.initPosition = pos; // initial position
