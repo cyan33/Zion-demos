@@ -1,3 +1,5 @@
+import Edge from './Edge'
+
 class Vertex {
     constructor(val){
         this.value = val; // vertex value
@@ -14,7 +16,7 @@ class Vertex {
      */
     addNeighbor(v, dist){
         if(!this.checkInNeighbors(v)){
-            neighbors.add(new Edge(this, v, dist));
+            this.neighbors.add(new Edge(this, v, dist));
         }
         return false;
     }
@@ -31,7 +33,7 @@ class Vertex {
         }
         for(let i = 0; i < this.neighbors.length; i++){
             // Test if the vertex to add is already at this position
-            if(neighbors[i].getNeighbor().equals(v)){
+            if(this.neighbors[i].getNeighbor().equals(v)){
                 return true;
             }
         }
@@ -44,7 +46,7 @@ class Vertex {
      * @return if this vertex and the object are equal
      */
     equals(o){
-        if(typeof o == 'Vertex') {
+        if(o instanceof Vertex) {
             if(o.getValue() == this.value){
                 return true;
             }
@@ -102,7 +104,7 @@ class Vertex {
      * @return this vertex's location (PVector)
      */
     getLoc() {
-        return loc;
+        return this.loc;
     }
 
     /**
