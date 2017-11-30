@@ -50,10 +50,10 @@ class DecisionNode {
 		if(this.testMethod.type == CHECK_METHOD){
 			if(this.testMethod.action){
 				// Call true child
-				trueNode.makeDecision();
+				this.trueNode.makeDecision();
 			} else {
 				// Call false child
-				falseNode.makeDecision();
+				this.falseNode.makeDecision();
 			}
 		} else if(this.testMethod.type == ACTION_METHOD){
 			// execute the action
@@ -77,3 +77,5 @@ class DecisionNode {
 	}
 
 }
+
+export default DecisionNode

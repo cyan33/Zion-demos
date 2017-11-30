@@ -1,6 +1,5 @@
 import VertexRecord from './VertexRecord'
-import Vertex from './Vertex'
-import Edge from './Edge'
+import { getDistance } from '../operations'
 
 /** the type of heuristic to use */
 const HEUR_TYPE = 0;
@@ -25,7 +24,7 @@ class AStar {
 		let open = []; // VertexRecord list
 		let closed = []; // VertexRecord list
 		let next = new VertexRecord(start); // VertexRecord
-		next.setEstCost(useHeuristic(start, end));
+		next.setEstCost(this.useHeuristic(start, end));
 		open.push(next); // Get the initial vertex
 		let current = null; // VertexRecord
 		
@@ -102,8 +101,8 @@ class AStar {
 		}
 		
 		// Update total closed and open nodes
-		total_open += open.length;
-		total_closed += closed.length;
+		this.total_open += open.length;
+		this.total_closed += closed.length;
 		
 		// Return reversed path
 		path = path.reverse();
@@ -182,7 +181,7 @@ class AStar {
 	 * @return estimated cost from start to goal node
 	 */
 	euclidean(from, end){
-		return Point.distance(from.getLoc().x, from.getLoc().y, end.getLoc().x, end.getLoc().y);
+		return getDistance(from.getLoc().x, from.getLoc().y, end.getLoc().x, end.getLoc().y);
 	}
 	
 	/**
@@ -202,3 +201,5 @@ class AStar {
 		this.total_closed = 0;
 	}
 }
+
+export default AStar
