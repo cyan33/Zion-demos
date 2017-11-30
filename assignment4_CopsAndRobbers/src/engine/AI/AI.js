@@ -13,7 +13,6 @@ const offset = 10;
 class AI extends Sprite {
     constructor (src, size, pos, vel, accel, maxForce, maxSpeed) {
         super(src, size, pos);
-        this.random = new Random(); // random variable for setting new targets
         this.position = pos; // position
         this.initPosition = pos; // initial position
         this.velocity = vel; // velocity
