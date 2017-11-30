@@ -1,11 +1,11 @@
 import {
     CANVAS_HEIGHT,
-    CANVAS_WEIGHT,
+    CANVAS_WIDTH,
     UP, DOWN, LEFT, RIGHT
 } from './options'
-
 import { createImageCache } from './engine/canvas'
 import Game from './engine/Game'
+import { drawWalls, drawGrid, drawCops, drawRobbers } from './helper'
 
 class CRGame {
     constructor() {
@@ -63,7 +63,26 @@ class CRGame {
             images[item.name] = item.img;
         })
 
+        // render walls and background
+        drawWalls(this.context, width, height);
+        drawGrid(this.context, width, height);
+
         // draw cops and robbers here
+        // drawCops(this.context);
+        // drawRobbers(this.context);
+    }
+
+    initCops() {
+        // TODO
+    }
+
+    initRobbers() {
+        // TODO
+    }
+
+    // is there a better way for initializing solid walls?
+    initWalls() {
+        // TODO
     }
 
     init() {
