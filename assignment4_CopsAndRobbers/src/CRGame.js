@@ -89,6 +89,12 @@ class CRGame extends Game {
                            data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn])
                           });
         this.initAI(numCops, numRobbers); // init AI players
+        // Swap player position if they are a cop
+        if(this.players[0].team === COP) {
+            let temp = this.players[2];
+            this.players[2] = this.players[0];
+            this.players[0] = temp;
+        }
         // this.initBoard();
     }
 
