@@ -10,12 +10,9 @@ export function drawWalls(context, width, height) {
 }
 
 // Goes through from top left across and fills in each tile with the appropriate color for now
-export function drawGrid(context, width, height) {
-    let x = 0;
-    let y = 0;
-
-    for (i = 0; i < 9; i++) {
-        for (j = 0; j < 9; j++) {
+export function drawGrid(context) {
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
             if (GRID[j,i] === OPEN) {
                 context.fillStyle = 'white';
             } else if (GRID[j,i] === WALL) {
@@ -27,7 +24,6 @@ export function drawGrid(context, width, height) {
             }
 
             context.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
-
         }
     }
 }

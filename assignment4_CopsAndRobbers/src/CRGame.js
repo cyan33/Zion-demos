@@ -7,7 +7,7 @@ import { createImageCache } from './engine/canvas'
 import Game from './engine/Game'
 import { drawWalls, drawGrid, drawCops, drawRobbers } from './helper'
 
-class CRGame {
+class CRGame extends Game {
     constructor() {
         super();
         this.canvas = document.querySelector('#copsAndRobbers');
@@ -17,20 +17,6 @@ class CRGame {
 
         // Start player off looking right? Does it matter?
         this.direction = RIGHT;
-    }
-
-    initImageCache() {
-        this.imageCache = createImageCache();
-
-        const IMAGE_DICT = {
-            // cops and robbers images here
-        }
-
-        Object.keys(IMAGE_DICT).forEach(name => {
-            this.imageCache.loadImage(name, IMAGE_DICT[name]);
-        })
-
-        this.imageCache.imagesOnLoad(() => this.timer = setInterval(this.gameloop, 30));
     }
 
     addKeyboardHandlers() {
@@ -57,16 +43,9 @@ class CRGame {
     render() {
         const { width, height } = this.canvas;
 
-        let images = {};
-
-        this.imageCache.getImages().forEach(item => {
-            images[item.name] = item.img;
-        })
-
         // render walls and background
         drawWalls(this.context, width, height);
-        drawGrid(this.context, width, height);
-
+        drawGrid(this.context);
     }
 
     initCops() {
@@ -83,8 +62,8 @@ class CRGame {
     }
 
     init() {
-        this.initImageCache();
         this.addKeyboardHandlers();
+        this.timer = setInterval(this.gameloop, 30);
     }
 
 }
