@@ -5,7 +5,7 @@ import {
 } from './options'
 import { createImageCache } from './engine/canvas'
 import Game from './engine/Game'
-import { drawWalls, drawGrid } from './helper'
+import { drawWalls, drawGrid, movePlayer, updateGrid } from './helper'
 
 class CRGame extends Game {
     constructor() {
@@ -15,8 +15,9 @@ class CRGame extends Game {
         this.gameover = false;
         this.gameloop = this.gameloop.bind(this);
 
-        // Start player off looking right? Does it matter?
-        this.direction = RIGHT;
+        //TODO: Player array initialization
+        this.players = []
+        this.direction = null;
         this.grid = GRID;
     }
 
@@ -25,19 +26,44 @@ class CRGame extends Game {
     }
 
     setMovingDirection(e) {
-        if (e.keyCode === 37) {
-            this.direction = LEFT;
-        } else if (e.keyCode === 38) {
-            this.direction = UP;
-        } else if (e.keyCode === 39) {
-            this.direction = RIGHT;
-        } else if (e.keyCode === 40) {
-            this.direction = DOWN;
+        // Only allow key presses on the player's turn
+        if (!this.players[0].isAI) {
+            if (e.keyCode === 37) {
+                this.direction = LEFT;
+            } else if (e.keyCode === 38) {
+                this.direction = UP;
+            } else if (e.keyCode === 39) {
+                this.direction = RIGHT;
+            } else if (e.keyCode === 40) {
+                this.direction = DOWN;
+            }
         }
     }
 
     update() {
-        // TODO
+        // Save data about the player whose turn it is
+        var currentTurn = this.players[0];
+        var oldData = this.players[0].data;
+        // If it is an AI player, make a move
+        if(currentTurn.isAI){
+            if (currentTurn.team === COP){
+                currentTurn.data = getCopMove(currentTurn.data);
+            } else {
+                currentTurn.data = getRobberMove(currentTurn.data);
+            }
+            //Rotate the player array
+            this.players.shift();
+            this.players.push(currentTurn);
+        // If it is a human player's turn, wait for them to press a key
+        } else if (this.direction) {
+            currentTurn.data = movePlayer(currentTurn.data, this.direction);
+            // Rotate player array and set direction to null
+            this.players.shift();
+            this.players.push(currentTurn);
+            this.direction = null;
+        }
+        // Update the grid with the latest move
+        this.grid = updateGrid(this.grid, currentTurn, oldData);
     }
 
     // rendering the game

@@ -27,3 +27,22 @@ export function drawGrid(context, state) {
         }
     }
 }
+
+export function movePlayer(player, direction) {
+    let nx = player.position.x;
+    let ny = player.position.y;
+    if (direction === LEFT) nx -= 1;
+    else if (direction === RIGHT) nx += 1;
+    else if (direction === UP) ny -= 1;
+    else if (direction === DOWN) ny += 1;
+    player.position.x = nx;
+    player.position.y = ny;
+    return player;
+    // TODO: Collision Detection
+}
+
+export function updateGrid(grid, newData, oldData) {
+    grid[oldData.position.x][oldData.position.y] = OPEN;
+    grid[newData.data.position.x][newData.data.position.y] = newData.team;
+    return grid;
+}
