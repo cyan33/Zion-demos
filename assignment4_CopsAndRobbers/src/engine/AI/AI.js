@@ -11,7 +11,6 @@ const offset = 10;
 class AI extends Sprite {
     constructor (src, size, pos, params) {
         super(src, size, pos);
-        this.position = pos; // position
         this.initPosition = pos; // initial position
         this.velocity = params.velocity; // velocity
         this.acceleration = params.acceleration; // acceleration

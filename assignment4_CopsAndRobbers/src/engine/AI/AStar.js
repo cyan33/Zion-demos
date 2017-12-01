@@ -191,9 +191,8 @@ class AStar {
 	 */
 	displayMemoryAvgs(n){
 		let avgOpen = this.total_open / n;
-		console.log(`Average nodes on open list: ${avgOpen}`);
 		let avgMemory = (this.total_open + this.total_closed) / n;
-		console.log(`Average nodes in memory ${avgMemory}`);
+		return {avgOpen, avgMemory};
 	}
 	
 	resetStats(){
