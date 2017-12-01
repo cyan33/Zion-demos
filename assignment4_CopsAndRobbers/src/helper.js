@@ -1,4 +1,6 @@
-import { GRID } from '/options'
+import { GRID, OPEN, WALL, COP, ROBBER } from '/options'
+
+const tileSize = 600 / 9;
 
 export function drawWalls(context, width, height) {
     context.fillStyle = 'white';
@@ -7,18 +9,26 @@ export function drawWalls(context, width, height) {
     context.strokeRect(0, 0, width, height);
 }
 
+// Goes through from top left across and fills in each tile with the appropriate color for now
 export function drawGrid(context, width, height) {
-    // draw tiles based on grid array
-    // 0 = white, 1 = black
-    // 9x9 grid so take canvas width and height divided by 9?
+    let x = 0;
+    let y = 0;
+
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 9; j++) {
+            if (GRID[j,i] === OPEN) {
+                context.fillStyle = 'white';
+            } else if (GRID[j,i] === WALL) {
+                context.fillStyle = 'black';
+            } else if (GRID[j,i] === COP) {
+                context.fillStyle = 'blue';
+            } else if (GRID[j,i] === ROBBER) {
+                context.fillStyle = 'red';
+            }
+
+            context.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
+
+        }
+    }
 }
 
-export function drawCops(context) {
-    // TODO
-    // draw only on 0 in grid array
-}
-
-export function drawRobbers(context) {
-    // TODO
-    // draw only on 0 in grid array
-}
