@@ -28,17 +28,31 @@ export function drawGrid(context, state) {
     }
 }
 
-export function movePlayer(player, direction) {
-    let nx = player.position.x;
-    let ny = player.position.y;
+export function movePlayer(player, direction, grid) {
+    let nx = player.data.position.x;
+    let ny = player.data.position.y;
+    // Get new position based on position and direction
     if (direction === LEFT) nx -= 1;
     else if (direction === RIGHT) nx += 1;
     else if (direction === UP) ny -= 1;
     else if (direction === DOWN) ny += 1;
-    player.position.x = nx;
-    player.position.y = ny;
-    return player;
-    // TODO: Collision Detection
+    // If the new position is open, move the player
+    if (grid[nx][ny] === OPEN) {
+        player.position.x = nx;
+        player.position.y = ny;
+        return player;
+    // If the movement causes a cop and robber to collide, end the game
+    } else if (grid[nx][ny] != WALL && grid[nx][ny] != player.team) {
+        document.querySelector('.restart-layer .winner').textContent = 'The Cops caught the Robbers!';
+        document.querySelector('.restart-layer').style.display = 'block';
+        document.querySelector(".restart-layer button").addEventListener("click", reload);
+    }
+    // If the new position is a wall, or causes collision between two cops or two robbers, return null
+    return null;
+}
+
+function reload() {
+    location.reload();
 }
 
 export function updateGrid(grid, newData, oldData) {

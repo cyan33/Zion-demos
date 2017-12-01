@@ -56,10 +56,13 @@ class CRGame extends Game {
             this.players.push(currentTurn);
         // If it is a human player's turn, wait for them to press a key
         } else if (this.direction) {
-            currentTurn.data = movePlayer(currentTurn.data, this.direction);
-            // Rotate player array and set direction to null
-            this.players.shift();
-            this.players.push(currentTurn);
+            var newData = movePlayer(currentTurn, this.direction, this.grid);
+            // If the move is valid, update the data and rotate the array
+            if (newData) {
+                currentTurn.data = newData;
+                this.players.shift();
+                this.players.push(currentTurn);
+            }
             this.direction = null;
         }
         // Update the grid with the latest move
