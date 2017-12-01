@@ -1,20 +1,27 @@
 import AI from './engine/AI/AI'
 import Game from './engine/Game'
 import DecisionNode from './engine/AI/DecisionTree/DecisionNode'
+import GraphGenerator from './engine/AI/GraphGenerator'
 import Sprite from './engine/Sprite'
 import {COP, ROBBER, COP_SRC, ROBBER_SRC, SRC_WIDTH, SRC_HEIGHT, VELOCITY, 
-        ACCELERATION, MAX_FORCE, MAX_SPEED, MAX_ACCELERATION, ROD, ROS, TIME_TO_TARGET} from './options'
-import {getSpawnLocation, initSpawnLocations} from './helper'
+        ACCELERATION, MAX_FORCE, MAX_SPEED, MAX_ACCELERATION, ROD, ROS, TIME_TO_TARGET,
+        UP, DOWN, LEFT, RIGHT, GRID, GRID_INFO} from './options'
+import {getSpawnLocation, initSpawnLocations, drawWalls, drawGrid, movePlayer} from './helper'
 
 class CRGame extends Game {
     constructor() {
         super();
         this.canvas = document.querySelector('#copsAndRobbers');
         this.context = this.canvas.getContext('2d');
-        this.graph = null;
+        this.graph = new GraphGenerator();
         this.players = [];
         this.spawnLocations = []; // defined {x,y}
         this.decisionTree = null;
+        this.gameover = false;
+        this.gameloop = this.gameloop.bind(this);
+        this.playerMoved = false;
+        // Start player off looking right? Does it matter?
+        this.grid = GRID;
     }
 
     initSelectionScreen() {
@@ -41,6 +48,7 @@ class CRGame extends Game {
             this.players.push({
                 isAI: true,
                 team: COP,
+                direction: null,
                 data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
             });
         }
@@ -51,6 +59,7 @@ class CRGame extends Game {
             this.players.push({
                 isAI: true,
                 team: ROBBER,
+                direction: null,
                 data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
             });
         }
@@ -75,15 +84,64 @@ class CRGame extends Game {
         this.spawnLocations[spawn].occupied = true;
         this.players.push({
                            isAI: false, 
-                           team: side, 
+                           team: side,
+                           direction: null,
                            data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn])
                           });
         this.initAI(numCops, numRobbers); // init AI players
         // this.initBoard();
-        // this.timer = setInterval(this.gameloop, 30);
     }
 
-    init() {
+    addKeyboardHandlers() {
+        document.addEventListener('keydown', (e) => this.setMovingDirection(e));
+    }
+
+    setMovingDirection(e) {
+        if(e.keyCode === 37) {
+            this.players[0].direction = LEFT;
+            this.playerMoved = true;
+        } else if(e.keyCode === 38) {
+            this.players[0].direction = UP;
+            this.playerMoved = true;
+        } else if(e.keyCode === 39) {
+            this.players[0].direction = RIGHT;
+            this.playerMoved = true;
+        } else if(e.keyCode === 40) {
+            this.players[0].direction = DOWN;
+            this.playerMoved = true;
+        }
+    }
+
+    update() {
+        // if(this.playerMoved) {
+        //     // move player
+        //     this.player[0] = movePlayer(this.players);
+        //     // update ai
+        //     // update grid 
+        //     // reset player movement so that AI only moves when they do
+        //     this.playerMoved = false;
+        // }
+    }
+
+    // rendering the game
+    render() {
+        const { width, height } = this.canvas;
+
+        // render walls and background
+        drawGrid(this.context, this.grid);
+        drawWalls(this.context, width, height);
+    }
+
+    initCops() {
+        // TODO
+    }
+
+    initRobbers() {
+        // TODO
+    }
+
+    // is there a better way for initializing solid walls?
+    initWalls() {
         // TODO
         this.initSelectionScreen();
     }
@@ -92,9 +150,14 @@ class CRGame extends Game {
         // TODO: Create decision nodes and construct tree
     }
 
-    initBoard() {
-
+    init() {
+        this.addKeyboardHandlers();
+        this.graph.generateGraphFromGridCells(GRID_INFO);
+        console.log(this.graph);
+        this.timer = setInterval(this.gameloop, 30);
+        window.drawGrid = drawGrid.bind(this, this.context, this.grid);
     }
+
 }
 
 export default CRGame;

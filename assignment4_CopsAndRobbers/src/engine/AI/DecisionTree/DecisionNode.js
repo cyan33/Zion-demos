@@ -1,4 +1,5 @@
-import { CHECK_METHOD, ACTION_METHOD } from './options'
+const CHECK_METHOD = 'check-method';
+const ACTION_METHOD = 'action-method';
 
 /**
  * Decision node used in traversing a Decision Tree. This tree is strictly binary for the purposes
