@@ -9,18 +9,18 @@ export const RIGHT = 39;
 export const DOWN = 40;
 
 // tile numbers
-export const OPEN = 0;
-export const WALL = 1;
-export const COP = 2;
-export const ROBBER = 3;
+export const OPEN = 'OPEN';
+export const WALL = 'WALL';
+export const COP = 'COP';
+export const ROBBER = 'ROBBER';
 
 // grid layout
 export const GRID = [
-    [1,1,1,1,1,1,1,1,1],
-    [1,2,1,0,0,0,1,2,1],
-    [1,0,1,0,1,1,1,0,1],
-    [1,0,0,0,0,3,1,0,1],
-    [1,0,1,1,1,0,0,0,1],
-    [1,0,0,3,1,0,0,0,1],
-    [1,1,1,1,1,1,1,1,1]
+    [WALL, WALL, WALL, WALL, WALL, WALL, WALL],
+    [WALL, COP, OPEN, OPEN, OPEN, OPEN, WALL],
+    [WALL, WALL, WALL, OPEN, WALL, OPEN, WALL],
+    [WALL, OPEN, OPEN, OPEN, WALL, ROBBER, WALL],
+    [WALL, OPEN, WALL, OPEN, WALL, WALL, WALL],
+    [WALL, OPEN, WALL, ROBBER, OPEN, OPEN, WALL],
+    [WALL, WALL, WALL, WALL, OPEN, OPEN, WALL]
 ];

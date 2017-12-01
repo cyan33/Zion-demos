@@ -1,11 +1,11 @@
 import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
-    UP, DOWN, LEFT, RIGHT
+    UP, DOWN, LEFT, RIGHT, GRID
 } from './options'
 import { createImageCache } from './engine/canvas'
 import Game from './engine/Game'
-import { drawWalls, drawGrid, drawCops, drawRobbers } from './helper'
+import { drawWalls, drawGrid } from './helper'
 
 class CRGame extends Game {
     constructor() {
@@ -17,6 +17,7 @@ class CRGame extends Game {
 
         // Start player off looking right? Does it matter?
         this.direction = RIGHT;
+        this.grid = GRID;
     }
 
     addKeyboardHandlers() {
@@ -44,8 +45,8 @@ class CRGame extends Game {
         const { width, height } = this.canvas;
 
         // render walls and background
+        drawGrid(this.context, this.grid);
         drawWalls(this.context, width, height);
-        drawGrid(this.context);
     }
 
     initCops() {
@@ -64,6 +65,7 @@ class CRGame extends Game {
     init() {
         this.addKeyboardHandlers();
         this.timer = setInterval(this.gameloop, 30);
+        window.drawGrid = drawGrid.bind(this, this.context, this.grid);
     }
 
 }

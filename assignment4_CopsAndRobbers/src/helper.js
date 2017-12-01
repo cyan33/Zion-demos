@@ -1,30 +1,29 @@
-import { GRID, OPEN, WALL, COP, ROBBER } from './options'
+import { GRID, OPEN, WALL, COP, ROBBER, CANVAS_WIDTH, CANVAS_HEIGHT } from './options'
 
-const tileSize = 600 / 9;
+
 
 export function drawWalls(context, width, height) {
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, width, height);
-    context.fillStyle = 'black';
+    context.strokeStyle = 'black';
     context.strokeRect(0, 0, width, height);
 }
 
 // Goes through from top left across and fills in each tile with the appropriate color for now
-export function drawGrid(context) {
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            if (GRID[j,i] === OPEN) {
+export function drawGrid(context, state) {
+    const tileHeight = CANVAS_HEIGHT / state.length;
+    const tileWidth = CANVAS_WIDTH / state[0].length;
+
+    for (let row = 0; row < state.length; row++) {
+        for (let col = 0; col < state[0].length; col++) {
+            if (GRID[row][col] === OPEN) {
                 context.fillStyle = 'white';
-            } else if (GRID[j,i] === WALL) {
-                context.fillStyle = 'black';
-            } else if (GRID[j,i] === COP) {
+            } else if (GRID[row][col] === WALL) {
+                context.fillStyle = 'gray';
+            } else if (GRID[row][col] === COP) {
                 context.fillStyle = 'blue';
-            } else if (GRID[j,i] === ROBBER) {
+            } else if (GRID[row][col] === ROBBER) {
                 context.fillStyle = 'red';
             }
-
-            context.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
+            context.fillRect(col * tileWidth,  row * tileHeight, tileWidth, tileHeight);
         }
     }
 }
-
