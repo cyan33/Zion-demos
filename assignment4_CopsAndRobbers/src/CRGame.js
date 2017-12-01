@@ -41,17 +41,6 @@ class CRGame extends Game {
             ros: ROS,
             timeToTarget: TIME_TO_TARGET
         }
-        // Spawn cops
-        for(let i = 0; i < numCops; i++) {
-            let spawn = getSpawnLocation(this.spawnLocations);
-            this.spawnLocations.occupied = true;
-            this.players.push({
-                isAI: true,
-                team: COP,
-                direction: null,
-                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
-            });
-        }
         // Spawn robbers
         for(let i = 0; i < numRobbers; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
@@ -61,6 +50,17 @@ class CRGame extends Game {
                 team: ROBBER,
                 direction: null,
                 data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
+            });
+        }
+        // Spawn cops
+        for(let i = 0; i < numCops; i++) {
+            let spawn = getSpawnLocation(this.spawnLocations);
+            this.spawnLocations.occupied = true;
+            this.players.push({
+                isAI: true,
+                team: COP,
+                direction: null,
+                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
             });
         }
     }
