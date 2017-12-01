@@ -1,4 +1,4 @@
-import { GRID, OPEN, WALL, COP, ROBBER } from '/options'
+import { GRID, OPEN, WALL, COP, ROBBER } from './options'
 
 const tileSize = 600 / 9;
 

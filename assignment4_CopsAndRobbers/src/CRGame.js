@@ -66,7 +66,7 @@ class CRGame {
         // render walls and background
         drawWalls(this.context, width, height);
         drawGrid(this.context, width, height);
-        
+
     }
 
     initCops() {
