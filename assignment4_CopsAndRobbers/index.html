@@ -5,13 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="src/style.css">
-  <title>Asteroids</title>
+  <title>Cops and Robbers</title>
 </head>
 <body>
   <div class="container">
-    <canvas id="asteroids" width="600px" height="600px">
+    <canvas id="copsAndRobbers" width="600px" height="600px">
       Canvas not supported
     </canvas>
+    <div class="selection-layer"></div>
+      <button class='selection-button' id='cop'>Cop</button>
+      <button class='selection-button' id='robber'>Robber</button>
     <script src="dist/bundle.js"></script>
   </div>
 </body>

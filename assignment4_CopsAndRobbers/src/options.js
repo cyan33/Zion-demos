@@ -1,0 +1,17 @@
+export const ROBBER = 'robber';
+export const COP = 'cop';
+export const COP_SRC = '';
+export const ROBBER_SRC = '';
+export const SRC_WIDTH = 16;
+export const SRC_HEIGHT = 16;
+export const START_X = 0;
+export const START_Y = 0;
+export const MAX_PLAYERS = 4;
+export const VELOCITY = {x: 0, y: 0};
+export const ACCELERATION =  {x: 0, y: 0};
+export const MAX_FORCE = 0.1;
+export const MAX_SPEED = 2;
+export const MAX_ACCELERATION = 3;
+export const ROD = 50;
+export const ROS = 2;
+export const TIME_TO_TARGET = 0.8;
