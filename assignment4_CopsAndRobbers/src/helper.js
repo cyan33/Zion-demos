@@ -73,12 +73,53 @@ export function getCopMove(ai, players, grid, aStar, graph) {
     let nx = ai.gridLocation.x;
     let ny = ai.gridLocation.y;
     let nearest = getNearestOpponentPlayer({x: nx, y: ny, team: ai.team}, players);
-    //console.log(nearest);
     // Path find to robber
-    console.log(`start_vertex: ${graph[ai.index]}`);
-    console.log(`end_vertex: ${graph[nearest.index]}`);
     let path = aStar.AStarPathfind(graph, graph[ai.index], graph[nearest.index]);
-    console.log(path);
+    // If path isn't null, update location to first result
+    if(path !== null  || path.length > 0) {
+        let newX = GRID_INFO[path[0].getValue()].gridPosition.r;
+        let newY = GRID_INFO[path[0].getValue()].gridPosition.c;
+        // Set the direction we just moved
+        if(newX == nx + 1) {
+            ai.direction = DOWN;
+        } else if(newX == nx - 1) {
+            ai.direction = UP;
+        } else if(newY == ny + 1) {
+            ai.direction = RIGHT;
+        } else if(newY == ny - 1) {
+            ai.direction = LEFT;
+        } else {
+            ai.direction = null;
+        }
+        nx = newX;
+        ny = newY;
+        // Check if the path is open
+        if(grid[nx][ny] === OPEN) {
+            // Update location and grid index
+            ai.gridLocation.x = nx;
+            ai.gridLocation.y = ny;
+            ai.index = getGridIndex({x: ai.gridLocation.x, y: ai.gridLocation.y});
+            return ai;
+        // If the movement causes a cop and robber to collide, end the game
+        } else if (grid[nx][ny] != WALL && grid[nx][ny] != ai.team) {
+            document.querySelector('.restart-layer .winner').textContent = 'The Cops caught the Robbers!';
+            document.querySelector('.restart-layer').style.display = 'block';
+            document.querySelector(".restart-layer button").addEventListener("click", reload);
+        }
+    }
+    // If the new position is a wall, causes collision between two cops or two robbers, or returns no valid path, return null
+    return null;
+}
+
+export function getRobberMove(ai, players, grid, aStar, graph) {
+    // Get the nearest Cop
+    let nx = ai.gridLocation.x;
+    let ny = ai.gridLocation.y;
+    let nearest = getNearestOpponentPlayer({x: nx, y: ny, team: ai.team}, players);
+    // Get one space away from Cop in an available direction and path find
+    let next = getFleeSpace(nearest, {x: nx, y: ny}, grid);
+    let target = getGridIndex(next);
+    let path = aStar.AStarPathfind(graph, graph[ai.index], graph[target]);
     // If path isn't null, update location to first result
     if(path !== null) {
         let newX = GRID_INFO[path[0].getValue()].gridPosition.r;
@@ -160,9 +201,51 @@ function getOldLocation(player) {
 
 export function getGridIndex(location) {
     // Determine the correpsonding grid index in the GRID_INFO array
-    //console.log(`location to check: [${location.x},${location.y}]`);
     for(let i = 0; i < GRID_INFO.length; i++) {
         let grid = GRID_INFO[i].gridPosition;
         if(location.x === grid.r && location.y === grid.c) return i;
+    }
+}
+
+function getFleeSpace(cop, location, grid) {
+    // Move away from the cop's current direction, if possible
+    if(cop.direction == RIGHT) {
+        if(grid[location.x][location.y - 1] == OPEN) { // try left
+            return {x: location.x, y: location.y - 1};
+        } else if(grid[location.x - 1][location.y] == OPEN) { // try up
+            return {x: location.x - 1, y: location.y};
+        } else if(grid[location.x + 1][location.y] == OPEN) { // try down
+            return {x: location.x + 1, y: location.y};
+        }
+        // invalid, so move right
+        return {x: location.x, y: location.y + 1};
+    } else if(cop.direction == LEFT) {
+        if(grid[location.x][location.y + 1] == OPEN) { // try right
+            return {x: location.x, y: location.y + 1};
+        } else if(grid[location.x - 1][location.y] == OPEN) { // try up
+            return {x: location.x - 1, y: location.y};
+        } else if(grid[location.x + 1][location.y] == OPEN) { // try down
+            return {x: location.x + 1, y: location.y};
+        }
+        // invalid, so move left
+        return {x: location.x, y: location.y - 1};
+    } else if(cop.direction == UP) {
+        if(grid[location.x + 1][location.y] == OPEN) { // try down
+            return {x: location.x + 1, y: location.y};
+        } else if(grid[location.x][location.y - 1] == OPEN) { // try left
+            return {x: location.x, y: location.y - 1};
+        } else if(grid[location.x][location.y + 1] == OPEN) { // try right
+            return {x: location.x, y: location.y + 1}
+        }
+        // invalid, so move up
+        return {x: location.x - 1, y: location.y};
+    } 
+    // else, moving down
+    if(grid[location.x][location.y - 1] == OPEN) { // try left
+        return {x: location.x, y: location.y - 1};
+    } else if(grid[location.x][location.y + 1] == OPEN) { // try right
+        return {x: location.x, y: location.y + 1};
+    } else if(grid[location.x - 1][location.y] == OPEN) { // try up
+        return {x: location.x - 1, y: location.y};
     }
 }
