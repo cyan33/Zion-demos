@@ -24,8 +24,8 @@ class CRGame extends Game {
         this.playerMoved = false;
         // Start player off looking right? Does it matter?
         this.grid = GRID;
-        // This line will probably need to be moved, since in the current version, the players array is not initialized at this point
-        this.turns = TURN_NUMBER * this.players.length;
+        this.turns = 0;
+        this.initSelectionScreen();
     }
 
     initSelectionScreen() {
@@ -53,8 +53,11 @@ class CRGame extends Game {
                 isAI: true,
                 team: ROBBER,
                 direction: null,
-                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
+                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
+                gridLocation: this.spawnLocations[0]
             });
+            this.grid[this.spawnLocations[0].x][this.spawnLocations[0].y] = ROBBER;
+            this.spawnLocations.shift();
         }
         // Spawn cops
         for(let i = 0; i < numCops; i++) {
@@ -64,8 +67,11 @@ class CRGame extends Game {
                 isAI: true,
                 team: COP,
                 direction: null,
-                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
+                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
+                gridLocation: this.spawnLocations[0]
             });
+            this.grid[this.spawnLocations[0].x][this.spawnLocations[0].y] = COP;
+            this.spawnLocations.shift();
         }
     }
 
@@ -82,7 +88,7 @@ class CRGame extends Game {
             numRobbers--;
         }
         // Initialize spawn locations
-        this.spawnLocations = initSpawnLocations();
+        this.spawnLocations = [{x:1,y:4},{x:7,y:4},{x:4,y:1},{x:4,y:7}]
         // Initialize player with selected properties
         let spawn = getSpawnLocation(this.spawnLocations);
         this.spawnLocations[spawn].occupied = true;
@@ -90,15 +96,22 @@ class CRGame extends Game {
                            isAI: false, 
                            team: side,
                            direction: null,
-                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn])
+                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn]),
+                           gridLocation: this.spawnLocations[0]
                           });
+        var location = this.spawnLocations.shift();
         this.initAI(numCops, numRobbers); // init AI players
         // Swap player position if they are a cop
         if(this.players[0].team === COP) {
             let temp = this.players[2];
             this.players[2] = this.players[0];
             this.players[0] = temp;
+            this.grid[location.x][location.y] = COP;
+        } else {
+            this.grid[location.x][location.y] = ROBBER;
         }
+        this.turns = TURN_NUMBER * this.players.length;
+        document.querySelector('.selection-layer').style.display = 'none';
         // this.initBoard();
     }
 
@@ -125,21 +138,21 @@ class CRGame extends Game {
     update() {
         // Save data about the player whose turn it is
         var currentTurn = this.players[0];
-        var oldData = this.players[0].data;
         // If it is an AI player, make a move
         if(currentTurn.isAI){
             if (currentTurn.team === COP){
-                currentTurn.data = getCopMove(currentTurn.data);
+                //currentTurn.data = getCopMove(currentTurn.data);
             } else {
-                currentTurn.data = getRobberMove(currentTurn.data);
+                //currentTurn.data = getRobberMove(currentTurn.data);
             }
             //Rotate the player array
             this.players.shift();
             this.players.push(currentTurn);
             this.turns--;
         // If it is a human player's turn, wait for them to press a key
-        } else if (this.direction) {
+        } else if (this.playerMoved) {
             var newData = movePlayer(currentTurn, this.grid);
+            console.log(newData);
             // If the move is valid, update the data and rotate the array
             if (newData) {
                 currentTurn.data = newData;
@@ -147,13 +160,13 @@ class CRGame extends Game {
                 this.players.push(currentTurn);
                 this.turns--;
             }
-            this.direction = null;
+            this.playerMoved = false;
         }
         if(this.turns < 1){
             endGame();
         }
         // Update the grid with the latest move
-        this.grid = updateGrid(this.grid, currentTurn, oldData);
+        this.grid = updateGrid(this.grid, currentTurn);
     }
 
     // rendering the game
