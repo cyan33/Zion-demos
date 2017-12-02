@@ -145,6 +145,8 @@ class CRGame extends Game {
             this.players.shift();
             this.players.push(currentTurn);
             this.turns--;
+            // Update the grid with the latest move
+            this.grid = updateGrid(this.grid, currentTurn);
         // If it is a human player's turn, wait for them to press a key
         } else if (this.playerMoved) {
             let newData = movePlayer(currentTurn, this.grid);
@@ -154,14 +156,14 @@ class CRGame extends Game {
                 this.players.shift();
                 this.players.push(currentTurn);
                 this.turns--;
+                // Update the grid with the latest move
+                this.grid = updateGrid(this.grid, currentTurn);
             }
             this.playerMoved = false;
         }
         if(this.turns < 1){
             endGame();
         }
-        // Update the grid with the latest move
-        this.grid = updateGrid(this.grid, currentTurn);
     }
 
     // rendering the game
