@@ -1,11 +1,12 @@
 import {
     CANVAS_HEIGHT,
     CANVAS_WIDTH,
-    UP, DOWN, LEFT, RIGHT, GRID
+    UP, DOWN, LEFT, RIGHT, GRID,
+    TURN_NUMBER
 } from './options'
 import { createImageCache } from './engine/canvas'
 import Game from './engine/Game'
-import { drawWalls, drawGrid, movePlayer, updateGrid } from './helper'
+import { drawWalls, drawGrid, movePlayer, updateGrid, endGame } from './helper'
 
 class CRGame extends Game {
     constructor() {
@@ -19,6 +20,8 @@ class CRGame extends Game {
         this.players = []
         this.direction = null;
         this.grid = GRID;
+        // This line will probably need to be moved, since in the current version, the players array is not initialized at this point
+        this.turns = TURN_NUMBER * this.players.length;
     }
 
     addKeyboardHandlers() {
@@ -54,6 +57,7 @@ class CRGame extends Game {
             //Rotate the player array
             this.players.shift();
             this.players.push(currentTurn);
+            this.turns--;
         // If it is a human player's turn, wait for them to press a key
         } else if (this.direction) {
             var newData = movePlayer(currentTurn, this.direction, this.grid);
@@ -62,8 +66,12 @@ class CRGame extends Game {
                 currentTurn.data = newData;
                 this.players.shift();
                 this.players.push(currentTurn);
+                this.turns--;
             }
             this.direction = null;
+        }
+        if(this.turns < 1){
+            endGame();
         }
         // Update the grid with the latest move
         this.grid = updateGrid(this.grid, currentTurn, oldData);

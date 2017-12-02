@@ -55,6 +55,12 @@ function reload() {
     location.reload();
 }
 
+export function endGame() {
+    document.querySelector('.restart-layer .winner').textContent = 'The Robbers escaped!';
+    document.querySelector('.restart-layer').style.display = 'block';
+    document.querySelector(".restart-layer button").addEventListener("click", reload);
+}
+
 export function updateGrid(grid, newData, oldData) {
     grid[oldData.position.x][oldData.position.y] = OPEN;
     grid[newData.data.position.x][newData.data.position.y] = newData.team;

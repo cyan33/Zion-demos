@@ -14,6 +14,8 @@ export const WALL = 'WALL';
 export const COP = 'COP';
 export const ROBBER = 'ROBBER';
 
+export const TURN_NUMBER = 7;
+
 // grid layout
 export const GRID = [
     [WALL, WALL, WALL, WALL, WALL, WALL, WALL],
