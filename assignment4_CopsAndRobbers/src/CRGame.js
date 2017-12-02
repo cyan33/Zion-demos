@@ -6,7 +6,7 @@ import {COP, ROBBER, COP_SRC, ROBBER_SRC, SRC_WIDTH, SRC_HEIGHT, VELOCITY,
 import { createImageCache } from './engine/canvas'
 import AStar from './engine/AI/AStar'
 import Game from './engine/Game'
-import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getSpawnLocation, getCopMove, getGridIndex } from './helper'
+import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getSpawnLocation, getCopMove, getRobberMove, getGridIndex } from './helper'
 import DecisionNode from './engine/AI/DecisionTree/DecisionNode'
 import GraphGenerator from './engine/AI/GraphGenerator'
 import Sprite from './engine/Sprite'
@@ -114,7 +114,6 @@ class CRGame extends Game {
             this.grid[location.x][location.y] = ROBBER;
         }
         this.turns = TURN_NUMBER * this.players.length;
-        // this.initBoard();
     }
 
     addKeyboardHandlers() {
@@ -146,7 +145,7 @@ class CRGame extends Game {
             if (currentTurn.team === COP){
                 currentTurn.data = getCopMove(currentTurn, this.players, this.grid, this.aStar, this.graph.getGraph());
             } else {
-                //currentTurn.data = getRobberMove(currentTurn.data);
+                currentTurn.data = getRobberMove(currentTurn, this.players, this.grid, this.aStar, this.graph.getGraph());
             }
             //Rotate the player array
             this.players.shift();
