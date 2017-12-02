@@ -1,6 +1,5 @@
 import {getRandomNumber, getDistance} from './engine/operations'
-import {CANVAS_WIDTH, CANVAS_HEIGHT, GRID, OPEN, WALL, COP, ROBBER,
-        EXIT, UP, DOWN, LEFT, RIGHT, GRID_INFO} from './options'
+import {CANVAS_WIDTH, CANVAS_HEIGHT, GRID, OPEN, WALL, COP, ROBBER, UP, DOWN, LEFT, RIGHT, GRID_INFO} from './options'
 
 export function convertGridToPixelCoords(cell) {
     let xCorner = CANVAS_WIDTH / GRID[0].length * cell.x;
@@ -20,7 +19,7 @@ export function drawGrid(context, grid) {
 
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[0].length; col++) {
-            if (grid[row][col] === OPEN || grid[row][col] === EXIT) {
+            if (grid[row][col] === OPEN) {
                 context.fillStyle = 'white';
             } else if (grid[row][col] === WALL) {
                 context.fillStyle = 'gray';
