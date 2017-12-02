@@ -1,11 +1,12 @@
 import AI from './engine/AI/AI'
+import AStar from './engine/AI/AStar'
 import Game from './engine/Game'
 import DecisionNode from './engine/AI/DecisionTree/DecisionNode'
 import GraphGenerator from './engine/AI/GraphGenerator'
 import Sprite from './engine/Sprite'
 import {COP, ROBBER, COP_SRC, ROBBER_SRC, SRC_WIDTH, SRC_HEIGHT, VELOCITY, 
         ACCELERATION, MAX_FORCE, MAX_SPEED, MAX_ACCELERATION, ROD, ROS, TIME_TO_TARGET,
-        UP, DOWN, LEFT, RIGHT, GRID, GRID_INFO} from './options'
+        UP, DOWN, LEFT, RIGHT, GRID, GRID_INFO, CANVAS_WIDTH, CANVAS_HEIGHT} from './options'
 import {getSpawnLocation, initSpawnLocations, drawWalls, drawGrid, movePlayer} from './helper'
 
 class CRGame extends Game {
@@ -20,6 +21,7 @@ class CRGame extends Game {
         this.gameover = false;
         this.gameloop = this.gameloop.bind(this);
         this.playerMoved = false;
+        this.aStar = new AStar();
         // Start player off looking right? Does it matter?
         this.grid = GRID;
     }
@@ -49,7 +51,8 @@ class CRGame extends Game {
                 isAI: true,
                 team: ROBBER,
                 direction: null,
-                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
+                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
+                gridLocation: null
             });
         }
         // Spawn cops
@@ -60,7 +63,8 @@ class CRGame extends Game {
                 isAI: true,
                 team: COP,
                 direction: null,
-                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params)
+                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
+                gridLocation: null
             });
         }
     }
@@ -86,7 +90,8 @@ class CRGame extends Game {
                            isAI: false, 
                            team: side,
                            direction: null,
-                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn])
+                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn]),
+                           gridLocation: null
                           });
         this.initAI(numCops, numRobbers); // init AI players
         // Swap player position if they are a cop
@@ -138,14 +143,6 @@ class CRGame extends Game {
         drawWalls(this.context, width, height);
     }
 
-    initCops() {
-        // TODO
-    }
-
-    initRobbers() {
-        // TODO
-    }
-
     // is there a better way for initializing solid walls?
     initWalls() {
         // TODO
@@ -158,8 +155,7 @@ class CRGame extends Game {
 
     init() {
         this.addKeyboardHandlers();
-        this.graph.generateGraphFromGridCells(GRID_INFO);
-        console.log(this.graph);
+        this.graph.generateGraphFromGridCells(GRID_INFO, CANVAS_WIDTH / GRID[0].length, CANVAS_HEIGHT / GRID.length);
         this.timer = setInterval(this.gameloop, 30);
         window.drawGrid = drawGrid.bind(this, this.context, this.grid);
     }
