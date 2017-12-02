@@ -1,6 +1,6 @@
-import {getRandomNumber} from './engine/operations'
+import {getRandomNumber, getDistance} from './engine/operations'
 import {CANVAS_WIDTH, CANVAS_HEIGHT, GRID, OPEN, WALL, COP, ROBBER,
-        EXIT, UP, DOWN, LEFT, RIGHT} from './options'
+        EXIT, UP, DOWN, LEFT, RIGHT, GRID_INFO} from './options'
 
 export function getSpawnLocation(spawnLocations) {
     let index = 0;
@@ -13,7 +13,6 @@ export function getSpawnLocation(spawnLocations) {
 }
 
 export function convertGridToPixelCoords(cell) {
-    console.log(cell);
     let xCorner = CANVAS_WIDTH / GRID[0].length * cell.x;
     let yCorner = CANVAS_HEIGHT / GRID.length * cell.y;
     return {x: xCorner, y: yCorner};
@@ -68,6 +67,68 @@ export function movePlayer(player, grid) {
     return null;
 }
 
+// Cop AI
+export function getCopMove(ai, players, grid, aStar, graph) {
+    // Get the nearest robber
+    let nx = ai.gridLocation.x;
+    let ny = ai.gridLocation.y;
+    let nearest = getNearestOpponentPlayer({x: nx, y: ny, team: ai.team}, players);
+    //console.log(nearest);
+    // Path find to robber
+    console.log(`start_vertex: ${graph[ai.index]}`);
+    console.log(`end_vertex: ${graph[nearest.index]}`);
+    let path = aStar.AStarPathfind(graph, graph[ai.index], graph[nearest.index]);
+    console.log(path);
+    // If path isn't null, update location to first result
+    if(path !== null) {
+        let newX = GRID_INFO[path[0].getValue()].gridPosition.r;
+        let newY = GRID_INFO[path[0].getValue()].gridPosition.c;
+        // Set the direction we just moved
+        if(newX == nx + 1) {
+            ai.direction = DOWN;
+        } else if(newX == nx - 1) {
+            ai.direction = UP;
+        } else if(newY == ny + 1) {
+            ai.direction = RIGHT;
+        } else if(newY == ny - 1) {
+            ai.direction = LEFT;
+        } else {
+            ai.direction = null;
+        }
+        nx = newX;
+        ny = newY;
+        // Check if the path is open
+        if(grid[nx][ny] === OPEN) {
+            // Update location and grid index
+            ai.gridLocation.x = nx;
+            ai.gridLocation.y = ny;
+            ai.index = getGridIndex({x: ai.gridLocation.x, y: ai.gridLocation.y});
+            return ai;
+        // If the movement causes a cop and robber to collide, end the game
+        } else if (grid[nx][ny] != WALL && grid[nx][ny] != ai.team) {
+            document.querySelector('.restart-layer .winner').textContent = 'The Cops caught the Robbers!';
+            document.querySelector('.restart-layer').style.display = 'block';
+            document.querySelector(".restart-layer button").addEventListener("click", reload);
+        }
+    }
+    // If the new position is a wall, causes collision between two cops or two robbers, or returns no valid path, return null
+    return null;
+}
+
+function getNearestOpponentPlayer(ai, players) {
+    let smallestDist = Number.MAX_SAFE_INTEGER;
+    let nearest = null;
+    for(let i = 0; i < players.length; i++) {
+        if((players[i].gridLocation.x === ai.x && players[i].gridLocation.y === ai.y) || players[i].team == ai.team) continue;
+        let dist = getDistance(ai.x, ai.y, players[i].gridLocation.x, players[i].gridLocation.y);
+        if(dist < smallestDist) {
+            smallestDist = dist;
+            nearest = players[i];
+        }
+    }
+    return nearest;
+}
+
 function reload() {
     location.reload();
 }
@@ -80,7 +141,7 @@ export function endGame() {
 
 export function updateGrid(grid, player) {
     if(player.direction) {
-        var oldLocation = getOldLocation(player);
+        let oldLocation = getOldLocation(player);
         grid[oldLocation.x][oldLocation.y] = OPEN;
         grid[player.gridLocation.x][player.gridLocation.y] = player.team;
     }
@@ -96,8 +157,12 @@ function getOldLocation(player) {
     else if (player.direction === DOWN) ox -= 1;
     return {x:ox, y:oy};
 }
-// Returns the player's updated movement
-export function moveAI(players) {
-    let player = players[0];
-    // move player only if they can move in the chosen direction
+
+export function getGridIndex(location) {
+    // Determine the correpsonding grid index in the GRID_INFO array
+    //console.log(`location to check: [${location.x},${location.y}]`);
+    for(let i = 0; i < GRID_INFO.length; i++) {
+        let grid = GRID_INFO[i].gridPosition;
+        if(location.x === grid.r && location.y === grid.c) return i;
+    }
 }
