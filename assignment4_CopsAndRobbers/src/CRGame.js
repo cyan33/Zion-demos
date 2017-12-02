@@ -51,7 +51,7 @@ class CRGame extends Game {
         for(let i = 0; i < numRobbers; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
-            let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
+            let position = convertGridToPixelCoords(this.spawnLocations[0]);
             this.players.push({
                 isAI: true,
                 team: ROBBER,
@@ -66,7 +66,7 @@ class CRGame extends Game {
         for(let i = 0; i < numCops; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
-            let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
+            let position = convertGridToPixelCoords(this.spawnLocations[0]);
             this.players.push({
                 isAI: true,
                 team: COP,
@@ -94,7 +94,7 @@ class CRGame extends Game {
         // Initialize player with selected properties
         let spawn = getSpawnLocation(this.spawnLocations);
         this.spawnLocations[spawn].occupied = true;
-        let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
+        let position = convertGridToPixelCoords(this.spawnLocations[0]);
         this.players.push({
                            isAI: false, 
                            team: side,

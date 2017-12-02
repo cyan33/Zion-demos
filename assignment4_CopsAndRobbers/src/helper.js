@@ -13,8 +13,9 @@ export function getSpawnLocation(spawnLocations) {
 }
 
 export function convertGridToPixelCoords(cell) {
-    let xCorner = CANVAS_WIDTH / GRID[0].length * cell.c;
-    let yCorner = CANVAS_HEIGHT / GRID.length * cell.r;
+    console.log(cell);
+    let xCorner = CANVAS_WIDTH / GRID[0].length * cell.x;
+    let yCorner = CANVAS_HEIGHT / GRID.length * cell.y;
     return {x: xCorner, y: yCorner};
 }
 
