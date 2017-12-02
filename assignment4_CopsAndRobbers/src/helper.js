@@ -2,16 +2,6 @@ import {getRandomNumber, getDistance} from './engine/operations'
 import {CANVAS_WIDTH, CANVAS_HEIGHT, GRID, OPEN, WALL, COP, ROBBER,
         EXIT, UP, DOWN, LEFT, RIGHT, GRID_INFO} from './options'
 
-export function getSpawnLocation(spawnLocations) {
-    let index = 0;
-    let found = false;
-    while(!found) {
-        index = getRandomNumber(spawnLocations.length);
-        if(!spawnLocations[index].occupied) found = true;
-    }
-    return index;
-}
-
 export function convertGridToPixelCoords(cell) {
     let xCorner = CANVAS_WIDTH / GRID[0].length * cell.x;
     let yCorner = CANVAS_HEIGHT / GRID.length * cell.y;
