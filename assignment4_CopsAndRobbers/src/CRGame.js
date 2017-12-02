@@ -6,8 +6,8 @@ import GraphGenerator from './engine/AI/GraphGenerator'
 import Sprite from './engine/Sprite'
 import {COP, ROBBER, COP_SRC, ROBBER_SRC, SRC_WIDTH, SRC_HEIGHT, VELOCITY, 
         ACCELERATION, MAX_FORCE, MAX_SPEED, MAX_ACCELERATION, ROD, ROS, TIME_TO_TARGET,
-        UP, DOWN, LEFT, RIGHT, GRID, GRID_INFO, CANVAS_WIDTH, CANVAS_HEIGHT} from './options'
-import {getSpawnLocation, initSpawnLocations, drawWalls, drawGrid, movePlayer} from './helper'
+        UP, DOWN, LEFT, RIGHT, GRID, GRID_INFO, CANVAS_WIDTH, CANVAS_HEIGHT, SPAWN_LOCATIONS} from './options'
+import {getSpawnLocation, initSpawnLocations, drawWalls, drawGrid, movePlayer, convertGridToPixelCoords} from './helper'
 
 class CRGame extends Game {
     constructor() {
@@ -16,7 +16,7 @@ class CRGame extends Game {
         this.context = this.canvas.getContext('2d');
         this.graph = new GraphGenerator();
         this.players = [];
-        this.spawnLocations = []; // defined {x,y}
+        this.spawnLocations = SPAWN_LOCATIONS; // defined {x,y}
         this.decisionTree = null;
         this.gameover = false;
         this.gameloop = this.gameloop.bind(this);
@@ -47,24 +47,26 @@ class CRGame extends Game {
         for(let i = 0; i < numRobbers; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
+            let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
             this.players.push({
                 isAI: true,
                 team: ROBBER,
                 direction: null,
-                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
-                gridLocation: null
+                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, position, params),
+                gridLocation: this.spawnLocations[spawn].gridPosition
             });
         }
         // Spawn cops
         for(let i = 0; i < numCops; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
+            let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
             this.players.push({
                 isAI: true,
                 team: COP,
                 direction: null,
-                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
-                gridLocation: null
+                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, position, params),
+                gridLocation: this.spawnLocations[spawn].gridPosition
             });
         }
     }
@@ -81,17 +83,16 @@ class CRGame extends Game {
             src = ROBBER_SRC;
             numRobbers--;
         }
-        // Initialize spawn locations
-        this.spawnLocations = initSpawnLocations();
         // Initialize player with selected properties
         let spawn = getSpawnLocation(this.spawnLocations);
         this.spawnLocations[spawn].occupied = true;
+        let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
         this.players.push({
                            isAI: false, 
                            team: side,
                            direction: null,
-                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn]),
-                           gridLocation: null
+                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, position),
+                           gridLocation: this.spawnLocations[spawn].gridPosition
                           });
         this.initAI(numCops, numRobbers); // init AI players
         // Swap player position if they are a cop
@@ -100,6 +101,7 @@ class CRGame extends Game {
             this.players[2] = this.players[0];
             this.players[0] = temp;
         }
+        console.log(this.players);
         // this.initBoard();
     }
 
