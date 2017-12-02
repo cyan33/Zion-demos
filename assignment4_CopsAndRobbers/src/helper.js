@@ -42,6 +42,7 @@ export function movePlayer(player, grid) {
     else if (player.direction === RIGHT) ny += 1;
     else if (player.direction === UP) nx -= 1;
     else if (player.direction === DOWN) nx += 1;
+    if(nx > grid.length || nx < 0 || ny > grid.length[0] || ny < 0) return null;
     // If the new position is open, move the player
     if (grid[nx][ny] === OPEN) {
         player.gridLocation.x = nx;
@@ -66,7 +67,7 @@ export function getCopMove(ai, players, grid, aStar, graph) {
     // Path find to robber
     let path = aStar.AStarPathfind(graph, graph[ai.index], graph[nearest.index]);
     // If path isn't null, update location to first result
-    if(path !== null  || path.length > 0) {
+    if(path !== null  && path.length > 0) {
         let newX = GRID_INFO[path[0].getValue()].gridPosition.r;
         let newY = GRID_INFO[path[0].getValue()].gridPosition.c;
         // Set the direction we just moved
