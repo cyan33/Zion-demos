@@ -80,6 +80,7 @@ class CRGame extends Game {
     }
 
     initLevel(side) {
+        document.querySelector('.selection-layer').style.display = 'none';
         let src;
         let numCops = 2;
         let numRobbers = 2;
@@ -139,6 +140,7 @@ class CRGame extends Game {
     }
 
     update() {
+        if(this.players.length === 0) return;
         // Save data about the player whose turn it is
         var currentTurn = this.players[0];
         // If it is an AI player, make a move
@@ -179,12 +181,6 @@ class CRGame extends Game {
         // render walls and background
         drawGrid(this.context, this.grid);
         drawWalls(this.context, width, height);
-    }
-
-    // is there a better way for initializing solid walls?
-    initWalls() {
-        // TODO
-        this.initSelectionScreen();
     }
 
     setupDecisions() {
