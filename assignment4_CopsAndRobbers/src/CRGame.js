@@ -6,7 +6,7 @@ import {COP, ROBBER, COP_SRC, ROBBER_SRC, SRC_WIDTH, SRC_HEIGHT, VELOCITY,
 import { createImageCache } from './engine/canvas'
 import AStar from './engine/AI/AStar'
 import Game from './engine/Game'
-import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getSpawnLocation, getCopMove, getRobberMove, getGridIndex } from './helper'
+import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getCopMove, getRobberMove, getGridIndex } from './helper'
 import DecisionNode from './engine/AI/DecisionTree/DecisionNode'
 import GraphGenerator from './engine/AI/GraphGenerator'
 import Sprite from './engine/Sprite'
@@ -48,13 +48,11 @@ class CRGame extends Game {
         }
         // Spawn robbers
         for(let i = 0; i < numRobbers; i++) {
-            let spawn = getSpawnLocation(this.spawnLocations);
-            this.spawnLocations.occupied = true;
             this.players.push({
                 isAI: true,
                 team: ROBBER,
                 direction: null,
-                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
+                data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[0], params),
                 gridLocation: this.spawnLocations[0],
                 index: getGridIndex(this.spawnLocations[0])
             });
@@ -63,13 +61,11 @@ class CRGame extends Game {
         }
         // Spawn cops
         for(let i = 0; i < numCops; i++) {
-            let spawn = getSpawnLocation(this.spawnLocations);
-            this.spawnLocations.occupied = true;
             this.players.push({
                 isAI: true,
                 team: COP,
                 direction: null,
-                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
+                data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[0], params),
                 gridLocation: this.spawnLocations[0],
                 index: getGridIndex(this.spawnLocations[0])
             });
@@ -92,13 +88,11 @@ class CRGame extends Game {
             numRobbers--;
         }
         // Initialize player with selected properties
-        let spawn = getSpawnLocation(this.spawnLocations);
-        this.spawnLocations[spawn].occupied = true;
         this.players.push({
                            isAI: false, 
                            team: side,
                            direction: null,
-                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn]),
+                           data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[0]),
                            gridLocation: this.spawnLocations[0],
                            index: getGridIndex(this.spawnLocations[0])
                           });
