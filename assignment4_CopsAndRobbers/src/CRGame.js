@@ -158,7 +158,6 @@ class CRGame extends Game {
     init() {
         this.addKeyboardHandlers();
         this.graph.generateGraphFromGridCells(GRID_INFO, CANVAS_WIDTH / GRID[0].length, CANVAS_HEIGHT / GRID.length);
-        this.initLevel(COP);
         this.timer = setInterval(this.gameloop, 30);
         window.drawGrid = drawGrid.bind(this, this.context, this.grid);
     }
