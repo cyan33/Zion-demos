@@ -13,8 +13,9 @@ export function getSpawnLocation(spawnLocations) {
 }
 
 export function convertGridToPixelCoords(cell) {
-    let xCorner = CANVAS_WIDTH / GRID[0].length * cell.c;
-    let yCorner = CANVAS_HEIGHT / GRID.length * cell.r;
+    console.log(cell);
+    let xCorner = CANVAS_WIDTH / GRID[0].length * cell.x;
+    let yCorner = CANVAS_HEIGHT / GRID.length * cell.y;
     return {x: xCorner, y: yCorner};
 }
 
@@ -24,19 +25,19 @@ export function drawWalls(context, width, height) {
 }
 
 // Goes through from top left across and fills in each tile with the appropriate color for now
-export function drawGrid(context, state) {
-    const tileHeight = CANVAS_HEIGHT / state.length;
-    const tileWidth = CANVAS_WIDTH / state[0].length;
+export function drawGrid(context, grid) {
+    const tileHeight = CANVAS_HEIGHT / grid.length;
+    const tileWidth = CANVAS_WIDTH / grid[0].length;
 
-    for (let row = 0; row < state.length; row++) {
-        for (let col = 0; col < state[0].length; col++) {
-            if (GRID[row][col] === OPEN || GRID[row][col] === EXIT) {
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[0].length; col++) {
+            if (grid[row][col] === OPEN || grid[row][col] === EXIT) {
                 context.fillStyle = 'white';
-            } else if (GRID[row][col] === WALL) {
+            } else if (grid[row][col] === WALL) {
                 context.fillStyle = 'gray';
-            } else if (GRID[row][col] === COP) {
+            } else if (grid[row][col] === COP) {
                 context.fillStyle = 'blue';
-            } else if (GRID[row][col] === ROBBER) {
+            } else if (grid[row][col] === ROBBER) {
                 context.fillStyle = 'red';
             }
             context.fillRect(col * tileWidth,  row * tileHeight, tileWidth, tileHeight);
@@ -44,6 +45,57 @@ export function drawGrid(context, state) {
     }
 }
 
+export function movePlayer(player, grid) {
+    let nx = player.gridLocation.x;
+    let ny = player.gridLocation.y;
+    // Get new position based on position and direction
+    if (player.direction === LEFT) ny -= 1;
+    else if (player.direction === RIGHT) ny += 1;
+    else if (player.direction === UP) nx -= 1;
+    else if (player.direction === DOWN) nx += 1;
+    // If the new position is open, move the player
+    if (grid[nx][ny] === OPEN) {
+        player.gridLocation.x = nx;
+        player.gridLocation.y = ny;
+        return player;
+    // If the movement causes a cop and robber to collide, end the game
+    } else if (grid[nx][ny] != WALL && grid[nx][ny] != player.team) {
+        document.querySelector('.restart-layer .winner').textContent = 'The Cops caught the Robbers!';
+        document.querySelector('.restart-layer').style.display = 'block';
+        document.querySelector(".restart-layer button").addEventListener("click", reload);
+    }
+    // If the new position is a wall, or causes collision between two cops or two robbers, return null
+    return null;
+}
+
+function reload() {
+    location.reload();
+}
+
+export function endGame() {
+    document.querySelector('.restart-layer .winner').textContent = 'The Robbers escaped!';
+    document.querySelector('.restart-layer').style.display = 'block';
+    document.querySelector(".restart-layer button").addEventListener("click", reload);
+}
+
+export function updateGrid(grid, player) {
+    if(player.direction) {
+        var oldLocation = getOldLocation(player);
+        grid[oldLocation.x][oldLocation.y] = OPEN;
+        grid[player.gridLocation.x][player.gridLocation.y] = player.team;
+    }
+    return grid;
+}
+
+function getOldLocation(player) {
+    let ox = player.gridLocation.x;
+    let oy = player.gridLocation.y;
+    if (player.direction === LEFT) oy += 1;
+    else if (player.direction === RIGHT) oy -= 1;
+    else if (player.direction === UP) ox += 1;
+    else if (player.direction === DOWN) ox -= 1;
+    return {x:ox, y:oy};
+}
 // Returns the player's updated movement
 export function moveAI(players) {
     let player = players[0];

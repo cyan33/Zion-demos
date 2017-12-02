@@ -28,6 +28,8 @@ export const COP = 'COP';
 export const ROBBER = 'ROBBER';
 export const EXIT = 'EXIT'; // drawn identical to OPEN
 
+export const TURN_NUMBER = 7;
+
 // grid layout
 export const GRID = [
     [WALL, WALL, WALL, WALL, EXIT, WALL, WALL, WALL, WALL],
@@ -213,4 +215,4 @@ export const GRID_INFO = [
     }
 ];
 
-export const SPAWN_LOCATIONS = [GRID_INFO[0], GRID_INFO[16], GRID_INFO[24], GRID_INFO[40]];
+export const SPAWN_LOCATIONS = this.spawnLocations = [{x:1,y:4},{x:7,y:4},{x:4,y:1},{x:4,y:7}]
