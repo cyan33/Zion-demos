@@ -16,7 +16,7 @@ class Vertex {
      */
     addNeighbor(v, dist){
         if(!this.checkInNeighbors(v)){
-            this.neighbors.add(new Edge(this, v, dist));
+            this.neighbors.push(new Edge(this, v, dist));
         }
         return false;
     }
