@@ -2,10 +2,11 @@
 import AI from './engine/AI/AI'
 import {COP, ROBBER, COP_SRC, ROBBER_SRC, SRC_WIDTH, SRC_HEIGHT, VELOCITY, 
         ACCELERATION, MAX_FORCE, MAX_SPEED, MAX_ACCELERATION, ROD, ROS, TIME_TO_TARGET,
-        UP, DOWN, LEFT, RIGHT, GRID, GRID_INFO, TURN_NUMBER} from './options'
+        UP, DOWN, LEFT, RIGHT, GRID, GRID_INFO, CANVAS_WIDTH, CANVAS_HEIGHT, SPAWN_LOCATIONS, TURN_NUMBER} from './options'
 import { createImageCache } from './engine/canvas'
+import AStar from './engine/AI/AStar'
 import Game from './engine/Game'
-import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getSpawnLocation, initSpawnLocations } from './helper'
+import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getSpawnLocation, initSpawnLocations, convertGridToPixelCoords } from './helper'
 import DecisionNode from './engine/AI/DecisionTree/DecisionNode'
 import GraphGenerator from './engine/AI/GraphGenerator'
 import Sprite from './engine/Sprite'
@@ -17,11 +18,12 @@ class CRGame extends Game {
         this.context = this.canvas.getContext('2d');
         this.graph = new GraphGenerator();
         this.players = [];
-        this.spawnLocations = []; // defined {x,y}
+        this.spawnLocations = SPAWN_LOCATIONS; // defined {x,y}
         this.decisionTree = null;
         this.gameover = false;
         this.gameloop = this.gameloop.bind(this);
         this.playerMoved = false;
+        this.aStar = new AStar();
         // Start player off looking right? Does it matter?
         this.grid = GRID;
         this.turns = 0;
@@ -49,6 +51,7 @@ class CRGame extends Game {
         for(let i = 0; i < numRobbers; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
+            let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
             this.players.push({
                 isAI: true,
                 team: ROBBER,
@@ -63,6 +66,7 @@ class CRGame extends Game {
         for(let i = 0; i < numCops; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
+            let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
             this.players.push({
                 isAI: true,
                 team: COP,
@@ -87,11 +91,10 @@ class CRGame extends Game {
             src = ROBBER_SRC;
             numRobbers--;
         }
-        // Initialize spawn locations
-        this.spawnLocations = [{x:1,y:4},{x:7,y:4},{x:4,y:1},{x:4,y:7}]
         // Initialize player with selected properties
         let spawn = getSpawnLocation(this.spawnLocations);
         this.spawnLocations[spawn].occupied = true;
+        let position = convertGridToPixelCoords(this.spawnLocations[spawn].gridPosition);
         this.players.push({
                            isAI: false, 
                            team: side,
@@ -178,14 +181,6 @@ class CRGame extends Game {
         drawWalls(this.context, width, height);
     }
 
-    initCops() {
-        // TODO
-    }
-
-    initRobbers() {
-        // TODO
-    }
-
     // is there a better way for initializing solid walls?
     initWalls() {
         // TODO
@@ -198,8 +193,7 @@ class CRGame extends Game {
 
     init() {
         this.addKeyboardHandlers();
-        this.graph.generateGraphFromGridCells(GRID_INFO);
-        console.log(this.graph);
+        this.graph.generateGraphFromGridCells(GRID_INFO, CANVAS_WIDTH / GRID[0].length, CANVAS_HEIGHT / GRID.length);
         this.timer = setInterval(this.gameloop, 30);
         window.drawGrid = drawGrid.bind(this, this.context, this.grid);
     }

@@ -214,3 +214,5 @@ export const GRID_INFO = [
         neighbors: [36]
     }
 ];
+
+export const SPAWN_LOCATIONS = [GRID_INFO[0], GRID_INFO[16], GRID_INFO[24], GRID_INFO[40]];
