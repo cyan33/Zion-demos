@@ -1,6 +1,5 @@
 import {getRandomNumber, getDistance} from './engine/operations'
-import {CANVAS_WIDTH, CANVAS_HEIGHT, GRID, OPEN, WALL, COP, ROBBER,
-        EXIT, UP, DOWN, LEFT, RIGHT, GRID_INFO} from './options'
+import {CANVAS_WIDTH, CANVAS_HEIGHT, GRID, OPEN, WALL, COP, ROBBER, UP, DOWN, LEFT, RIGHT, GRID_INFO} from './options'
 
 export function convertGridToPixelCoords(cell) {
     let xCorner = CANVAS_WIDTH / GRID[0].length * cell.x;
@@ -20,7 +19,7 @@ export function drawGrid(context, grid) {
 
     for (let row = 0; row < grid.length; row++) {
         for (let col = 0; col < grid[0].length; col++) {
-            if (grid[row][col] === OPEN || grid[row][col] === EXIT) {
+            if (grid[row][col] === OPEN) {
                 context.fillStyle = 'white';
             } else if (grid[row][col] === WALL) {
                 context.fillStyle = 'gray';
@@ -42,6 +41,7 @@ export function movePlayer(player, grid) {
     else if (player.direction === RIGHT) ny += 1;
     else if (player.direction === UP) nx -= 1;
     else if (player.direction === DOWN) nx += 1;
+    if(nx > grid.length || nx < 0 || ny > grid.length[0] || ny < 0) return null;
     // If the new position is open, move the player
     if (grid[nx][ny] === OPEN) {
         player.gridLocation.x = nx;
@@ -66,7 +66,7 @@ export function getCopMove(ai, players, grid, aStar, graph) {
     // Path find to robber
     let path = aStar.AStarPathfind(graph, graph[ai.index], graph[nearest.index]);
     // If path isn't null, update location to first result
-    if(path !== null  || path.length > 0) {
+    if(path !== null  && path.length > 0) {
         let newX = GRID_INFO[path[0].getValue()].gridPosition.r;
         let newY = GRID_INFO[path[0].getValue()].gridPosition.c;
         // Set the direction we just moved
