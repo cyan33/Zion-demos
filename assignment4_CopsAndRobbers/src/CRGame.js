@@ -6,7 +6,7 @@ import {COP, ROBBER, COP_SRC, ROBBER_SRC, SRC_WIDTH, SRC_HEIGHT, VELOCITY,
 import { createImageCache } from './engine/canvas'
 import AStar from './engine/AI/AStar'
 import Game from './engine/Game'
-import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getSpawnLocation, initSpawnLocations, convertGridToPixelCoords } from './helper'
+import { drawWalls, drawGrid, movePlayer, updateGrid, endGame, getSpawnLocation, getCopMove, getGridIndex } from './helper'
 import DecisionNode from './engine/AI/DecisionTree/DecisionNode'
 import GraphGenerator from './engine/AI/GraphGenerator'
 import Sprite from './engine/Sprite'
@@ -27,7 +27,6 @@ class CRGame extends Game {
         // Start player off looking right? Does it matter?
         this.grid = GRID;
         this.turns = 0;
-        this.initSelectionScreen();
     }
 
     initSelectionScreen() {
@@ -51,13 +50,13 @@ class CRGame extends Game {
         for(let i = 0; i < numRobbers; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
-            let position = convertGridToPixelCoords(this.spawnLocations[0]);
             this.players.push({
                 isAI: true,
                 team: ROBBER,
                 direction: null,
                 data: new AI(ROBBER_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
-                gridLocation: this.spawnLocations[0]
+                gridLocation: this.spawnLocations[0],
+                index: getGridIndex(this.spawnLocations[0])
             });
             this.grid[this.spawnLocations[0].x][this.spawnLocations[0].y] = ROBBER;
             this.spawnLocations.shift();
@@ -66,13 +65,13 @@ class CRGame extends Game {
         for(let i = 0; i < numCops; i++) {
             let spawn = getSpawnLocation(this.spawnLocations);
             this.spawnLocations.occupied = true;
-            let position = convertGridToPixelCoords(this.spawnLocations[0]);
             this.players.push({
                 isAI: true,
                 team: COP,
                 direction: null,
                 data: new AI(COP_SRC, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn], params),
-                gridLocation: this.spawnLocations[0]
+                gridLocation: this.spawnLocations[0],
+                index: getGridIndex(this.spawnLocations[0])
             });
             this.grid[this.spawnLocations[0].x][this.spawnLocations[0].y] = COP;
             this.spawnLocations.shift();
@@ -95,15 +94,15 @@ class CRGame extends Game {
         // Initialize player with selected properties
         let spawn = getSpawnLocation(this.spawnLocations);
         this.spawnLocations[spawn].occupied = true;
-        let position = convertGridToPixelCoords(this.spawnLocations[0]);
         this.players.push({
                            isAI: false, 
                            team: side,
                            direction: null,
                            data: new Sprite(src, {width: SRC_WIDTH, height: SRC_HEIGHT}, this.spawnLocations[spawn]),
-                           gridLocation: this.spawnLocations[0]
+                           gridLocation: this.spawnLocations[0],
+                           index: getGridIndex(this.spawnLocations[0])
                           });
-        var location = this.spawnLocations.shift();
+        let location = this.spawnLocations.shift();
         this.initAI(numCops, numRobbers); // init AI players
         // Swap player position if they are a cop
         if(this.players[0].team === COP) {
@@ -115,7 +114,6 @@ class CRGame extends Game {
             this.grid[location.x][location.y] = ROBBER;
         }
         this.turns = TURN_NUMBER * this.players.length;
-        document.querySelector('.selection-layer').style.display = 'none';
         // this.initBoard();
     }
 
@@ -142,11 +140,11 @@ class CRGame extends Game {
     update() {
         if(this.players.length === 0) return;
         // Save data about the player whose turn it is
-        var currentTurn = this.players[0];
+        let currentTurn = this.players[0];
         // If it is an AI player, make a move
         if(currentTurn.isAI){
             if (currentTurn.team === COP){
-                //currentTurn.data = getCopMove(currentTurn.data);
+                currentTurn.data = getCopMove(currentTurn, this.players, this.grid, this.aStar, this.graph.getGraph());
             } else {
                 //currentTurn.data = getRobberMove(currentTurn.data);
             }
@@ -156,8 +154,7 @@ class CRGame extends Game {
             this.turns--;
         // If it is a human player's turn, wait for them to press a key
         } else if (this.playerMoved) {
-            var newData = movePlayer(currentTurn, this.grid);
-            console.log(newData);
+            let newData = movePlayer(currentTurn, this.grid);
             // If the move is valid, update the data and rotate the array
             if (newData) {
                 currentTurn.data = newData;
@@ -190,6 +187,7 @@ class CRGame extends Game {
     init() {
         this.addKeyboardHandlers();
         this.graph.generateGraphFromGridCells(GRID_INFO, CANVAS_WIDTH / GRID[0].length, CANVAS_HEIGHT / GRID.length);
+        this.initSelectionScreen();
         this.timer = setInterval(this.gameloop, 30);
         window.drawGrid = drawGrid.bind(this, this.context, this.grid);
     }

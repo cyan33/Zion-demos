@@ -215,4 +215,4 @@ export const GRID_INFO = [
     }
 ];
 
-export const SPAWN_LOCATIONS = this.spawnLocations = [{x:1,y:4},{x:7,y:4},{x:4,y:1},{x:4,y:7}]
+export const SPAWN_LOCATIONS = this.spawnLocations = [{x:1,y:4},{x:7,y:4},{x:4,y:1},{x:4,y:7}] // [r,c]

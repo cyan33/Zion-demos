@@ -92,7 +92,8 @@ class Vertex {
      */
     toString(){
         let disp = "Vertex " + this.value + " - Neighbors: [";
-        for(let e in this.neighbors){
+        for(let i = 0; i < this.neighbors.length; i++){
+            let e = this.neighbors[i];
             disp += "Vertex: " + e.getNeighbor().getValue() + ", Weight = " + e.getWeight() + "; ";
         }
         disp += "]";
