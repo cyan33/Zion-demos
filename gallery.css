@@ -1,5 +1,5 @@
 .container {
-    width: 400px;
+    width: 700px;
     margin: 0 auto;
 }
 
@@ -13,11 +13,12 @@
 
 .sections {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    margin-top: -40px;
 }
 
 .sections .section {
-    margin-right: 30px;
+    margin-right: 50px;
 }
 
 .section a {
