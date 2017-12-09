@@ -1,32 +1,31 @@
 .container {
-    width: 400px;
-    margin: 0 auto;
+    width: 800px;
+    margin: 0px auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
     color: #f99222;
 }
 
-.info {
-    margin-bottom: 40px;
-}
-
 .sections {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .sections .section {
-    margin-right: 30px;
+    margin-right: 50px;
 }
 
-.section a {
+.section h2, .section a {
     color: #55bbb3;
     text-decoration: underline;
 }
 
 .section a:focus, .section a:active {
-    color: #55bbb3;
+    color: #366d68;
 }
 
 .demo-pic {
